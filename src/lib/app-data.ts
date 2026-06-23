@@ -12,6 +12,13 @@ export type EnabledFields = {
   rackNumber: boolean;
 };
 
+export const VISIBLE_FIELD_KEYS = ['side', 'rackLevel', 'distance', 'floor', 'rackNumber'] as const;
+
+export const ENABLED_FIELD_KEYS = [
+  'lane',
+  ...VISIBLE_FIELD_KEYS,
+] as const satisfies readonly (keyof EnabledFields)[];
+
 export type StationConfig = {
   name: string;
   laneInputMode: LaneInputMode;
@@ -20,7 +27,7 @@ export type StationConfig = {
   defaultFloor: string;
 };
 
-export type VisibleFields = Partial<Record<keyof Omit<EnabledFields, 'lane'>, true>>;
+export type VisibleFields = Partial<Record<(typeof VISIBLE_FIELD_KEYS)[number], true>>;
 
 type RecordBase = {
   id: string;

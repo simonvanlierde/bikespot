@@ -1,3 +1,5 @@
+import { createId } from './id';
+
 const PHOTO_DB_NAME = 'bike-storage-tracker-photos';
 const PHOTO_STORE_NAME = 'photos';
 
@@ -95,12 +97,4 @@ function openPhotoDb(): Promise<IDBDatabase> {
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error ?? new Error('Could not open photo database'));
   });
-}
-
-function createId(): string {
-  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
-    return crypto.randomUUID();
-  }
-
-  return `photo-${Math.random().toString(36).slice(2, 10)}`;
 }

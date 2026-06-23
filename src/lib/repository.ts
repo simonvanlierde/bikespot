@@ -1,4 +1,5 @@
 import type { AppData, Distance, LocationRecord, RackLevel, Side, VisibleFields } from './app-data';
+import { VISIBLE_FIELD_KEYS } from './app-data';
 import { defaultAppData, defaultStationConfig } from './defaults';
 import { normalizeStationConfig } from './domain';
 import { clearPhotoBlobs, loadPhotoBlob, savePhotoBlob } from './photos';
@@ -143,24 +144,10 @@ function normalizeVisibleFields(value: unknown): VisibleFields {
   const candidate = value as Partial<Record<keyof VisibleFields, unknown>>;
   const visibleFields: VisibleFields = {};
 
-  if (candidate.side === true) {
-    visibleFields.side = true;
-  }
-
-  if (candidate.rackLevel === true) {
-    visibleFields.rackLevel = true;
-  }
-
-  if (candidate.distance === true) {
-    visibleFields.distance = true;
-  }
-
-  if (candidate.floor === true) {
-    visibleFields.floor = true;
-  }
-
-  if (candidate.rackNumber === true) {
-    visibleFields.rackNumber = true;
+  for (const key of VISIBLE_FIELD_KEYS) {
+    if (candidate[key] === true) {
+      visibleFields[key] = true;
+    }
   }
 
   return visibleFields;

@@ -6,8 +6,9 @@ import type {
   StationConfig,
   VisibleFields,
 } from './app-data';
-import { RECENT_LIMIT } from './app-data';
+import { ENABLED_FIELD_KEYS, RECENT_LIMIT, VISIBLE_FIELD_KEYS } from './app-data';
 import { defaultStationConfig } from './defaults';
+import { createId } from './id';
 
 type StationLocationRecordSeed = Omit<
   Extract<LocationRecord, { mode: 'station' }>,
@@ -85,24 +86,10 @@ export function updateStationConfig(data: AppData, station: StationConfig): AppD
 export function buildVisibleFields(enabledFields: EnabledFields): VisibleFields {
   const visibleFields: VisibleFields = {};
 
-  if (enabledFields.side) {
-    visibleFields.side = true;
-  }
-
-  if (enabledFields.rackLevel) {
-    visibleFields.rackLevel = true;
-  }
-
-  if (enabledFields.distance) {
-    visibleFields.distance = true;
-  }
-
-  if (enabledFields.floor) {
-    visibleFields.floor = true;
-  }
-
-  if (enabledFields.rackNumber) {
-    visibleFields.rackNumber = true;
+  for (const key of VISIBLE_FIELD_KEYS) {
+    if (enabledFields[key]) {
+      visibleFields[key] = true;
+    }
   }
 
   return visibleFields;
@@ -119,18 +106,17 @@ export function normalizeStationConfig(
         .slice(0, 5)
     : fallback.laneLabels;
 
+  const enabledFields = {} as EnabledFields;
+
+  for (const key of ENABLED_FIELD_KEYS) {
+    enabledFields[key] = value?.enabledFields?.[key] ?? fallback.enabledFields[key];
+  }
+
   return {
     name: value?.name?.trim() || fallback.name,
     laneInputMode: value?.laneInputMode === 'number' ? 'number' : 'quick',
     laneLabels: labels.length > 0 ? labels : fallback.laneLabels,
-    enabledFields: {
-      lane: value?.enabledFields?.lane ?? fallback.enabledFields.lane,
-      side: value?.enabledFields?.side ?? fallback.enabledFields.side,
-      rackLevel: value?.enabledFields?.rackLevel ?? fallback.enabledFields.rackLevel,
-      distance: value?.enabledFields?.distance ?? fallback.enabledFields.distance,
-      floor: value?.enabledFields?.floor ?? fallback.enabledFields.floor,
-      rackNumber: value?.enabledFields?.rackNumber ?? fallback.enabledFields.rackNumber,
-    },
+    enabledFields,
     defaultFloor: value?.defaultFloor?.trim() || fallback.defaultFloor,
   };
 }
@@ -172,12 +158,4 @@ function buildRecord(
 
 function capRecent(entries: LocationRecord[]): LocationRecord[] {
   return entries.slice(0, RECENT_LIMIT);
-}
-
-function createId(): string {
-  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
-    return crypto.randomUUID();
-  }
-
-  return `location-${Math.random().toString(36).slice(2, 10)}`;
 }
