@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@preact/signals':
+        specifier: ^2.9.2
+        version: 2.9.2(preact@10.29.1)
       lucide-preact:
         specifier: 1.8.0
         version: 1.8.0(preact@10.29.1)
@@ -713,6 +716,14 @@ packages:
 
   '@oxc-project/types@0.126.0':
     resolution: {integrity: sha512-oGfVtjAgwQVVpfBrbtk4e1XDyWHRFta6BS3GWVzrF8xYBT2VGQAk39yJS/wFSMrZqoiCU4oghT3Ch0HaHGIHcQ==}
+
+  '@preact/signals-core@1.14.3':
+    resolution: {integrity: sha512-m0K3vnbSLC5rHs2ZVfeAMvBtT1zIyq4mxx5OlNncSgMj5Iz6W5Rn3kPrDxAC+iIKmiVe0lSl6U37t5ZkEWoVAw==}
+
+  '@preact/signals@2.9.2':
+    resolution: {integrity: sha512-DvFPISNMSh3vPqRwPa1tAVAHl85aDq4pTyNu1bTGfrKr64F3EOCHjdUl9aUdohKBf1v9PRGLYuGFcJpfztkdoQ==}
+    peerDependencies:
+      preact: '>= 10.25.0 || >=11.0.0-0'
 
   '@rolldown/binding-android-arm64@1.0.0-rc.16':
     resolution: {integrity: sha512-rhY3k7Bsae9qQfOtph2Pm2jZEA+s8Gmjoz4hhmx70K9iMQ/ddeae+xhRQcM5IuVx5ry1+bGfkvMn7D6MJggVSA==}
@@ -3055,6 +3066,13 @@ snapshots:
     optional: true
 
   '@oxc-project/types@0.126.0': {}
+
+  '@preact/signals-core@1.14.3': {}
+
+  '@preact/signals@2.9.2(preact@10.29.1)':
+    dependencies:
+      '@preact/signals-core': 1.14.3
+      preact: 10.29.1
 
   '@rolldown/binding-android-arm64@1.0.0-rc.16':
     optional: true
