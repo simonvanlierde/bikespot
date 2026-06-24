@@ -8,9 +8,10 @@ An offline-first PWA for remembering where you parked your bike. Everything stay
 - **Photos and notes** attached to any spot.
 - **Recent history** of your last five spots, each restorable as the current one.
 - **Configurable station** — name, lane-input style, lane labels, visible fields, and default floor.
+- **Optional GPS coordinates** — capture a spot's location and reopen it as an "Open in Maps" link. Configurable per station (never, ask, or always); no map is embedded, so the app stays offline-first.
 - **Installable and offline** via a generated service worker and web manifest.
 
-By design, the app is single-device and manual: no GPS, no map, no cross-device sync. State lives in `localStorage`; photos live in IndexedDB.
+By design, the app is single-device: no cross-device sync. State lives in `localStorage`; photos live in IndexedDB.
 
 ## Tech stack
 
