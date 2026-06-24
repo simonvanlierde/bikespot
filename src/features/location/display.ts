@@ -8,25 +8,21 @@ export function titleCase(value?: string) {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
+// Free-text fields count as present only when non-blank; enums just need a value.
+const TEXT_FIELDS = new Set<keyof EnabledFields>(['lane', 'floor', 'rackNumber']);
+
 export function shouldShowEntryField(entry: LocationRecord, field: keyof EnabledFields) {
   if (entry.mode !== 'station') {
     return false;
   }
 
-  switch (field) {
-    case 'lane':
-      return Boolean(entry.lane?.trim());
-    case 'side':
-      return entry.visibleFields.side === true && Boolean(entry.side);
-    case 'rackLevel':
-      return entry.visibleFields.rackLevel === true && Boolean(entry.rackLevel);
-    case 'distance':
-      return entry.visibleFields.distance === true && Boolean(entry.distance);
-    case 'floor':
-      return entry.visibleFields.floor === true && Boolean(entry.floor?.trim());
-    case 'rackNumber':
-      return entry.visibleFields.rackNumber === true && Boolean(entry.rackNumber?.trim());
-  }
+  const value = entry[field];
+  const hasValue = TEXT_FIELDS.has(field)
+    ? Boolean((value as string | undefined)?.trim())
+    : Boolean(value);
+
+  // Lane is always shown when set; the rest depend on the saved visibility flags.
+  return field === 'lane' ? hasValue : entry.visibleFields[field] === true && hasValue;
 }
 
 export function showFloor(entry: LocationRecord) {
