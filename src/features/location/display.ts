@@ -1,4 +1,4 @@
-import type { EnabledFields, LocationRecord } from '../../lib/app-data';
+import type { Coords, EnabledFields, LocationRecord } from '../../lib/app-data';
 
 export function titleCase(value?: string) {
   if (!value) {
@@ -60,6 +60,14 @@ export function getSummary(entry: LocationRecord | null): string {
   ].filter(Boolean);
 
   return parts.join(' · ');
+}
+
+export function mapsLink(coords: Coords): string {
+  return `https://www.google.com/maps/search/?api=1&query=${coords.lat},${coords.lng}`;
+}
+
+export function formatAccuracy(coords: Coords): string {
+  return typeof coords.accuracy === 'number' ? `±${coords.accuracy}m` : '';
 }
 
 export function getSupportingSummary(entry: LocationRecord | null, summary: string): string {

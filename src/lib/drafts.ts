@@ -1,7 +1,9 @@
 import type {
+  Coords,
   Distance,
   EnabledFields,
   LaneInputMode,
+  LocationCaptureMode,
   LocationRecord,
   LocationRecordInput,
   RackLevel,
@@ -20,12 +22,14 @@ export type StationLocationDraft = {
   rackNumber: string;
   notes: string;
   photoFile: File | null;
+  coords: Coords | null;
 };
 
 export type OutsideLocationDraft = {
   kind: 'outside';
   notes: string;
   photoFile: File | null;
+  coords: Coords | null;
 };
 
 export type LocationDraft = StationLocationDraft | OutsideLocationDraft;
@@ -36,6 +40,7 @@ export type StationSettingsDraft = {
   laneLabels: string[];
   enabledFields: EnabledFields;
   defaultFloor: string;
+  locationCapture: LocationCaptureMode;
 };
 
 export function createStationSettingsDraft(station: StationConfig): StationSettingsDraft {
@@ -45,6 +50,7 @@ export function createStationSettingsDraft(station: StationConfig): StationSetti
     laneLabels: [...station.laneLabels],
     enabledFields: { ...station.enabledFields },
     defaultFloor: station.defaultFloor,
+    locationCapture: station.locationCapture,
   };
 }
 
@@ -63,6 +69,7 @@ export function createLocationDraft(
       rackNumber: '',
       notes: '',
       photoFile: null,
+      coords: null,
     };
   }
 
@@ -77,6 +84,7 @@ export function createLocationDraft(
     rackNumber: current.mode === 'station' ? (current.rackNumber ?? '') : '',
     notes: current.mode === 'station' ? (current.notes ?? '') : '',
     photoFile: null,
+    coords: current.coords ?? null,
   };
 }
 
@@ -85,6 +93,7 @@ export function createOutsideLocationDraft(): OutsideLocationDraft {
     kind: 'outside',
     notes: '',
     photoFile: null,
+    coords: null,
   };
 }
 
@@ -104,6 +113,7 @@ export function buildLocationRecordInput(
       mode: 'outside',
       outsideDescription,
       photoId,
+      coords: draft.coords ?? undefined,
     };
   }
 
@@ -127,6 +137,7 @@ export function buildLocationRecordInput(
     rackNumber: station.enabledFields.rackNumber ? emptyToUndefined(draft.rackNumber) : undefined,
     notes: emptyToUndefined(draft.notes),
     photoId,
+    coords: draft.coords ?? undefined,
   };
 }
 
@@ -149,6 +160,7 @@ export function buildStationConfig(draft: StationSettingsDraft): StationConfig {
       rackNumber: draft.enabledFields.rackNumber,
     },
     defaultFloor: draft.defaultFloor.trim() || defaultStationConfig.defaultFloor,
+    locationCapture: draft.locationCapture,
   };
 }
 

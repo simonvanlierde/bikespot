@@ -1,6 +1,8 @@
 import {
   closeOverlay,
   data,
+  geoStatus,
+  handleCaptureLocation,
   handleLocationSubmit,
   handlePhotoChange,
   handleStationSubmit,
@@ -33,11 +35,13 @@ export function AppOverlays() {
           formState={locationDraft.value}
           station={appData.station}
           showDetails={showEditorDetails.value}
+          geoStatus={geoStatus.value}
           setFormState={setLocationDraft}
           onClose={closeOverlay}
           onSubmit={handleLocationSubmit}
           onToggleDetails={toggleEditorDetails}
           onPhotoChange={handlePhotoChange}
+          onCaptureLocation={handleCaptureLocation}
         />
       ) : null}
 

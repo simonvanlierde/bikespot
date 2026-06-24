@@ -1,6 +1,7 @@
 import { ArrowRightLeft, CircleHelp, Undo2 } from 'lucide-preact';
 
 import type { ChangeEvent, Dispatch, FormEvent, SetStateAction } from 'preact/compat';
+import { CoordsField } from '../../components/CoordsField';
 import { NotesField } from '../../components/NotesField';
 import { PhotoField } from '../../components/PhotoField';
 import { SegmentedControl } from '../../components/SegmentedControl';
@@ -186,20 +187,24 @@ export function LocationEditorSheet({
   formState,
   station,
   showDetails,
+  geoStatus,
   setFormState,
   onClose,
   onSubmit,
   onToggleDetails,
   onPhotoChange,
+  onCaptureLocation,
 }: {
   formState: LocationDraft;
   station: StationConfig;
   showDetails: boolean;
+  geoStatus: 'idle' | 'capturing' | 'error';
   setFormState: Dispatch<SetStateAction<LocationDraft>>;
   onClose: () => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onToggleDetails: () => void;
   onPhotoChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  onCaptureLocation: () => void;
 }) {
   function updateNotes(notes: string) {
     setFormState((previous) => ({
@@ -251,6 +256,10 @@ export function LocationEditorSheet({
       </div>
 
       <form className="editor-form" onSubmit={onSubmit}>
+        {station.locationCapture !== 'never' ? (
+          <CoordsField coords={formState.coords} status={geoStatus} onCapture={onCaptureLocation} />
+        ) : null}
+
         {formState.kind === 'outside' ? (
           <OutsideLocationFields
             formState={formState}

@@ -22,6 +22,35 @@
   color: var(--ink-soft);
 }
 
+.coords-field__status {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.coords-field__status--error {
+  color: #a3372b;
+}
+
+.maps-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid var(--line-soft);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.maps-link__accuracy {
+  margin-left: auto;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
 .photo-preview {
   margin: 0;
   overflow: hidden;

@@ -1,7 +1,16 @@
+import { MapPin } from 'lucide-preact';
+
 import { DetailRow } from '../../components/DetailRow';
 import { usePhotoUrl } from '../../components/usePhotoUrl';
 import type { LocationRecord } from '../../lib/app-data';
-import { getSummary, shouldShowEntryField, showFloor, titleCase } from './display';
+import {
+  formatAccuracy,
+  getSummary,
+  mapsLink,
+  shouldShowEntryField,
+  showFloor,
+  titleCase,
+} from './display';
 
 export function LocationDetailContent({
   entry,
@@ -62,6 +71,21 @@ export function LocationDetailContent({
 
       {entry.mode === 'station' && entry.notes ? (
         <p className="detail-note">{entry.notes}</p>
+      ) : null}
+
+      {entry.coords ? (
+        <a
+          className="maps-link"
+          href={mapsLink(entry.coords)}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <MapPin aria-hidden="true" className="button-icon" />
+          <span>Open in Maps</span>
+          {formatAccuracy(entry.coords) ? (
+            <span className="maps-link__accuracy">{formatAccuracy(entry.coords)}</span>
+          ) : null}
+        </a>
       ) : null}
 
       {photoUrl ? (

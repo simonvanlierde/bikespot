@@ -12,6 +12,7 @@ import {
   type LocationDraft,
   type StationSettingsDraft,
 } from './drafts';
+import { captureCoords } from './geolocation';
 import { loadAppData, saveAppData, savePhoto } from './repository';
 
 export const data = signal<AppData>(defaultAppData);
@@ -21,6 +22,7 @@ export const stationDraft = signal<StationSettingsDraft | null>(null);
 export const showEditorDetails = signal(false);
 export const notice = signal('');
 export const hydrated = signal(false);
+export const geoStatus = signal<'idle' | 'capturing' | 'error'>('idle');
 
 // Persist app data whenever it changes, but only after the initial load so we
 // never overwrite stored data with the default placeholder.
@@ -45,6 +47,7 @@ export function initStore(): () => void {
   showEditorDetails.value = false;
   notice.value = '';
   hydrated.value = false;
+  geoStatus.value = 'idle';
 
   let active = true;
 
@@ -65,10 +68,15 @@ export function initStore(): () => void {
 export function openOverlay(next: OverlayState): void {
   overlay.value = next;
   showEditorDetails.value = false;
+  geoStatus.value = 'idle';
 
   if (next.kind === 'edit-location') {
     locationDraft.value = createLocationDraft(data.value.current, data.value.station);
     stationDraft.value = null;
+
+    if (data.value.station.locationCapture === 'always') {
+      void handleCaptureLocation();
+    }
     return;
   }
 
@@ -87,6 +95,7 @@ export function closeOverlay(): void {
   locationDraft.value = null;
   stationDraft.value = null;
   showEditorDetails.value = false;
+  geoStatus.value = 'idle';
 }
 
 export async function handleLocationSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
@@ -139,6 +148,30 @@ export function handlePhotoChange(event: ChangeEvent<HTMLInputElement>): void {
   }
 
   locationDraft.value = { ...draft, photoFile: file };
+}
+
+export async function handleCaptureLocation(): Promise<void> {
+  const draft = locationDraft.value;
+
+  if (!draft) {
+    return;
+  }
+
+  geoStatus.value = 'capturing';
+
+  try {
+    const coords = await captureCoords();
+
+    if (!coords || locationDraft.value === null) {
+      geoStatus.value = coords ? 'idle' : 'error';
+      return;
+    }
+
+    locationDraft.value = { ...locationDraft.value, coords };
+    geoStatus.value = 'idle';
+  } catch {
+    geoStatus.value = 'error';
+  }
 }
 
 export function toggleEditorDetails(): void {

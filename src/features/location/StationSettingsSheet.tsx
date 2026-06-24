@@ -12,6 +12,12 @@ const ENABLED_FIELD_OPTIONS = [
   { key: 'rackNumber', label: 'Rack number' },
 ] as const;
 
+const LOCATION_CAPTURE_OPTIONS = [
+  { value: 'never', label: 'Never' },
+  { value: 'ask', label: 'Ask' },
+  { value: 'always', label: 'Always' },
+] as const;
+
 export function StationSettingsSheet({
   stationForm,
   setStationForm,
@@ -112,6 +118,25 @@ export function StationSettingsSheet({
             onChange={(event) => updateStationField('defaultFloor', event.currentTarget.value)}
           />
         </label>
+
+        <fieldset className="segmented-field">
+          <legend>Save GPS location</legend>
+          <div className="segmented-field__options segmented-field__options--fit">
+            {LOCATION_CAPTURE_OPTIONS.map((option) => (
+              <button
+                aria-pressed={stationForm.locationCapture === option.value}
+                className={
+                  stationForm.locationCapture === option.value ? 'segment is-active' : 'segment'
+                }
+                key={option.value}
+                type="button"
+                onClick={() => updateStationField('locationCapture', option.value)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </fieldset>
 
         <fieldset className="settings-fieldset">
           <legend>Enabled fields</legend>
