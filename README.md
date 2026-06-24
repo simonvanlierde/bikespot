@@ -1,37 +1,31 @@
 # Bike Storage Tracker
 
-An offline-first PWA for remembering where you parked your bike. Everything is stored client-side in the browser — no account, no server.
+An offline-first PWA for remembering where you parked your bike. Everything stays on your device — no account, no server.
 
-## What works
+## Features
 
-- **Save your current spot** in one of two modes: a structured *station* spot (lane, side, rack level, distance, floor, rack number) or a free-text *outside* description.
-- **Attach a photo** to a spot (kept in IndexedDB) and add free-form notes.
-- **Recent history**: the last five spots are kept, and any of them can be restored as the current spot.
-- **Configurable station**: name, lane-input style (quick labels or numbers), lane labels, which fields are shown, and a default floor.
-- **Installable and offline-capable**: a service worker and web manifest are generated at build time, so the app works without a connection.
+- **Save your spot** as a structured *station* location (lane, side, rack level, distance, floor, rack number) or a free-text *outside* description.
+- **Photos and notes** attached to any spot.
+- **Recent history** of your last five spots, each restorable as the current one.
+- **Configurable station** — name, lane-input style, lane labels, visible fields, and default floor.
+- **Installable and offline** via a generated service worker and web manifest.
 
-State lives in `localStorage`; photo blobs live in IndexedDB.
-
-## Planned / not done yet
-
-- No GPS or map — spots are entered manually, not located automatically.
-- No remote sync, accounts, or cross-device sharing (storage is per-browser by design).
-- Not currently deployed to a public URL.
+By design, the app is single-device and manual: no GPS, no map, no cross-device sync. State lives in `localStorage`; photos live in IndexedDB.
 
 ## Tech stack
 
-Preact + `@preact/signals`, TypeScript, Vite, `vite-plugin-pwa` (Workbox), Biome, Vitest. Managed with pnpm.
+Preact + `@preact/signals`, TypeScript, Vite, `vite-plugin-pwa` (Workbox), Biome, and Vitest. Managed with pnpm.
 
-## Local development
+## Development
 
-Requires Node.js 24 and `pnpm`.
+Requires Node.js 24 and pnpm.
 
 ```bash
 pnpm install
 pnpm dev      # start the dev server
-pnpm check    # lint + test + build (the full gate)
+pnpm check    # lint, test, and build
 ```
 
-`pnpm build` outputs a static site to `dist/`, deployable to any static host (the repo is set up for Cloudflare Pages).
+`pnpm build` outputs a static site to `dist/`, deployable to any static host.
 
 Released under the [MIT License](LICENSE).
