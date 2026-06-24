@@ -52,6 +52,33 @@ describe('app data repository', () => {
     });
   });
 
+  it('round-trips valid coordinates and drops invalid ones on load', async () => {
+    const base = defaultAppData.current;
+
+    if (!base || base.mode !== 'station') {
+      throw new Error('expected a station current record in defaults');
+    }
+
+    window.localStorage.setItem(
+      APP_DATA_STORAGE_KEY,
+      JSON.stringify({
+        ...defaultAppData,
+        current: { ...base, coords: { lat: 52.379189, lng: 4.899431, accuracy: 12 } },
+        recent: [
+          { ...defaultAppData.recent[0], coords: { lat: 999, lng: 4.9 } },
+          { ...defaultAppData.recent[0], id: 'no-coords', coords: undefined },
+        ],
+      }),
+    );
+
+    const hydrated = await loadAppData();
+
+    expect(hydrated.current?.coords).toEqual({ lat: 52.379189, lng: 4.899431, accuracy: 12 });
+    // Out-of-range latitude is rejected, and records without coords still load.
+    expect(hydrated.recent[0]?.coords).toBeUndefined();
+    expect(hydrated.recent[1]?.coords).toBeUndefined();
+  });
+
   it('starts fresh when legacy versioned state is found', async () => {
     window.localStorage.setItem(
       APP_DATA_STORAGE_KEY,
