@@ -1,17 +1,26 @@
-# Bike Storage Tracker
+# Bikespot
 
 An offline-first PWA for remembering where you parked your bike. Everything stays on your device — no account, no server.
 
 ## Features
 
 - **Save your spot** as a structured *station* location (lane, side, rack level, distance, floor, rack number) or a free-text *outside* description.
-- **Photos and notes** attached to any spot.
+- **Optional GPS coordinates, photos and notes** attached to any spot.
 - **Recent history** of your last five spots, each restorable as the current one.
 - **Configurable station** — name, lane-input style, lane labels, visible fields, and default floor.
-- **Optional GPS coordinates** — capture a spot's location and reopen it as an "Open in Maps" link. Configurable per station (never, ask, or always); no map is embedded, so the app stays offline-first.
 - **Installable and offline** via a generated service worker and web manifest.
 
 By design, the app is single-device: no cross-device sync. State lives in `localStorage`; photos live in IndexedDB.
+
+## Install
+
+Open [duinlab.nl/bikespot](https://duinlab.nl/bikespot) and add it to your home screen:
+
+- **iPhone / iPad (Safari):** tap **Share** → **Add to Home Screen** → **Add**.
+- **Android (Chrome):** tap **⋮** → **Add to Home screen** → **Install**.
+- **Desktop (Chrome / Edge):** click the **install icon** in the address bar, or **⋮** → **Install Bikespot**.
+
+It then runs full-screen and works offline, like a native app.
 
 ## Tech stack
 

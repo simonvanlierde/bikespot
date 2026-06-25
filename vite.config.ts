@@ -2,6 +2,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
+  base: '/bikespot/',
   build: {
     chunkSizeWarningLimit: 235,
   },
@@ -20,26 +21,27 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icons/apple-touch-icon.png'],
       manifest: {
-        name: 'Bike Storage Tracker',
-        short_name: 'Bike Spot',
+        name: 'Bikespot',
+        short_name: 'Bikespot',
         description: 'Save and reopen the bike spot you last used.',
-        start_url: '/',
+        start_url: '.',
+        scope: '/bikespot/',
         display: 'standalone',
         theme_color: '#15231d',
         background_color: '#f4f3ef',
         icons: [
           {
-            src: '/icons/icon-192.png',
+            src: 'icons/icon-192.png',
             sizes: '192x192',
             type: 'image/png',
           },
           {
-            src: '/icons/icon-512.png',
+            src: 'icons/icon-512.png',
             sizes: '512x512',
             type: 'image/png',
           },
           {
-            src: '/icons/icon-maskable-512.png',
+            src: 'icons/icon-maskable-512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable',
@@ -48,7 +50,7 @@ export default defineConfig({
       },
       workbox: {
         cleanupOutdatedCaches: true,
-        navigateFallback: 'index.html',
+        navigateFallback: '/bikespot/index.html',
         globPatterns: ['**/*.{html,js,css,png,svg,webmanifest}'],
         runtimeCaching: [],
       },
