@@ -1,12 +1,7 @@
-.git
-.gitignore
-.codex
-.claude
-.superpowers
 node_modules
 dist
 coverage
-test-results
+.git
+.github
+.pnpm-store
 *.tsbuildinfo
-README.md
-*.log

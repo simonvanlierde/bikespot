@@ -25,5 +25,9 @@ format:
 coverage:
     pnpm test:coverage
 
+docker:
+    docker build -t bikespot .
+    docker run --rm -p 8080:80 bikespot
+
 clean:
     rm -rf dist/ coverage/
