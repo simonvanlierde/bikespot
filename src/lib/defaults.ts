@@ -14,7 +14,6 @@ export const defaultStationConfig: StationConfig = {
     rackNumber: false,
   },
   defaultFloor: 'Main station level',
-  locationCapture: 'ask',
 };
 
 const starterCurrent: LocationRecord = createLocationRecord(

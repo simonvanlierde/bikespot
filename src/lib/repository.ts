@@ -122,18 +122,12 @@ function normalizeLocationRecord(value: unknown): LocationRecord | null {
     return null;
   }
 
-  const lane = typeof entry.lane === 'string' ? entry.lane.trim() : '';
-
-  if (!lane) {
-    return null;
-  }
-
   return {
     id,
     updatedAt,
     mode: 'station',
     stationName,
-    lane,
+    lane: normalizeOptionalString(entry.lane),
     side: normalizeEnum<Side>(entry.side, ['left', 'right']),
     rackLevel: normalizeEnum<RackLevel>(entry.rackLevel, ['top', 'bottom']),
     distance: normalizeEnum<Distance>(entry.distance, ['close', 'medium', 'far']),

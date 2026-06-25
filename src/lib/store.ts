@@ -73,10 +73,6 @@ export function openOverlay(next: OverlayState): void {
   if (next.kind === 'edit-location') {
     locationDraft.value = createLocationDraft(data.value.current, data.value.station);
     stationDraft.value = null;
-
-    if (data.value.station.locationCapture === 'always') {
-      void handleCaptureLocation();
-    }
     return;
   }
 

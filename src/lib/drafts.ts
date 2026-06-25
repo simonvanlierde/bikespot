@@ -3,7 +3,6 @@ import type {
   Distance,
   EnabledFields,
   LaneInputMode,
-  LocationCaptureMode,
   LocationRecord,
   LocationRecordInput,
   RackLevel,
@@ -40,7 +39,6 @@ export type StationSettingsDraft = {
   laneLabels: string[];
   enabledFields: EnabledFields;
   defaultFloor: string;
-  locationCapture: LocationCaptureMode;
 };
 
 export function createStationSettingsDraft(station: StationConfig): StationSettingsDraft {
@@ -50,7 +48,6 @@ export function createStationSettingsDraft(station: StationConfig): StationSetti
     laneLabels: [...station.laneLabels],
     enabledFields: { ...station.enabledFields },
     defaultFloor: station.defaultFloor,
-    locationCapture: station.locationCapture,
   };
 }
 
@@ -119,11 +116,8 @@ export function buildLocationRecordInput(
 
   const lane = station.enabledFields.lane ? draft.lane.trim() : undefined;
 
+  // Lane is required only when the field is enabled.
   if (station.enabledFields.lane && !lane) {
-    return null;
-  }
-
-  if (!lane) {
     return null;
   }
 
@@ -151,16 +145,8 @@ export function buildStationConfig(draft: StationSettingsDraft): StationConfig {
     name: draft.name.trim() || defaultStationConfig.name,
     laneInputMode: draft.laneInputMode,
     laneLabels: laneLabels.length > 0 ? laneLabels : defaultStationConfig.laneLabels,
-    enabledFields: {
-      lane: true,
-      side: draft.enabledFields.side,
-      rackLevel: draft.enabledFields.rackLevel,
-      distance: draft.enabledFields.distance,
-      floor: draft.enabledFields.floor,
-      rackNumber: draft.enabledFields.rackNumber,
-    },
+    enabledFields: { ...draft.enabledFields },
     defaultFloor: draft.defaultFloor.trim() || defaultStationConfig.defaultFloor,
-    locationCapture: draft.locationCapture,
   };
 }
 

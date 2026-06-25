@@ -1,18 +1,13 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import type { AppData, StationConfig } from '../src/lib/app-data';
+import type { AppData } from '../src/lib/app-data';
 import { defaultAppData, defaultStationConfig } from '../src/lib/defaults';
 import {
   createLocationRecord,
-  normalizeStationConfig,
   promoteRecentLocation,
   saveLocation,
   updateStationConfig,
 } from '../src/lib/domain';
-import {
-  buildLocationRecordInput,
-  buildStationConfig,
-  createStationSettingsDraft,
-} from '../src/lib/drafts';
+import { buildLocationRecordInput } from '../src/lib/drafts';
 import { APP_DATA_STORAGE_KEY, clearPhotoStore, loadAppData } from '../src/lib/repository';
 
 describe('location storage', () => {
@@ -213,7 +208,6 @@ describe('location storage', () => {
         rackNumber: false,
       },
       defaultFloor: 'Lower level',
-      locationCapture: 'ask',
     });
 
     expect(nextState.station).toMatchObject({
@@ -372,29 +366,6 @@ describe('location storage', () => {
     );
 
     expect(nextState.current?.coords).toEqual({ lat: 52.379189, lng: 4.899431, accuracy: 12 });
-  });
-
-  it('coerces an unknown location capture mode to the fallback and accepts valid modes', () => {
-    expect(
-      normalizeStationConfig(
-        { locationCapture: 'bogus' } as unknown as Partial<StationConfig>,
-        defaultStationConfig,
-      ).locationCapture,
-    ).toBe(defaultStationConfig.locationCapture);
-
-    expect(
-      normalizeStationConfig({ locationCapture: 'always' }, defaultStationConfig).locationCapture,
-    ).toBe('always');
-  });
-
-  it('round-trips the chosen location capture mode through the settings draft', () => {
-    const draft = createStationSettingsDraft({
-      ...defaultStationConfig,
-      locationCapture: 'always',
-    });
-
-    expect(draft.locationCapture).toBe('always');
-    expect(buildStationConfig(draft).locationCapture).toBe('always');
   });
 
   it('resets malformed persisted state back to the default state', async () => {

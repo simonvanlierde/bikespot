@@ -2,7 +2,6 @@ export type Side = 'left' | 'right';
 export type RackLevel = 'top' | 'bottom';
 export type Distance = 'close' | 'medium' | 'far';
 export type LaneInputMode = 'quick' | 'number';
-export type LocationCaptureMode = 'never' | 'ask' | 'always';
 
 export type Coords = {
   lat: number;
@@ -32,7 +31,6 @@ export type StationConfig = {
   laneLabels: string[];
   enabledFields: EnabledFields;
   defaultFloor: string;
-  locationCapture: LocationCaptureMode;
 };
 
 export type VisibleFields = Partial<Record<(typeof VISIBLE_FIELD_KEYS)[number], true>>;
@@ -48,7 +46,7 @@ type RecordBase = {
 
 export type StationLocationRecord = RecordBase & {
   mode: 'station';
-  lane: string;
+  lane?: string;
   visibleFields: VisibleFields;
   side?: Side;
   rackLevel?: RackLevel;
@@ -66,7 +64,7 @@ export type LocationRecord = StationLocationRecord | OutsideLocationRecord;
 
 export type StationLocationRecordInput = {
   mode: 'station';
-  lane: string;
+  lane?: string;
   side?: Side;
   rackLevel?: RackLevel;
   distance?: Distance;

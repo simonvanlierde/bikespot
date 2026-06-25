@@ -1,7 +1,6 @@
 import type {
   AppData,
   EnabledFields,
-  LocationCaptureMode,
   LocationRecord,
   LocationRecordInput,
   StationConfig,
@@ -119,15 +118,7 @@ export function normalizeStationConfig(
     laneLabels: labels.length > 0 ? labels : fallback.laneLabels,
     enabledFields,
     defaultFloor: value?.defaultFloor?.trim() || fallback.defaultFloor,
-    locationCapture: normalizeLocationCapture(value?.locationCapture, fallback.locationCapture),
   };
-}
-
-function normalizeLocationCapture(
-  value: unknown,
-  fallback: LocationCaptureMode,
-): LocationCaptureMode {
-  return value === 'never' || value === 'ask' || value === 'always' ? value : fallback;
 }
 
 function buildRecord(
@@ -152,7 +143,7 @@ function buildRecord(
     {
       mode: 'station',
       stationName: station.name,
-      lane: input.lane.trim(),
+      lane: input.lane?.trim(),
       side: input.side,
       rackLevel: input.rackLevel,
       distance: input.distance,
