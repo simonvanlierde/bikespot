@@ -116,9 +116,8 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .sheet-dialog {
-    inset: 50% auto auto 50%;
-    transform: translate(-50%, -50%);
+  .sheet-overlay {
+    padding-top: 2rem;
   }
 
   .editor-sheet {

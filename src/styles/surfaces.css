@@ -285,6 +285,10 @@
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
+.utility-button__row {
+  align-items: center;
+}
+
 .utility-button__title {
   display: inline-flex;
   align-items: center;
@@ -293,31 +297,49 @@
   font-weight: 700;
 }
 
+/* Trim the font's half-leading so the text's cap-to-baseline ink is what gets
+   centered, not the taller line box. Without this the descender-less "Recent
+   locations" sits visually high. Degrades gracefully where unsupported. */
+.utility-button__title > span {
+  text-box: trim-both cap alphabetic;
+}
+
 .utility-count {
   min-height: auto;
   padding-block: 0.2rem;
   font-size: 0.78rem;
 }
 
-.sheet-dialog {
+/* Full-screen dimmed backdrop. Top-anchored so the sheet doesn't shift as its
+   content height changes (e.g. toggling between station and outside). */
+.sheet-overlay {
   position: fixed;
-  inset: auto auto 0 50%;
-  width: min(34rem, calc(100vw - 2rem));
-  max-width: 100%;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  transform: translateX(-50%);
-}
-
-.sheet-dialog::backdrop {
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 1rem;
+  overflow-y: auto;
   background: rgba(12, 20, 17, 0.4);
   backdrop-filter: blur(8px);
 }
 
+.sheet-overlay__hit {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: default;
+}
+
 .editor-sheet {
-  width: 100%;
+  position: relative;
+  z-index: 1;
+  width: min(34rem, 100%);
   max-height: min(92vh, 54rem);
   overflow: auto;
   border-radius: 1.6rem;
