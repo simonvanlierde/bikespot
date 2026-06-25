@@ -22,5 +22,8 @@ lint:
 format:
     pnpm format
 
+coverage:
+    pnpm test:coverage
+
 clean:
     rm -rf dist/ coverage/
