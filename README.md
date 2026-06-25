@@ -1,5 +1,9 @@
 # Bikespot
 
+[![CI](https://github.com/simonvanlierde/bike-storage-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/simonvanlierde/bike-storage-tracker/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![PWA](https://img.shields.io/badge/PWA-installable-5a3.svg)](https://bikespot.duinlab.nl)
+
 An offline-first PWA for remembering where you parked your bike. Everything stays on your device — no account, no server.
 
 ## Features
@@ -14,17 +18,33 @@ By design, the app is single-device: no cross-device sync. State lives in `local
 
 ## Install
 
-Open [bikespot.duinlab.nl](https://bikespot.duinlab.nl) and add it to your home screen:
+Bikespot runs in the browser and installs as an app — no app store needed.
 
-- **iPhone / iPad (Safari):** tap **Share** → **Add to Home Screen** → **Add**.
-- **Android (Chrome):** tap **⋮** → **Add to Home screen** → **Install**.
-- **Desktop (Chrome / Edge):** click the **install icon** in the address bar, or **⋮** → **Install Bikespot**.
+1. Open **[bikespot.duinlab.nl](https://bikespot.duinlab.nl)**.
+2. Add it to your home screen:
+   - **iOS (Safari):** Share → *Add to Home Screen*
+   - **Android (Chrome):** menu (⋮) → *Install app*
+   - **Desktop (Chrome/Edge):** install icon in the address bar
 
-It then runs full-screen and works offline, like a native app.
+Once installed it works offline, and all data stays on your device.
 
 ## Tech stack
 
 Preact + `@preact/signals`, TypeScript, Vite, `vite-plugin-pwa` (Workbox), Biome, and Vitest. Managed with pnpm.
+
+## Architecture
+
+The app is a small client-only PWA with a three-layer `src/` structure and a single global store:
+
+```text
+lib/         types, pure domain logic, persistence, and the signals store
+  ↓
+features/    domain modules (location, history, app) that wire the store to UI
+  ↓
+components/  presentational UI primitives (fields, sheet dialog, segmented control)
+```
+
+State is a set of `@preact/signals` in [`lib/store.ts`](src/lib/store.ts). UI reads signals directly; updates go through **pure functions** in [`lib/domain.ts`](src/lib/domain.ts) rather than in-place mutation, and an `effect()` persists the `data` signal whenever it changes. There is no router — navigation is modal state, modelled as the `OverlayState` discriminated union and rendered by [`features/app/AppOverlays.tsx`](src/features/app/AppOverlays.tsx). Persistence is split: structured app data in `localStorage` ([`lib/repository.ts`](src/lib/repository.ts)) and photos in IndexedDB with an in-memory fallback ([`lib/photos.ts`](src/lib/photos.ts)).
 
 ## Development
 
