@@ -47,4 +47,84 @@ describe('location detail content', () => {
     );
     expect(createObjectUrl).toHaveBeenCalledTimes(1);
   });
+
+  it('renders an Open in Maps link when coordinates are present', () => {
+    render(
+      <LocationDetailContent
+        entry={{
+          id: 'outside-coords',
+          mode: 'outside',
+          outsideDescription: 'By the canal',
+          stationName: 'My station',
+          updatedAt: '2026-04-20T20:00:00.000Z',
+          coords: { lat: 52.379189, lng: 4.899431, accuracy: 12 },
+        }}
+        photoAlt="Saved bike reference"
+      />,
+    );
+
+    const link = screen.getByRole('link', { name: /open in maps/i });
+    expect(link).toHaveAttribute(
+      'href',
+      'https://www.google.com/maps/search/?api=1&query=52.379189,4.899431',
+    );
+    expect(screen.getByText('±12m')).toBeInTheDocument();
+  });
+
+  it('lists enabled station fields broad-to-specific and omits the station name', () => {
+    const { container } = render(
+      <LocationDetailContent
+        entry={{
+          id: 'station-1',
+          mode: 'station',
+          stationName: 'My station',
+          updatedAt: '2026-04-20T20:00:00.000Z',
+          lane: '5',
+          side: 'left',
+          rackLevel: 'top',
+          distance: 'close',
+          floor: 'Upper deck',
+          rackNumber: 'R12',
+          visibleFields: {
+            side: true,
+            rackLevel: true,
+            distance: true,
+            floor: true,
+            rackNumber: true,
+          },
+        }}
+        photoAlt="Saved bike reference"
+      />,
+    );
+
+    const labels = Array.from(container.querySelectorAll('.detail-row__label')).map(
+      (element) => element.textContent,
+    );
+    expect(labels).toEqual([
+      'Station floor',
+      'Lane',
+      'Distance',
+      'Side',
+      'Rack level',
+      'Rack number',
+    ]);
+    expect(screen.queryByText(/^station$/i)).not.toBeInTheDocument();
+  });
+
+  it('renders no maps link when coordinates are absent', () => {
+    render(
+      <LocationDetailContent
+        entry={{
+          id: 'outside-no-coords',
+          mode: 'outside',
+          outsideDescription: 'By the canal',
+          stationName: 'My station',
+          updatedAt: '2026-04-20T20:00:00.000Z',
+        }}
+        photoAlt="Saved bike reference"
+      />,
+    );
+
+    expect(screen.queryByRole('link', { name: /open in maps/i })).not.toBeInTheDocument();
+  });
 });

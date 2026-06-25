@@ -7,7 +7,3 @@ test-results/
 coverage/
 *.tsbuildinfo
 
-# LLM
-.claude
-.codex/
-.superpowers/

@@ -1,12 +1,13 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { AppData } from '../src/lib/app-data';
-import { defaultAppData } from '../src/lib/defaults';
+import { defaultAppData, defaultStationConfig } from '../src/lib/defaults';
 import {
   createLocationRecord,
   promoteRecentLocation,
   saveLocation,
   updateStationConfig,
 } from '../src/lib/domain';
+import { buildLocationRecordInput } from '../src/lib/drafts';
 import { APP_DATA_STORAGE_KEY, clearPhotoStore, loadAppData } from '../src/lib/repository';
 
 describe('location storage', () => {
@@ -198,6 +199,8 @@ describe('location storage', () => {
       name: 'Amsterdam Zuid',
       laneInputMode: 'quick',
       laneLabels: ['4', '5', '6'],
+      floorInputMode: 'number',
+      floorLabels: ['1', '2', '3'],
       enabledFields: {
         lane: true,
         side: false,
@@ -206,7 +209,6 @@ describe('location storage', () => {
         floor: false,
         rackNumber: false,
       },
-      defaultFloor: 'Lower level',
     });
 
     expect(nextState.station).toMatchObject({
@@ -309,7 +311,6 @@ describe('location storage', () => {
         floor: true,
         rackNumber: false,
       },
-      defaultFloor: 'Upper deck',
     });
 
     expect(renamedState.current).toMatchObject({
@@ -337,6 +338,34 @@ describe('location storage', () => {
     if (entry.mode === 'outside') {
       expect(entry.photoId).toBeUndefined();
     }
+  });
+
+  it('carries draft coordinates through to the saved record', () => {
+    const input = buildLocationRecordInput(
+      {
+        kind: 'station',
+        lane: '4',
+        side: 'right',
+        rackLevel: 'bottom',
+        distance: 'medium',
+        floor: '',
+        rackNumber: '',
+        notes: '',
+        photoFile: null,
+        coords: { lat: 52.379189, lng: 4.899431, accuracy: 12 },
+      },
+      defaultStationConfig,
+    );
+
+    expect(input).toMatchObject({ coords: { lat: 52.379189, lng: 4.899431, accuracy: 12 } });
+
+    const nextState = saveLocation(
+      { ...defaultState, recent: [] },
+      input ?? { mode: 'station', lane: '4' },
+      '2026-04-19T07:05:00.000Z',
+    );
+
+    expect(nextState.current?.coords).toEqual({ lat: 52.379189, lng: 4.899431, accuracy: 12 });
   });
 
   it('resets malformed persisted state back to the default state', async () => {

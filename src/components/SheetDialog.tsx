@@ -17,52 +17,51 @@ export function SheetDialog({
   onClose: () => void;
   closeLabel?: string;
 }) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
+  const sheetRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     previousFocusRef.current =
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    sheetRef.current?.focus();
 
-    if (typeof dialogRef.current?.showModal === 'function' && !dialogRef.current.open) {
-      dialogRef.current.showModal();
-    }
-
-    return () => {
-      if (dialogRef.current?.open && typeof dialogRef.current.close === 'function') {
-        dialogRef.current.close();
-      }
-
-      previousFocusRef.current?.focus?.();
-    };
-  }, []);
-
-  return (
-    <dialog
-      ref={dialogRef}
-      aria-label={label}
-      className="sheet-dialog"
-      open
-      onCancel={(event) => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
         event.preventDefault();
         onClose();
-      }}
-      onClick={(event) => {
-        if (event.target === event.currentTarget) {
-          onClose();
-        }
-      }}
-      onKeyDown={(event) => {
-        if (
-          event.target === event.currentTarget &&
-          (event.key === 'Enter' || event.key === ' ' || event.key === 'Escape')
-        ) {
-          event.preventDefault();
-          onClose();
-        }
-      }}
-    >
-      <section className="editor-sheet">
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      document.body.style.overflow = previousOverflow;
+      previousFocusRef.current?.focus?.();
+    };
+  }, [onClose]);
+
+  return (
+    <div className="sheet-overlay">
+      {/* Backdrop hit target — a pointer convenience behind the sheet. Hidden
+          from assistive tech; Escape and the close button are the a11y paths. */}
+      <button
+        aria-hidden="true"
+        className="sheet-overlay__hit"
+        tabIndex={-1}
+        type="button"
+        onClick={onClose}
+      />
+      <section
+        ref={sheetRef}
+        aria-label={label}
+        aria-modal="true"
+        className="editor-sheet"
+        role="dialog"
+        tabIndex={-1}
+      >
         <div className="sheet-header">
           <h2 className="sheet-title">
             {titleIcon}
@@ -80,6 +79,6 @@ export function SheetDialog({
         </div>
         {children}
       </section>
-    </dialog>
+    </div>
   );
 }

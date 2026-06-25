@@ -1,14 +1,20 @@
-import type { Dispatch, FormEvent, SetStateAction } from 'preact/compat';
+import type { TargetedEvent } from 'preact';
+import { Fragment } from 'preact';
+import type { Dispatch, SetStateAction } from 'preact/compat';
 
-import { SheetDialog } from '../../components/SheetDialog';
-import { ToggleField } from '../../components/ToggleField';
-import type { StationSettingsDraft } from '../../lib/drafts';
+import { SheetDialog } from '@/components/SheetDialog';
+import { ToggleField } from '@/components/ToggleField';
+import type { StationSettingsDraft } from '@/lib/drafts';
+import { FieldInputSettings } from './FieldInputSettings';
 
-const ENABLED_FIELD_OPTIONS = [
+// Field toggles in broad → specific order (floor → rack number), matching the
+// editor and details views.
+const FIELD_TOGGLE_OPTIONS = [
+  { key: 'floor', label: 'Floor' },
+  { key: 'lane', label: 'Lane' },
+  { key: 'distance', label: 'Distance' },
   { key: 'side', label: 'Side' },
   { key: 'rackLevel', label: 'Rack level' },
-  { key: 'distance', label: 'Distance' },
-  { key: 'floor', label: 'Floor' },
   { key: 'rackNumber', label: 'Rack number' },
 ] as const;
 
@@ -21,7 +27,7 @@ export function StationSettingsSheet({
   stationForm: StationSettingsDraft;
   setStationForm: Dispatch<SetStateAction<StationSettingsDraft>>;
   onClose: () => void;
-  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  onSubmit: (event: TargetedEvent<HTMLFormElement>) => void;
 }) {
   function updateStationField<K extends keyof StationSettingsDraft>(
     field: K,
@@ -33,22 +39,10 @@ export function StationSettingsSheet({
     }));
   }
 
-  function updateLaneLabel(index: number, value: string) {
+  function updateFieldToggle(key: (typeof FIELD_TOGGLE_OPTIONS)[number]['key'], checked: boolean) {
     setStationForm((previous) => ({
       ...previous,
-      laneLabels: previous.laneLabels.map((label, laneIndex) =>
-        laneIndex === index ? value : label,
-      ),
-    }));
-  }
-
-  function updateEnabledField(
-    field: (typeof ENABLED_FIELD_OPTIONS)[number]['key'],
-    checked: boolean,
-  ) {
-    setStationForm((previous) => ({
-      ...previous,
-      enabledFields: { ...previous.enabledFields, [field]: checked },
+      enabledFields: { ...previous.enabledFields, [key]: checked },
     }));
   }
 
@@ -60,68 +54,36 @@ export function StationSettingsSheet({
       onClose={onClose}
     >
       <form className="editor-form" onSubmit={onSubmit}>
-        <label className="field field--prominent">
-          <span>Station name</span>
-          <input
-            aria-label="Station name"
-            value={stationForm.name}
-            onChange={(event) => updateStationField('name', event.currentTarget.value)}
-          />
-        </label>
-
-        <fieldset className="segmented-field">
-          <legend>Lane input</legend>
-          <div className="segmented-field__options segmented-field__options--two">
-            <button
-              aria-pressed={stationForm.laneInputMode === 'quick'}
-              className={stationForm.laneInputMode === 'quick' ? 'segment is-active' : 'segment'}
-              type="button"
-              onClick={() => updateStationField('laneInputMode', 'quick')}
-            >
-              Quick lanes
-            </button>
-            <button
-              aria-pressed={stationForm.laneInputMode === 'number'}
-              className={stationForm.laneInputMode === 'number' ? 'segment is-active' : 'segment'}
-              type="button"
-              onClick={() => updateStationField('laneInputMode', 'number')}
-            >
-              Number input
-            </button>
-          </div>
-        </fieldset>
-
-        <div className="settings-grid">
-          {stationForm.laneLabels.map((label, index) => (
-            <label className="field" key={`lane-label-${index + 1}`}>
-              <span>Lane label {index + 1}</span>
-              <input
-                aria-label={`Lane label ${index + 1}`}
-                value={label}
-                onChange={(event) => updateLaneLabel(index, event.currentTarget.value)}
-              />
-            </label>
-          ))}
-        </div>
-
-        <label className="field field--secondary">
-          <span>Default floor</span>
-          <input
-            aria-label="Default floor"
-            value={stationForm.defaultFloor}
-            onChange={(event) => updateStationField('defaultFloor', event.currentTarget.value)}
-          />
-        </label>
-
         <fieldset className="settings-fieldset">
           <legend>Enabled fields</legend>
-          {ENABLED_FIELD_OPTIONS.map((option) => (
-            <ToggleField
-              checked={stationForm.enabledFields[option.key]}
-              key={option.key}
-              label={option.label}
-              onChange={(checked) => updateEnabledField(option.key, checked)}
-            />
+          {FIELD_TOGGLE_OPTIONS.map((option) => (
+            <Fragment key={option.key}>
+              <ToggleField
+                checked={stationForm.enabledFields[option.key]}
+                label={option.label}
+                onChange={(checked) => updateFieldToggle(option.key, checked)}
+              />
+              {option.key === 'floor' && stationForm.enabledFields.floor ? (
+                <FieldInputSettings
+                  noun="floor"
+                  legend="Floor input"
+                  mode={stationForm.floorInputMode}
+                  labels={stationForm.floorLabels}
+                  onModeChange={(mode) => updateStationField('floorInputMode', mode)}
+                  onLabelsChange={(labels) => updateStationField('floorLabels', labels)}
+                />
+              ) : null}
+              {option.key === 'lane' && stationForm.enabledFields.lane ? (
+                <FieldInputSettings
+                  noun="lane"
+                  legend="Lane input"
+                  mode={stationForm.laneInputMode}
+                  labels={stationForm.laneLabels}
+                  onModeChange={(mode) => updateStationField('laneInputMode', mode)}
+                  onLabelsChange={(labels) => updateStationField('laneLabels', labels)}
+                />
+              ) : null}
+            </Fragment>
           ))}
         </fieldset>
 

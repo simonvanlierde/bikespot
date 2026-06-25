@@ -1,83 +1,76 @@
-import type { ChangeEvent, Dispatch, FormEvent, SetStateAction } from 'preact/compat';
-import type { AppData } from '../../lib/app-data';
-import type { LocationDraft, StationSettingsDraft } from '../../lib/drafts';
-import { RecentLocationPreviewSheet } from '../history/RecentLocationPreviewSheet';
-import { RecentLocationsSheet } from '../history/RecentLocationsSheet';
-import { LocationDetailsSheet } from '../location/LocationDetailsSheet';
-import { LocationEditorSheet } from '../location/LocationEditorSheet';
-import { StationSettingsSheet } from '../location/StationSettingsSheet';
+import { RecentLocationPreviewSheet } from '@/features/history/RecentLocationPreviewSheet';
+import { RecentLocationsSheet } from '@/features/history/RecentLocationsSheet';
+import { LocationDetailsSheet } from '@/features/location/LocationDetailsSheet';
+import { LocationEditorSheet } from '@/features/location/LocationEditorSheet';
+import { StationSettingsSheet } from '@/features/location/StationSettingsSheet';
 import {
-  createDraftStateSetter,
-  getSelectedRecent,
-  type OverlaySessionState,
-} from './overlay-state';
-
-export function AppOverlays({
+  closeOverlay,
   data,
-  overlayState,
+  geoStatus,
+  handleCaptureLocation,
+  handleLocationSubmit,
+  handlePhotoChange,
+  handleStationSubmit,
+  handleUseRecent,
+  locationDraft,
+  openOverlay,
+  overlay,
   setLocationDraft,
   setStationDraft,
-  onClose,
-  onLocationSubmit,
-  onStationSubmit,
-  onPreviewRecent,
-  onUseRecent,
-  onToggleEditorDetails,
-  onPhotoChange,
-}: {
-  data: AppData;
-  overlayState: OverlaySessionState;
-  setLocationDraft: Dispatch<SetStateAction<LocationDraft | null>>;
-  setStationDraft: Dispatch<SetStateAction<StationSettingsDraft | null>>;
-  onClose: () => void;
-  onLocationSubmit: (event: FormEvent<HTMLFormElement>) => void;
-  onStationSubmit: (event: FormEvent<HTMLFormElement>) => void;
-  onPreviewRecent: (id: string) => void;
-  onUseRecent: (id: string) => void;
-  onToggleEditorDetails: () => void;
-  onPhotoChange: (event: ChangeEvent<HTMLInputElement>) => void;
-}) {
-  const selectedRecent = getSelectedRecent(overlayState.overlay, data.recent);
-  const setLocationDraftState = createDraftStateSetter(setLocationDraft);
-  const setStationDraftState = createDraftStateSetter(setStationDraft);
+  showEditorDetails,
+  stationDraft,
+  toggleEditorDetails,
+} from '@/lib/store';
+import { getSelectedRecent } from './overlay-state';
+
+export function AppOverlays() {
+  const appData = data.value;
+  const current = overlay.value;
+  const selectedRecent = getSelectedRecent(current, appData.recent);
 
   return (
     <>
-      {overlayState.overlay.kind === 'edit-location' && overlayState.locationDraft ? (
+      {current.kind === 'edit-location' && locationDraft.value ? (
         <LocationEditorSheet
-          formState={overlayState.locationDraft}
-          station={data.station}
-          showDetails={overlayState.showEditorDetails}
-          setFormState={setLocationDraftState}
-          onClose={onClose}
-          onSubmit={onLocationSubmit}
-          onToggleDetails={onToggleEditorDetails}
-          onPhotoChange={onPhotoChange}
+          formState={locationDraft.value}
+          station={appData.station}
+          showDetails={showEditorDetails.value}
+          geoStatus={geoStatus.value}
+          setFormState={setLocationDraft}
+          onClose={closeOverlay}
+          onSubmit={handleLocationSubmit}
+          onToggleDetails={toggleEditorDetails}
+          onPhotoChange={handlePhotoChange}
+          onCaptureLocation={handleCaptureLocation}
         />
       ) : null}
 
-      {overlayState.overlay.kind === 'station-settings' && overlayState.stationDraft ? (
+      {current.kind === 'station-settings' && stationDraft.value ? (
         <StationSettingsSheet
-          stationForm={overlayState.stationDraft}
-          setStationForm={setStationDraftState}
-          onClose={onClose}
-          onSubmit={onStationSubmit}
+          stationForm={stationDraft.value}
+          setStationForm={setStationDraft}
+          onClose={closeOverlay}
+          onSubmit={handleStationSubmit}
         />
       ) : null}
 
-      {overlayState.overlay.kind === 'location-details' ? (
-        <LocationDetailsSheet current={data.current} onClose={onClose} />
+      {current.kind === 'location-details' ? (
+        <LocationDetailsSheet current={appData.current} onClose={closeOverlay} />
       ) : null}
 
-      {overlayState.overlay.kind === 'recent-list' ? (
-        <RecentLocationsSheet recent={data.recent} onClose={onClose} onPreview={onPreviewRecent} />
+      {current.kind === 'recent-list' ? (
+        <RecentLocationsSheet
+          recent={appData.recent}
+          onClose={closeOverlay}
+          onPreview={(id) => openOverlay({ kind: 'recent-preview', id })}
+        />
       ) : null}
 
       {selectedRecent ? (
         <RecentLocationPreviewSheet
           selectedRecent={selectedRecent}
-          onClose={onClose}
-          onUse={onUseRecent}
+          onClose={closeOverlay}
+          onUse={handleUseRecent}
         />
       ) : null}
     </>

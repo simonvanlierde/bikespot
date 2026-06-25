@@ -6,8 +6,9 @@ import type {
   StationConfig,
   VisibleFields,
 } from './app-data';
-import { RECENT_LIMIT } from './app-data';
+import { ENABLED_FIELD_KEYS, RECENT_LIMIT, VISIBLE_FIELD_KEYS } from './app-data';
 import { defaultStationConfig } from './defaults';
+import { createId } from './id';
 
 type StationLocationRecordSeed = Omit<
   Extract<LocationRecord, { mode: 'station' }>,
@@ -85,24 +86,10 @@ export function updateStationConfig(data: AppData, station: StationConfig): AppD
 export function buildVisibleFields(enabledFields: EnabledFields): VisibleFields {
   const visibleFields: VisibleFields = {};
 
-  if (enabledFields.side) {
-    visibleFields.side = true;
-  }
-
-  if (enabledFields.rackLevel) {
-    visibleFields.rackLevel = true;
-  }
-
-  if (enabledFields.distance) {
-    visibleFields.distance = true;
-  }
-
-  if (enabledFields.floor) {
-    visibleFields.floor = true;
-  }
-
-  if (enabledFields.rackNumber) {
-    visibleFields.rackNumber = true;
+  for (const key of VISIBLE_FIELD_KEYS) {
+    if (enabledFields[key]) {
+      visibleFields[key] = true;
+    }
   }
 
   return visibleFields;
@@ -112,26 +99,27 @@ export function normalizeStationConfig(
   value: Partial<StationConfig> | undefined,
   fallback: StationConfig,
 ): StationConfig {
-  const labels = Array.isArray(value?.laneLabels)
-    ? value.laneLabels
-        .map((label) => String(label).trim())
-        .filter(Boolean)
-        .slice(0, 5)
-    : fallback.laneLabels;
+  const normalizeLabels = (raw: unknown, fallbackLabels: string[]) => {
+    if (!Array.isArray(raw)) {
+      return fallbackLabels;
+    }
+    const labels = raw.map((label) => String(label).trim()).filter(Boolean);
+    return labels.length > 0 ? labels : fallbackLabels;
+  };
+
+  const enabledFields = {} as EnabledFields;
+
+  for (const key of ENABLED_FIELD_KEYS) {
+    enabledFields[key] = value?.enabledFields?.[key] ?? fallback.enabledFields[key];
+  }
 
   return {
     name: value?.name?.trim() || fallback.name,
-    laneInputMode: value?.laneInputMode === 'number' ? 'number' : 'quick',
-    laneLabels: labels.length > 0 ? labels : fallback.laneLabels,
-    enabledFields: {
-      lane: value?.enabledFields?.lane ?? fallback.enabledFields.lane,
-      side: value?.enabledFields?.side ?? fallback.enabledFields.side,
-      rackLevel: value?.enabledFields?.rackLevel ?? fallback.enabledFields.rackLevel,
-      distance: value?.enabledFields?.distance ?? fallback.enabledFields.distance,
-      floor: value?.enabledFields?.floor ?? fallback.enabledFields.floor,
-      rackNumber: value?.enabledFields?.rackNumber ?? fallback.enabledFields.rackNumber,
-    },
-    defaultFloor: value?.defaultFloor?.trim() || fallback.defaultFloor,
+    laneInputMode: value?.laneInputMode === 'quick' ? 'quick' : 'number',
+    laneLabels: normalizeLabels(value?.laneLabels, fallback.laneLabels),
+    floorInputMode: value?.floorInputMode === 'quick' ? 'quick' : 'number',
+    floorLabels: normalizeLabels(value?.floorLabels, fallback.floorLabels),
+    enabledFields,
   };
 }
 
@@ -147,6 +135,7 @@ function buildRecord(
         stationName: station.name,
         outsideDescription: input.outsideDescription.trim(),
         photoId: input.photoId,
+        coords: input.coords,
       },
       timestamp,
     );
@@ -156,7 +145,7 @@ function buildRecord(
     {
       mode: 'station',
       stationName: station.name,
-      lane: input.lane.trim(),
+      lane: input.lane?.trim(),
       side: input.side,
       rackLevel: input.rackLevel,
       distance: input.distance,
@@ -164,6 +153,7 @@ function buildRecord(
       rackNumber: input.rackNumber,
       notes: input.notes,
       photoId: input.photoId,
+      coords: input.coords,
       visibleFields: buildVisibleFields(station.enabledFields),
     },
     timestamp,
@@ -172,12 +162,4 @@ function buildRecord(
 
 function capRecent(entries: LocationRecord[]): LocationRecord[] {
   return entries.slice(0, RECENT_LIMIT);
-}
-
-function createId(): string {
-  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
-    return crypto.randomUUID();
-  }
-
-  return `location-${Math.random().toString(36).slice(2, 10)}`;
 }

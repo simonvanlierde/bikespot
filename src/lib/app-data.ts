@@ -1,7 +1,13 @@
 export type Side = 'left' | 'right';
 export type RackLevel = 'top' | 'bottom';
 export type Distance = 'close' | 'medium' | 'far';
-export type LaneInputMode = 'quick' | 'number';
+export type FieldInputMode = 'quick' | 'number';
+
+export type Coords = {
+  lat: number;
+  lng: number;
+  accuracy?: number;
+};
 
 export type EnabledFields = {
   lane: boolean;
@@ -12,15 +18,23 @@ export type EnabledFields = {
   rackNumber: boolean;
 };
 
+export const VISIBLE_FIELD_KEYS = ['side', 'rackLevel', 'distance', 'floor', 'rackNumber'] as const;
+
+export const ENABLED_FIELD_KEYS = [
+  'lane',
+  ...VISIBLE_FIELD_KEYS,
+] as const satisfies readonly (keyof EnabledFields)[];
+
 export type StationConfig = {
   name: string;
-  laneInputMode: LaneInputMode;
+  laneInputMode: FieldInputMode;
   laneLabels: string[];
+  floorInputMode: FieldInputMode;
+  floorLabels: string[];
   enabledFields: EnabledFields;
-  defaultFloor: string;
 };
 
-export type VisibleFields = Partial<Record<keyof Omit<EnabledFields, 'lane'>, true>>;
+export type VisibleFields = Partial<Record<(typeof VISIBLE_FIELD_KEYS)[number], true>>;
 
 type RecordBase = {
   id: string;
@@ -28,11 +42,12 @@ type RecordBase = {
   stationName: string;
   notes?: string;
   photoId?: string;
+  coords?: Coords;
 };
 
 export type StationLocationRecord = RecordBase & {
   mode: 'station';
-  lane: string;
+  lane?: string;
   visibleFields: VisibleFields;
   side?: Side;
   rackLevel?: RackLevel;
@@ -50,7 +65,7 @@ export type LocationRecord = StationLocationRecord | OutsideLocationRecord;
 
 export type StationLocationRecordInput = {
   mode: 'station';
-  lane: string;
+  lane?: string;
   side?: Side;
   rackLevel?: RackLevel;
   distance?: Distance;
@@ -58,12 +73,14 @@ export type StationLocationRecordInput = {
   rackNumber?: string;
   notes?: string;
   photoId?: string;
+  coords?: Coords;
 };
 
 export type OutsideLocationRecordInput = {
   mode: 'outside';
   outsideDescription: string;
   photoId?: string;
+  coords?: Coords;
 };
 
 export type LocationRecordInput = StationLocationRecordInput | OutsideLocationRecordInput;

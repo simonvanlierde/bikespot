@@ -1,54 +1,61 @@
-# Bike Storage Tracker
+# Bikespot
 
-Bike Storage Tracker is a small offline-first web app for saving where you parked your bike.
+[![CI](https://github.com/simonvanlierde/bike-storage-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/simonvanlierde/bike-storage-tracker/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![PWA](https://img.shields.io/badge/PWA-installable-5a3.svg)](https://bikespot.duinlab.nl)
 
-It stores the current bike spot, keeps a short recent history, and lets you restore an older location when needed. Everything stays client-side in the browser.
+An offline-first PWA for remembering where you parked your bike. Everything stays on your device — no account, no server.
 
-## Local Development
+## Features
 
-Requirements: Node.js 24 and `pnpm`.
+- **Save your spot** as a structured *station* location (lane, side, rack level, distance, floor, rack number) or a free-text *outside* description.
+- **Optional GPS coordinates, photos and notes** attached to any spot.
+- **Recent history** of your last five spots, each restorable as the current one.
+- **Configurable station** — name, lane-input style, lane labels, visible fields, and default floor.
+- **Installable and offline** via a generated service worker and web manifest.
 
-```bash
-pnpm install
-pnpm dev
-```
+By design, the app is single-device: no cross-device sync. State lives in `localStorage`; photos live in IndexedDB.
 
-The app runs as a static Vite + Preact PWA. App state lives in local storage, photo blobs live in IndexedDB, and the service worker/manifest are generated during the production build.
+## Install
 
-## Quality Gates
+Bikespot runs in the browser and installs as an app — no app store needed.
 
-```bash
-pnpm lint
-pnpm test
-pnpm build
-```
+1. Open **[bikespot.duinlab.nl](https://bikespot.duinlab.nl)**.
+2. Add it to your home screen:
+   - **iOS (Safari):** Share → *Add to Home Screen*
+   - **Android (Chrome):** menu (⋮) → *Install app*
+   - **Desktop (Chrome/Edge):** install icon in the address bar
 
-For the full local gate:
+Once installed it works offline, and all data stays on your device.
 
-```bash
-pnpm check
-```
+## Tech stack
 
-`pnpm build` relies on Vite's chunk-size warning for oversized bundles.
-
-## Deployment
-
-Deploy with Cloudflare Pages using the repo’s native Pages integration.
-
-Recommended Pages settings:
-
-- Framework preset: `None`
-- Build command: `pnpm build`
-- Build output directory: `dist`
-- Production branch: `main`
-
-The repo keeps GitHub Actions for verification only. Cloudflare Pages is the deploy system of record.
+Preact + `@preact/signals`, TypeScript, Vite, `vite-plugin-pwa` (Workbox), Biome, and Vitest. Managed with pnpm.
 
 ## Architecture
 
-- `src/features/app` owns app-level orchestration such as hydration, persistence timing, and sheet state.
-- `src/lib` owns domain state transitions, defaults, persistence, and photo storage.
-- `src/features/**` and `src/components/**` own the UI for editing, previewing, and restoring locations.
-- The PWA shell stays static-hosted; no server, SSR, or remote sync is involved.
+The app is a small client-only PWA with a three-layer `src/` structure and a single global store:
+
+```text
+lib/         types, pure domain logic, persistence, and the signals store
+  ↓
+features/    domain modules (location, history, app) that wire the store to UI
+  ↓
+components/  presentational UI primitives (fields, sheet dialog, segmented control)
+```
+
+State is a set of `@preact/signals` in [`lib/store.ts`](src/lib/store.ts). UI reads signals directly; updates go through **pure functions** in [`lib/domain.ts`](src/lib/domain.ts) rather than in-place mutation, and an `effect()` persists the `data` signal whenever it changes. There is no router — navigation is modal state, modelled as the `OverlayState` discriminated union and rendered by [`features/app/AppOverlays.tsx`](src/features/app/AppOverlays.tsx). Persistence is split: structured app data in `localStorage` ([`lib/repository.ts`](src/lib/repository.ts)) and photos in IndexedDB with an in-memory fallback ([`lib/photos.ts`](src/lib/photos.ts)).
+
+## Development
+
+Requires Node.js 24 and pnpm.
+
+```bash
+pnpm install
+pnpm dev      # start the dev server
+pnpm check    # lint, test, and build
+```
+
+`pnpm build` outputs a static site to `dist/`, deployable to any static host.
 
 Released under the [MIT License](LICENSE).

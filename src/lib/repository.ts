@@ -1,4 +1,13 @@
-import type { AppData, Distance, LocationRecord, RackLevel, Side, VisibleFields } from './app-data';
+import type {
+  AppData,
+  Coords,
+  Distance,
+  LocationRecord,
+  RackLevel,
+  Side,
+  VisibleFields,
+} from './app-data';
+import { VISIBLE_FIELD_KEYS } from './app-data';
 import { defaultAppData, defaultStationConfig } from './defaults';
 import { normalizeStationConfig } from './domain';
 import { clearPhotoBlobs, loadPhotoBlob, savePhotoBlob } from './photos';
@@ -105,16 +114,11 @@ function normalizeLocationRecord(value: unknown): LocationRecord | null {
       outsideDescription,
       notes: normalizeOptionalString(entry.notes),
       photoId: normalizeOptionalString(entry.photoId),
+      coords: normalizeCoords(entry.coords),
     };
   }
 
   if (entry.mode !== 'station') {
-    return null;
-  }
-
-  const lane = typeof entry.lane === 'string' ? entry.lane.trim() : '';
-
-  if (!lane) {
     return null;
   }
 
@@ -123,7 +127,7 @@ function normalizeLocationRecord(value: unknown): LocationRecord | null {
     updatedAt,
     mode: 'station',
     stationName,
-    lane,
+    lane: normalizeOptionalString(entry.lane),
     side: normalizeEnum<Side>(entry.side, ['left', 'right']),
     rackLevel: normalizeEnum<RackLevel>(entry.rackLevel, ['top', 'bottom']),
     distance: normalizeEnum<Distance>(entry.distance, ['close', 'medium', 'far']),
@@ -131,8 +135,39 @@ function normalizeLocationRecord(value: unknown): LocationRecord | null {
     rackNumber: normalizeOptionalString(entry.rackNumber),
     notes: normalizeOptionalString(entry.notes),
     photoId: normalizeOptionalString(entry.photoId),
+    coords: normalizeCoords(entry.coords),
     visibleFields: normalizeVisibleFields(entry.visibleFields),
   };
+}
+
+function normalizeCoords(value: unknown): Coords | undefined {
+  if (!value || typeof value !== 'object') {
+    return undefined;
+  }
+
+  const candidate = value as Partial<Record<keyof Coords, unknown>>;
+  const lat = candidate.lat;
+  const lng = candidate.lng;
+
+  if (!isFiniteNumber(lat) || !isFiniteNumber(lng)) {
+    return undefined;
+  }
+
+  if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+    return undefined;
+  }
+
+  const accuracy = candidate.accuracy;
+
+  return {
+    lat,
+    lng,
+    accuracy: isFiniteNumber(accuracy) && accuracy >= 0 ? accuracy : undefined,
+  };
+}
+
+function isFiniteNumber(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value);
 }
 
 function normalizeVisibleFields(value: unknown): VisibleFields {
@@ -143,24 +178,10 @@ function normalizeVisibleFields(value: unknown): VisibleFields {
   const candidate = value as Partial<Record<keyof VisibleFields, unknown>>;
   const visibleFields: VisibleFields = {};
 
-  if (candidate.side === true) {
-    visibleFields.side = true;
-  }
-
-  if (candidate.rackLevel === true) {
-    visibleFields.rackLevel = true;
-  }
-
-  if (candidate.distance === true) {
-    visibleFields.distance = true;
-  }
-
-  if (candidate.floor === true) {
-    visibleFields.floor = true;
-  }
-
-  if (candidate.rackNumber === true) {
-    visibleFields.rackNumber = true;
+  for (const key of VISIBLE_FIELD_KEYS) {
+    if (candidate[key] === true) {
+      visibleFields[key] = true;
+    }
   }
 
   return visibleFields;

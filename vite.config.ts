@@ -1,3 +1,4 @@
+import { fileURLToPath, URL } from 'node:url';
 import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig } from 'vitest/config';
 
@@ -7,6 +8,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
       react: 'preact/compat',
       'react-dom/test-utils': 'preact/test-utils',
       'react-dom/client': 'preact/compat/client',
@@ -20,8 +22,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icons/apple-touch-icon.png'],
       manifest: {
-        name: 'Bike Storage Tracker',
-        short_name: 'Bike Spot',
+        name: 'Bikespot',
+        short_name: 'Bikespot',
         description: 'Save and reopen the bike spot you last used.',
         start_url: '/',
         display: 'standalone',
@@ -59,5 +61,11 @@ export default defineConfig({
     globals: true,
     setupFiles: './tests/setup.ts',
     testTimeout: 30000,
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html', 'lcov'],
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: ['src/**/*.d.ts', 'src/main.tsx'],
+    },
   },
 });
