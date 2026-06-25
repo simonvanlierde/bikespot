@@ -326,10 +326,17 @@
   margin-bottom: 1rem;
 }
 
+/* When a mode-switch chip follows the title, keep it snug under the header and
+   give it clear separation from the form below. */
+.sheet-header:has(+ .sheet-header__main) {
+  margin-bottom: 0.5rem;
+}
+
 .sheet-header__main {
   display: grid;
   gap: 0.45rem;
   min-width: 0;
+  margin-bottom: 1.1rem;
 }
 
 .sheet-close {
@@ -427,12 +434,13 @@
 .text-button--switch {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.4rem;
   width: fit-content;
-  min-height: 2rem;
-  padding: 0.35rem 0.6rem;
+  min-height: 1.75rem;
+  padding: 0.25rem 0.65rem;
   border-radius: 999px;
   background: rgba(24, 36, 31, 0.045);
+  font-size: 0.85rem;
 }
 
 .text-button--switch:hover {

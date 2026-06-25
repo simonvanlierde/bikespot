@@ -40,7 +40,7 @@ function OutsideLocationFields({
 }) {
   return (
     <>
-      <NotesField prominent value={formState.notes} onChange={onNotesChange} />
+      <NotesField value={formState.notes} onChange={onNotesChange} />
       <PhotoField onPhotoChange={onPhotoChange} />
     </>
   );
@@ -50,21 +50,38 @@ function StationLocationFields({
   formState,
   station,
   showDetails,
+  geoStatus,
   updateStationField,
   onNotesChange,
   onToggleDetails,
   onPhotoChange,
+  onCaptureLocation,
 }: {
   formState: StationLocationDraft;
   station: StationConfig;
   showDetails: boolean;
+  geoStatus: 'idle' | 'capturing' | 'error';
   updateStationField: UpdateStationField;
   onNotesChange: (notes: string) => void;
   onToggleDetails: () => void;
   onPhotoChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  onCaptureLocation: () => void;
 }) {
   return (
     <>
+      {/* Enabled fields in broad → specific order (floor → rack number), matching
+          the settings and details views. */}
+      {station.enabledFields.floor ? (
+        <label className="field">
+          <span>Station floor</span>
+          <input
+            aria-label="Station floor"
+            value={formState.floor}
+            onChange={(event) => updateStationField('floor', event.currentTarget.value)}
+          />
+        </label>
+      ) : null}
+
       {station.enabledFields.lane ? (
         station.laneInputMode === 'quick' ? (
           <fieldset className="segmented-field">
@@ -89,7 +106,7 @@ function StationLocationFields({
             </div>
           </fieldset>
         ) : (
-          <label className="field field--prominent">
+          <label className="field">
             <span>Lane</span>
             <input
               aria-label="Lane"
@@ -99,6 +116,25 @@ function StationLocationFields({
             />
           </label>
         )
+      ) : null}
+
+      {station.enabledFields.distance ? (
+        <SegmentedControl
+          label="Distance"
+          labelSuffix={
+            <button aria-label="Distance help" className="info-trigger" type="button">
+              <CircleHelp aria-hidden="true" className="button-icon" />
+              <span className="info-tooltip">
+                Close = near the entrance. Medium = around the middle. Far = deeper inside.
+              </span>
+            </button>
+          }
+          layout="fit"
+          options={['close', 'medium', 'far']}
+          value={formState.distance}
+          onChange={(distance) => updateStationField('distance', distance)}
+          titleCase={titleCase}
+        />
       ) : null}
 
       {station.enabledFields.side ? (
@@ -123,23 +159,15 @@ function StationLocationFields({
         />
       ) : null}
 
-      {station.enabledFields.distance ? (
-        <SegmentedControl
-          label="Distance"
-          labelSuffix={
-            <button aria-label="Distance help" className="info-trigger" type="button">
-              <CircleHelp aria-hidden="true" className="button-icon" />
-              <span className="info-tooltip">
-                Close = near the entrance. Medium = around the middle. Far = deeper inside.
-              </span>
-            </button>
-          }
-          layout="fit"
-          options={['close', 'medium', 'far']}
-          value={formState.distance}
-          onChange={(distance) => updateStationField('distance', distance)}
-          titleCase={titleCase}
-        />
+      {station.enabledFields.rackNumber ? (
+        <label className="field">
+          <span>Rack number</span>
+          <input
+            aria-label="Rack number"
+            value={formState.rackNumber}
+            onChange={(event) => updateStationField('rackNumber', event.currentTarget.value)}
+          />
+        </label>
       ) : null}
 
       <button
@@ -154,27 +182,7 @@ function StationLocationFields({
 
       {showDetails ? (
         <div className="details-panel">
-          {station.enabledFields.floor ? (
-            <label className="field field--secondary">
-              <span>Station floor</span>
-              <input
-                aria-label="Station floor"
-                value={formState.floor}
-                onChange={(event) => updateStationField('floor', event.currentTarget.value)}
-              />
-            </label>
-          ) : null}
-
-          {station.enabledFields.rackNumber ? (
-            <label className="field">
-              <span>Rack number</span>
-              <input
-                aria-label="Rack number"
-                value={formState.rackNumber}
-                onChange={(event) => updateStationField('rackNumber', event.currentTarget.value)}
-              />
-            </label>
-          ) : null}
+          <CoordsField coords={formState.coords} status={geoStatus} onCapture={onCaptureLocation} />
           <NotesField value={formState.notes} onChange={onNotesChange} />
           <PhotoField onPhotoChange={onPhotoChange} />
         </div>
@@ -240,7 +248,7 @@ export function LocationEditorSheet({
               onClick={() => setFormState(createOutsideLocationDraft())}
             >
               <ArrowRightLeft aria-hidden="true" className="button-icon" />
-              <span>Parked outside instead</span>
+              <span>Parked outside</span>
             </button>
           ) : (
             <button
@@ -256,25 +264,30 @@ export function LocationEditorSheet({
       </div>
 
       <form className="editor-form" onSubmit={onSubmit}>
-        {station.locationCapture !== 'never' ? (
-          <CoordsField coords={formState.coords} status={geoStatus} onCapture={onCaptureLocation} />
-        ) : null}
-
         {formState.kind === 'outside' ? (
-          <OutsideLocationFields
-            formState={formState}
-            onNotesChange={updateNotes}
-            onPhotoChange={onPhotoChange}
-          />
+          <>
+            <CoordsField
+              coords={formState.coords}
+              status={geoStatus}
+              onCapture={onCaptureLocation}
+            />
+            <OutsideLocationFields
+              formState={formState}
+              onNotesChange={updateNotes}
+              onPhotoChange={onPhotoChange}
+            />
+          </>
         ) : (
           <StationLocationFields
             formState={formState}
             station={station}
             showDetails={showDetails}
+            geoStatus={geoStatus}
             updateStationField={updateStationField}
             onNotesChange={updateNotes}
             onToggleDetails={onToggleDetails}
             onPhotoChange={onPhotoChange}
+            onCaptureLocation={onCaptureLocation}
           />
         )}
 

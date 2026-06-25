@@ -86,6 +86,23 @@ describe('bike storage tracker app', () => {
     expect(screen.queryByRole('button', { name: /distance close/i })).not.toBeInTheDocument();
   });
 
+  it('keeps GPS under More details for station mode but shows it by default outside', async () => {
+    const user = userEvent.setup();
+
+    render(<App />);
+
+    await user.click(screen.getByRole('button', { name: /change location/i }));
+
+    // Station mode: GPS capture lives in the collapsed More details panel.
+    expect(screen.queryByRole('button', { name: /use my location/i })).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /more details/i }));
+    expect(screen.getByRole('button', { name: /use my location/i })).toBeInTheDocument();
+
+    // Outside mode: GPS capture is shown by default.
+    await user.click(screen.getByRole('button', { name: /parked outside/i }));
+    expect(screen.getByRole('button', { name: /use my location/i })).toBeInTheDocument();
+  });
+
   it('saves an outside location and shows its notes and photo in details', async () => {
     const user = userEvent.setup();
 
