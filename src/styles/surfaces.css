@@ -213,6 +213,10 @@
   justify-content: center;
   gap: 0.55rem;
   background: linear-gradient(180deg, #23362e 0%, #18241f 100%);
+  /* Opaque dark border (not transparent) so the lighter surface can't bleed
+     through the edge as a hairline at fractional pixel widths. */
+  border-color: #1d2c25;
+  background-clip: padding-box;
   color: white;
   font-weight: 700;
   box-shadow: 0 14px 28px rgba(24, 36, 31, 0.16);
