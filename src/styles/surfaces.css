@@ -447,7 +447,6 @@
   background: rgba(24, 36, 31, 0.08);
 }
 
-.field,
 .segmented-field,
 .settings-fieldset {
   margin: 0;
@@ -457,20 +456,21 @@
   background: rgba(255, 255, 255, 0.62);
 }
 
+/* Single-input fields are flat: a bold label above a control that carries its
+   own border — no outer card. */
 .field {
   display: grid;
   gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
 }
 
-.field--prominent,
 .segmented-field,
 .settings-fieldset,
 .details-panel {
   background: rgba(255, 255, 255, 0.72);
-}
-
-.field--secondary {
-  background: rgba(247, 243, 236, 0.86);
 }
 
 .field span,
@@ -489,13 +489,6 @@
   padding: 0.9rem 1rem;
   background: var(--surface-strong);
   color: var(--ink);
-}
-
-.field input[type="file"] {
-  padding: 0;
-  min-height: unset;
-  border: 0;
-  background: transparent;
 }
 
 .segmented-field {
@@ -588,19 +581,29 @@
   border: 1px solid var(--line-soft);
 }
 
-.file-input-wrap {
-  display: flex;
+/* A clean button-style trigger wrapping a visually-hidden file input. */
+.file-trigger {
+  display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
+  justify-self: start;
+  gap: 0.55rem;
+  padding: 0.8rem 1.1rem;
   border: 1px solid var(--line);
   border-radius: 0.95rem;
-  padding: 0.8rem 0.95rem;
   background: var(--surface-strong);
+  color: var(--ink);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 180ms ease;
 }
 
-.file-input-wrap input {
-  flex: 1 1 auto;
-  min-width: 0;
+.file-trigger:hover {
+  background: rgba(24, 36, 31, 0.05);
+}
+
+.file-trigger:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .settings-fieldset {

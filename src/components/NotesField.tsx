@@ -1,14 +1,12 @@
 export function NotesField({
   value,
-  prominent = false,
   onChange,
 }: {
   value: string;
-  prominent?: boolean;
   onChange: (notes: string) => void;
 }) {
   return (
-    <label className={prominent ? 'field field--prominent' : 'field'}>
+    <label className="field">
       <span>Notes</span>
       <textarea
         aria-label="Notes"

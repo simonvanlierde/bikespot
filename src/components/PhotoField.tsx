@@ -10,10 +10,17 @@ export function PhotoField({
   return (
     <label className="field">
       <span>Photo</span>
-      <div className="file-input-wrap">
+      <span className="file-trigger">
         <ImagePlus aria-hidden="true" className="button-icon" />
-        <input accept="image/*" aria-label="Photo" onChange={onPhotoChange} type="file" />
-      </div>
+        <span>Add a photo</span>
+        <input
+          accept="image/*"
+          aria-label="Photo"
+          className="sr-only"
+          onChange={onPhotoChange}
+          type="file"
+        />
+      </span>
     </label>
   );
 }
