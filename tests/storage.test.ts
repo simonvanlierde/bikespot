@@ -199,6 +199,8 @@ describe('location storage', () => {
       name: 'Amsterdam Zuid',
       laneInputMode: 'quick',
       laneLabels: ['4', '5', '6'],
+      floorInputMode: 'number',
+      floorLabels: ['1', '2', '3'],
       enabledFields: {
         lane: true,
         side: false,
@@ -207,7 +209,6 @@ describe('location storage', () => {
         floor: false,
         rackNumber: false,
       },
-      defaultFloor: 'Lower level',
     });
 
     expect(nextState.station).toMatchObject({
@@ -310,7 +311,6 @@ describe('location storage', () => {
         floor: true,
         rackNumber: false,
       },
-      defaultFloor: 'Upper deck',
     });
 
     expect(renamedState.current).toMatchObject({

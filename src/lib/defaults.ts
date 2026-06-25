@@ -3,8 +3,10 @@ import { createLocationRecord } from './domain';
 
 export const defaultStationConfig: StationConfig = {
   name: 'My station',
-  laneInputMode: 'quick',
+  laneInputMode: 'number',
   laneLabels: ['4', '5', '6'],
+  floorInputMode: 'number',
+  floorLabels: ['1', '2', '3'],
   enabledFields: {
     lane: true,
     side: false,
@@ -13,7 +15,6 @@ export const defaultStationConfig: StationConfig = {
     floor: false,
     rackNumber: false,
   },
-  defaultFloor: 'Main station level',
 };
 
 const starterCurrent: LocationRecord = createLocationRecord(
@@ -24,7 +25,7 @@ const starterCurrent: LocationRecord = createLocationRecord(
     side: 'right',
     rackLevel: 'bottom',
     distance: 'medium',
-    floor: 'Main station level',
+    floor: '1',
     notes: 'Starter spot - update this to your real location.',
     visibleFields: {
       side: true,
@@ -47,7 +48,7 @@ export const defaultAppData: AppData = {
         side: 'left',
         rackLevel: 'top',
         distance: 'close',
-        floor: 'Main station level',
+        floor: '1',
         visibleFields: {
           side: true,
           rackLevel: true,

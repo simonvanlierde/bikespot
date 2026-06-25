@@ -2,7 +2,7 @@ import type {
   Coords,
   Distance,
   EnabledFields,
-  LaneInputMode,
+  FieldInputMode,
   LocationRecord,
   LocationRecordInput,
   RackLevel,
@@ -35,10 +35,11 @@ export type LocationDraft = StationLocationDraft | OutsideLocationDraft;
 
 export type StationSettingsDraft = {
   name: string;
-  laneInputMode: LaneInputMode;
+  laneInputMode: FieldInputMode;
   laneLabels: string[];
+  floorInputMode: FieldInputMode;
+  floorLabels: string[];
   enabledFields: EnabledFields;
-  defaultFloor: string;
 };
 
 export function createStationSettingsDraft(station: StationConfig): StationSettingsDraft {
@@ -46,8 +47,9 @@ export function createStationSettingsDraft(station: StationConfig): StationSetti
     name: station.name,
     laneInputMode: station.laneInputMode,
     laneLabels: [...station.laneLabels],
+    floorInputMode: station.floorInputMode,
+    floorLabels: [...station.floorLabels],
     enabledFields: { ...station.enabledFields },
-    defaultFloor: station.defaultFloor,
   };
 }
 
@@ -62,7 +64,7 @@ export function createLocationDraft(
       side: 'right',
       rackLevel: 'bottom',
       distance: 'medium',
-      floor: station.defaultFloor,
+      floor: station.floorLabels[0] ?? '',
       rackNumber: '',
       notes: '',
       photoFile: null,
@@ -77,7 +79,9 @@ export function createLocationDraft(
     rackLevel: current.mode === 'station' ? (current.rackLevel ?? 'bottom') : 'bottom',
     distance: current.mode === 'station' ? (current.distance ?? 'medium') : 'medium',
     floor:
-      current.mode === 'station' ? (current.floor ?? station.defaultFloor) : station.defaultFloor,
+      current.mode === 'station'
+        ? (current.floor ?? station.floorLabels[0] ?? '')
+        : (station.floorLabels[0] ?? ''),
     rackNumber: current.mode === 'station' ? (current.rackNumber ?? '') : '',
     notes: current.mode === 'station' ? (current.notes ?? '') : '',
     photoFile: null,
@@ -127,7 +131,7 @@ export function buildLocationRecordInput(
     side: station.enabledFields.side ? draft.side : undefined,
     rackLevel: station.enabledFields.rackLevel ? draft.rackLevel : undefined,
     distance: station.enabledFields.distance ? draft.distance : undefined,
-    floor: station.enabledFields.floor ? draft.floor.trim() || station.defaultFloor : undefined,
+    floor: station.enabledFields.floor ? emptyToUndefined(draft.floor) : undefined,
     rackNumber: station.enabledFields.rackNumber ? emptyToUndefined(draft.rackNumber) : undefined,
     notes: emptyToUndefined(draft.notes),
     photoId,
@@ -136,17 +140,18 @@ export function buildLocationRecordInput(
 }
 
 export function buildStationConfig(draft: StationSettingsDraft): StationConfig {
-  const laneLabels = draft.laneLabels
-    .map((label) => label.trim())
-    .filter(Boolean)
-    .slice(0, 5);
+  const cleanLabels = (labels: string[], fallback: string[]) => {
+    const trimmed = labels.map((label) => label.trim()).filter(Boolean);
+    return trimmed.length > 0 ? trimmed : fallback;
+  };
 
   return {
     name: draft.name.trim() || defaultStationConfig.name,
     laneInputMode: draft.laneInputMode,
-    laneLabels: laneLabels.length > 0 ? laneLabels : defaultStationConfig.laneLabels,
+    laneLabels: cleanLabels(draft.laneLabels, defaultStationConfig.laneLabels),
+    floorInputMode: draft.floorInputMode,
+    floorLabels: cleanLabels(draft.floorLabels, defaultStationConfig.floorLabels),
     enabledFields: { ...draft.enabledFields },
-    defaultFloor: draft.defaultFloor.trim() || defaultStationConfig.defaultFloor,
   };
 }
 

@@ -1,7 +1,7 @@
 export type Side = 'left' | 'right';
 export type RackLevel = 'top' | 'bottom';
 export type Distance = 'close' | 'medium' | 'far';
-export type LaneInputMode = 'quick' | 'number';
+export type FieldInputMode = 'quick' | 'number';
 
 export type Coords = {
   lat: number;
@@ -27,10 +27,11 @@ export const ENABLED_FIELD_KEYS = [
 
 export type StationConfig = {
   name: string;
-  laneInputMode: LaneInputMode;
+  laneInputMode: FieldInputMode;
   laneLabels: string[];
+  floorInputMode: FieldInputMode;
+  floorLabels: string[];
   enabledFields: EnabledFields;
-  defaultFloor: string;
 };
 
 export type VisibleFields = Partial<Record<(typeof VISIBLE_FIELD_KEYS)[number], true>>;

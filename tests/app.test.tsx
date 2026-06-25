@@ -46,7 +46,6 @@ describe('bike storage tracker app', () => {
       render(<App />);
 
       await user.click(screen.getByRole('button', { name: /change location/i }));
-      await user.click(screen.getByRole('button', { name: /^lane 5$/i }));
       await user.click(screen.getByRole('button', { name: /save location/i }));
 
       expect(screen.getByText(/location updated/i)).toBeInTheDocument();
@@ -68,12 +67,13 @@ describe('bike storage tracker app', () => {
 
     await user.click(screen.getByRole('button', { name: /station settings/i }));
 
-    await user.clear(screen.getByLabelText(/lane label 1/i));
-    await user.type(screen.getByLabelText(/lane label 1/i), '4');
-    await user.clear(screen.getByLabelText(/lane label 2/i));
-    await user.type(screen.getByLabelText(/lane label 2/i), '5');
-    await user.clear(screen.getByLabelText(/lane label 3/i));
-    await user.type(screen.getByLabelText(/lane label 3/i), '6');
+    await user.click(screen.getByRole('button', { name: /quick lanes/i }));
+    await user.clear(screen.getByLabelText(/^lane 1$/i));
+    await user.type(screen.getByLabelText(/^lane 1$/i), '4');
+    await user.clear(screen.getByLabelText(/^lane 2$/i));
+    await user.type(screen.getByLabelText(/^lane 2$/i), '5');
+    await user.clear(screen.getByLabelText(/^lane 3$/i));
+    await user.type(screen.getByLabelText(/^lane 3$/i), '6');
     await user.click(screen.getByRole('checkbox', { name: /side/i }));
     await user.click(screen.getByRole('button', { name: /save station settings/i }));
 
@@ -137,7 +137,8 @@ describe('bike storage tracker app', () => {
     render(<App />);
 
     await user.click(screen.getByRole('button', { name: /change location/i }));
-    await user.click(screen.getByRole('button', { name: /^lane 5$/i }));
+    await user.clear(screen.getByLabelText(/^lane$/i));
+    await user.type(screen.getByLabelText(/^lane$/i), '5');
     await user.click(screen.getByRole('button', { name: /save location/i }));
 
     await user.click(screen.getByRole('button', { name: /recent locations/i }));
@@ -165,14 +166,14 @@ describe('bike storage tracker app', () => {
     await user.click(screen.getByRole('button', { name: /save station settings/i }));
 
     await user.click(screen.getByRole('button', { name: /change location/i }));
-    await user.click(screen.getByRole('button', { name: /^lane 5$/i }));
+    await user.clear(screen.getByLabelText(/^lane$/i));
+    await user.type(screen.getByLabelText(/^lane$/i), '5');
     await user.click(screen.getByRole('button', { name: /side left/i }));
     await user.click(screen.getByRole('button', { name: /save location/i }));
 
     await user.click(screen.getByRole('button', { name: /station settings/i }));
     await user.click(screen.getByRole('checkbox', { name: /side/i }));
     await user.click(screen.getByRole('checkbox', { name: /floor/i }));
-    await user.type(screen.getByLabelText(/default floor/i), 'Upper deck');
     await user.click(screen.getByRole('button', { name: /save station settings/i }));
 
     await user.click(screen.getByRole('button', { name: /recent locations/i }));
@@ -185,7 +186,6 @@ describe('bike storage tracker app', () => {
     const previewSheet = screen.getByRole('dialog', { name: /recent location preview/i });
     expect(within(previewSheet).getByText(/^side$/i)).toBeInTheDocument();
     expect(within(previewSheet).getAllByText(/^right$/i).length).toBeGreaterThan(0);
-    expect(within(previewSheet).queryByText(/upper deck/i)).not.toBeInTheDocument();
   });
 
   it('closes sheets when the user clicks the dialog backdrop', async () => {

@@ -99,12 +99,13 @@ export function normalizeStationConfig(
   value: Partial<StationConfig> | undefined,
   fallback: StationConfig,
 ): StationConfig {
-  const labels = Array.isArray(value?.laneLabels)
-    ? value.laneLabels
-        .map((label) => String(label).trim())
-        .filter(Boolean)
-        .slice(0, 5)
-    : fallback.laneLabels;
+  const normalizeLabels = (raw: unknown, fallbackLabels: string[]) => {
+    if (!Array.isArray(raw)) {
+      return fallbackLabels;
+    }
+    const labels = raw.map((label) => String(label).trim()).filter(Boolean);
+    return labels.length > 0 ? labels : fallbackLabels;
+  };
 
   const enabledFields = {} as EnabledFields;
 
@@ -114,10 +115,11 @@ export function normalizeStationConfig(
 
   return {
     name: value?.name?.trim() || fallback.name,
-    laneInputMode: value?.laneInputMode === 'number' ? 'number' : 'quick',
-    laneLabels: labels.length > 0 ? labels : fallback.laneLabels,
+    laneInputMode: value?.laneInputMode === 'quick' ? 'quick' : 'number',
+    laneLabels: normalizeLabels(value?.laneLabels, fallback.laneLabels),
+    floorInputMode: value?.floorInputMode === 'quick' ? 'quick' : 'number',
+    floorLabels: normalizeLabels(value?.floorLabels, fallback.floorLabels),
     enabledFields,
-    defaultFloor: value?.defaultFloor?.trim() || fallback.defaultFloor,
   };
 }
 
