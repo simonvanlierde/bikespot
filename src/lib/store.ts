@@ -1,5 +1,6 @@
 import { effect, signal } from '@preact/signals';
-import type { ChangeEvent, Dispatch, FormEvent, SetStateAction } from 'preact/compat';
+import type { TargetedEvent } from 'preact';
+import type { Dispatch, SetStateAction } from 'preact/compat';
 
 import type { AppData, OverlayState } from './app-data';
 import { defaultAppData } from './defaults';
@@ -94,7 +95,7 @@ export function closeOverlay(): void {
   geoStatus.value = 'idle';
 }
 
-export async function handleLocationSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
+export async function handleLocationSubmit(event: TargetedEvent<HTMLFormElement>): Promise<void> {
   event.preventDefault();
 
   const draft = locationDraft.value;
@@ -115,7 +116,7 @@ export async function handleLocationSubmit(event: FormEvent<HTMLFormElement>): P
   closeOverlay();
 }
 
-export function handleStationSubmit(event: FormEvent<HTMLFormElement>): void {
+export function handleStationSubmit(event: TargetedEvent<HTMLFormElement>): void {
   event.preventDefault();
 
   const draft = stationDraft.value;
@@ -135,7 +136,7 @@ export function handleUseRecent(id: string): void {
   closeOverlay();
 }
 
-export function handlePhotoChange(event: ChangeEvent<HTMLInputElement>): void {
+export function handlePhotoChange(event: TargetedEvent<HTMLInputElement>): void {
   const file = event.currentTarget.files?.[0] ?? null;
   const draft = locationDraft.value;
 

@@ -1,11 +1,11 @@
 import { ImagePlus } from 'lucide-preact';
 
-import type { ChangeEvent } from 'preact/compat';
+import type { TargetedEvent } from 'preact';
 
 export function PhotoField({
   onPhotoChange,
 }: {
-  onPhotoChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  onPhotoChange: (event: TargetedEvent<HTMLInputElement>) => void;
 }) {
   return (
     <label className="field">
