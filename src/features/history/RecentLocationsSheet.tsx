@@ -27,7 +27,7 @@ export function RecentLocationsSheet({
 
           return (
             <button
-              aria-label={`Restore ${entry.mode === 'outside' ? 'outside location' : `lane ${entry.lane}`} from recent locations`}
+              aria-label={`Restore ${getRestoreLabel(entry)} from recent locations`}
               key={entry.id}
               className="recent-item"
               type="button"
@@ -46,12 +46,25 @@ export function RecentLocationsSheet({
   );
 }
 
+function getRestoreLabel(entry: LocationRecord) {
+  if (entry.mode === 'outside') {
+    return 'outside location';
+  }
+
+  return entry.lane ? `lane ${entry.lane}` : 'station spot';
+}
+
 function getRecentTitle(entry: LocationRecord) {
   if (entry.mode === 'outside') {
     return 'Outside the station';
   }
 
   const summary = getSummary(entry);
+
+  if (!entry.lane) {
+    return summary || 'Bike spot';
+  }
+
   return `Lane ${entry.lane}${summary ? ` · ${summary}` : ''}`;
 }
 

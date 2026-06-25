@@ -30,6 +30,45 @@
   pointer-events: none;
 }
 
+/* Tappable card: a full-bleed hit button sits behind the content and opens the
+   details sheet. Content ignores pointer events so taps fall through to the hit
+   target, except the action button, which re-enables them and stays clickable. */
+.current-card--tappable {
+  cursor: pointer;
+}
+
+.current-card__content {
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.current-card__content button {
+  pointer-events: auto;
+}
+
+.current-card__chevron {
+  color: var(--muted);
+}
+
+.current-card__hit {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.current-card__hit:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -3px;
+}
+
 .secondary-card {
   padding: 1.1rem;
 }
@@ -62,7 +101,6 @@
 
 .current-card__topline,
 .sheet-header,
-.utility-panel__header,
 .utility-button__row,
 .toggle-row,
 .detail-row {
@@ -223,15 +261,6 @@
 .utility-button:hover {
   background: rgba(24, 36, 31, 0.08);
   border-color: rgba(24, 36, 31, 0.14);
-}
-
-.utility-panel {
-  display: grid;
-  gap: 1rem;
-}
-
-.utility-panel__header {
-  align-items: center;
 }
 
 .utility-actions {

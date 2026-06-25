@@ -2,7 +2,7 @@ import { RotateCcw } from 'lucide-preact';
 
 import { SheetDialog } from '../../components/SheetDialog';
 import type { LocationRecord } from '../../lib/app-data';
-import { formatTimestamp } from '../location/display';
+import { formatTimestamp, getPrimaryLabel } from '../location/display';
 import { LocationDetailContent } from '../location/LocationDetailContent';
 
 export function RecentLocationPreviewSheet({
@@ -17,9 +17,7 @@ export function RecentLocationPreviewSheet({
   return (
     <SheetDialog
       label="Recent location preview"
-      title={
-        selectedRecent.mode === 'outside' ? 'Outside the station' : `Lane ${selectedRecent.lane}`
-      }
+      title={getPrimaryLabel(selectedRecent)}
       onClose={onClose}
     >
       <div className="preview-stack">

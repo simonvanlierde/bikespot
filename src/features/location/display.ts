@@ -70,17 +70,20 @@ export function formatAccuracy(coords: Coords): string {
   return typeof coords.accuracy === 'number' ? `±${coords.accuracy}m` : '';
 }
 
-export function getSupportingSummary(entry: LocationRecord | null, summary: string): string {
+// Headline for a spot: lane when set, otherwise the enabled-field summary, with
+// a final fallback so a lane-less station spot still reads sensibly.
+export function getPrimaryLabel(entry: LocationRecord | null): string {
   if (!entry) {
     return '';
   }
 
   if (entry.mode === 'outside') {
-    return entry.outsideDescription;
+    return 'Outside the station';
   }
 
-  const parts = [entry.stationName, summary, showFloor(entry) ? `Floor ${entry.floor}` : ''].filter(
-    Boolean,
-  );
-  return parts.join(' · ');
+  if (entry.lane) {
+    return `Lane ${entry.lane}`;
+  }
+
+  return getSummary(entry) || 'Bike spot';
 }

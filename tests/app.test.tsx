@@ -1,6 +1,6 @@
-import { render, screen, within } from '@testing-library/preact';
+import { act, fireEvent, render, screen, within } from '@testing-library/preact';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import App from '../src/App';
 
@@ -29,6 +29,36 @@ describe('bike storage tracker app', () => {
     expect(
       within(quickActions).getByRole('button', { name: /station settings/i }),
     ).toBeInTheDocument();
+  });
+
+  it('shows the enabled field summary directly on the current spot card', () => {
+    render(<App />);
+
+    const currentSpotCard = screen.getByRole('region', { name: /current spot/i });
+    expect(within(currentSpotCard).getByText(/right · bottom · medium/i)).toBeInTheDocument();
+  });
+
+  it('auto-dismisses the status notice after a delay', async () => {
+    vi.useFakeTimers();
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+
+    try {
+      render(<App />);
+
+      await user.click(screen.getByRole('button', { name: /change location/i }));
+      await user.click(screen.getByRole('button', { name: /^lane 5$/i }));
+      await user.click(screen.getByRole('button', { name: /save location/i }));
+
+      expect(screen.getByText(/location updated/i)).toBeInTheDocument();
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(4100);
+      });
+
+      expect(screen.queryByText(/location updated/i)).not.toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('uses station settings to drive the location editor fields', async () => {
