@@ -1,4 +1,4 @@
-import type { AppData, OverlayState } from '../../lib/app-data';
+import type { AppData, OverlayState } from '@/lib/app-data';
 
 export function getSelectedRecent(
   overlay: OverlayState,

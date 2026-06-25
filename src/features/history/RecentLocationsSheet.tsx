@@ -1,8 +1,8 @@
 import { History } from 'lucide-preact';
 
-import { SheetDialog } from '../../components/SheetDialog';
-import type { LocationRecord } from '../../lib/app-data';
-import { formatTimestamp, getSummary, showFloor } from '../location/display';
+import { SheetDialog } from '@/components/SheetDialog';
+import { formatTimestamp, getSummary, showFloor } from '@/features/location/display';
+import type { LocationRecord } from '@/lib/app-data';
 
 export function RecentLocationsSheet({
   recent,

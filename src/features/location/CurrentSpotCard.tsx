@@ -1,6 +1,6 @@
 import { ChevronRight, Pencil } from 'lucide-preact';
 
-import type { LocationRecord } from '../../lib/app-data';
+import type { LocationRecord } from '@/lib/app-data';
 import { formatTimestamp, getPrimaryLabel, getSummary, showFloor } from './display';
 
 export function CurrentSpotCard({

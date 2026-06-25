@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'preact/hooks';
 
-import { getPhotoUrl } from '../lib/repository';
+import { getPhotoUrl } from '@/lib/repository';
 
 export function usePhotoUrl(photoId?: string, photoFile?: File | null) {
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);

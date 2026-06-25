@@ -1,6 +1,6 @@
 import { LocateFixed } from 'lucide-preact';
-import { formatAccuracy } from '../features/location/display';
-import type { Coords } from '../lib/app-data';
+import { formatAccuracy } from '@/features/location/display';
+import type { Coords } from '@/lib/app-data';
 
 export function CoordsField({
   coords,

@@ -1,3 +1,8 @@
+import { RecentLocationPreviewSheet } from '@/features/history/RecentLocationPreviewSheet';
+import { RecentLocationsSheet } from '@/features/history/RecentLocationsSheet';
+import { LocationDetailsSheet } from '@/features/location/LocationDetailsSheet';
+import { LocationEditorSheet } from '@/features/location/LocationEditorSheet';
+import { StationSettingsSheet } from '@/features/location/StationSettingsSheet';
 import {
   closeOverlay,
   data,
@@ -15,12 +20,7 @@ import {
   showEditorDetails,
   stationDraft,
   toggleEditorDetails,
-} from '../../lib/store';
-import { RecentLocationPreviewSheet } from '../history/RecentLocationPreviewSheet';
-import { RecentLocationsSheet } from '../history/RecentLocationsSheet';
-import { LocationDetailsSheet } from '../location/LocationDetailsSheet';
-import { LocationEditorSheet } from '../location/LocationEditorSheet';
-import { StationSettingsSheet } from '../location/StationSettingsSheet';
+} from '@/lib/store';
 import { getSelectedRecent } from './overlay-state';
 
 export function AppOverlays() {

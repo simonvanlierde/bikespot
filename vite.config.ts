@@ -1,3 +1,4 @@
+import { fileURLToPath, URL } from 'node:url';
 import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig } from 'vitest/config';
 
@@ -7,6 +8,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
       react: 'preact/compat',
       'react-dom/test-utils': 'preact/test-utils',
       'react-dom/client': 'preact/compat/client',

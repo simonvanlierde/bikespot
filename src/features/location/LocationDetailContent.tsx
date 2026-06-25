@@ -1,8 +1,7 @@
 import { MapPin } from 'lucide-preact';
-
-import { DetailRow } from '../../components/DetailRow';
-import { usePhotoUrl } from '../../components/usePhotoUrl';
-import type { LocationRecord } from '../../lib/app-data';
+import { DetailRow } from '@/components/DetailRow';
+import { usePhotoUrl } from '@/components/usePhotoUrl';
+import type { LocationRecord } from '@/lib/app-data';
 import { formatAccuracy, mapsLink, shouldShowEntryField, showFloor, titleCase } from './display';
 
 export function LocationDetailContent({
