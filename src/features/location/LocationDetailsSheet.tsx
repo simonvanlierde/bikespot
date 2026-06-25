@@ -2,6 +2,7 @@ import { CircleEllipsis } from 'lucide-preact';
 
 import { SheetDialog } from '../../components/SheetDialog';
 import type { LocationRecord } from '../../lib/app-data';
+import { formatTimestamp } from './display';
 import { LocationDetailContent } from './LocationDetailContent';
 
 export function LocationDetailsSheet({
@@ -19,7 +20,12 @@ export function LocationDetailsSheet({
       titleIcon={<CircleEllipsis aria-hidden="true" className="button-icon" />}
       onClose={onClose}
     >
-      {current ? <LocationDetailContent entry={current} photoAlt="Saved bike reference" /> : null}
+      {current ? (
+        <div className="preview-stack">
+          <LocationDetailContent entry={current} photoAlt="Saved bike reference" />
+          <p className="timestamp">Updated {formatTimestamp(current.updatedAt)}</p>
+        </div>
+      ) : null}
     </SheetDialog>
   );
 }

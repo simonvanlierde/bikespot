@@ -71,6 +71,46 @@ describe('location detail content', () => {
     expect(screen.getByText('±12m')).toBeInTheDocument();
   });
 
+  it('lists enabled station fields broad-to-specific and omits the station name', () => {
+    const { container } = render(
+      <LocationDetailContent
+        entry={{
+          id: 'station-1',
+          mode: 'station',
+          stationName: 'My station',
+          updatedAt: '2026-04-20T20:00:00.000Z',
+          lane: '5',
+          side: 'left',
+          rackLevel: 'top',
+          distance: 'close',
+          floor: 'Upper deck',
+          rackNumber: 'R12',
+          visibleFields: {
+            side: true,
+            rackLevel: true,
+            distance: true,
+            floor: true,
+            rackNumber: true,
+          },
+        }}
+        photoAlt="Saved bike reference"
+      />,
+    );
+
+    const labels = Array.from(container.querySelectorAll('.detail-row__label')).map(
+      (element) => element.textContent,
+    );
+    expect(labels).toEqual([
+      'Station floor',
+      'Lane',
+      'Distance',
+      'Side',
+      'Rack level',
+      'Rack number',
+    ]);
+    expect(screen.queryByText(/^station$/i)).not.toBeInTheDocument();
+  });
+
   it('renders no maps link when coordinates are absent', () => {
     render(
       <LocationDetailContent

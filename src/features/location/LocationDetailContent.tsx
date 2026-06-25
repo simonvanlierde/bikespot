@@ -3,29 +3,30 @@ import { MapPin } from 'lucide-preact';
 import { DetailRow } from '../../components/DetailRow';
 import { usePhotoUrl } from '../../components/usePhotoUrl';
 import type { LocationRecord } from '../../lib/app-data';
-import {
-  formatAccuracy,
-  getSummary,
-  mapsLink,
-  shouldShowEntryField,
-  showFloor,
-  titleCase,
-} from './display';
+import { formatAccuracy, mapsLink, shouldShowEntryField, showFloor, titleCase } from './display';
 
 export function LocationDetailContent({
   entry,
   photoAlt,
-  draftPhotoFile,
 }: {
   entry: LocationRecord;
   photoAlt: string;
-  draftPhotoFile?: File | null;
 }) {
-  const photoUrl = usePhotoUrl(entry.photoId, draftPhotoFile);
+  const photoUrl = usePhotoUrl(entry.photoId);
+  // Enabled fields in broad → specific order (floor → rack number), matching the
+  // editor and settings views.
   const stationDetails =
     entry.mode === 'station'
       ? [
+          { label: 'Station floor', value: showFloor(entry) ? entry.floor : undefined },
           { label: 'Lane', value: entry.lane },
+          {
+            label: 'Distance',
+            value:
+              shouldShowEntryField(entry, 'distance') && entry.distance
+                ? titleCase(entry.distance)
+                : undefined,
+          },
           {
             label: 'Side',
             value:
@@ -39,14 +40,6 @@ export function LocationDetailContent({
                 : undefined,
           },
           {
-            label: 'Distance',
-            value:
-              shouldShowEntryField(entry, 'distance') && entry.distance
-                ? titleCase(entry.distance)
-                : undefined,
-          },
-          { label: 'Station floor', value: showFloor(entry) ? entry.floor : undefined },
-          {
             label: 'Rack number',
             value: shouldShowEntryField(entry, 'rackNumber') ? entry.rackNumber : undefined,
           },
@@ -55,16 +48,8 @@ export function LocationDetailContent({
 
   return (
     <div className="preview-stack">
-      {entry.mode === 'outside' ? (
-        <p className="spot-summary">{entry.outsideDescription}</p>
-      ) : (
-        <>
-          <p className="spot-summary">{getSummary(entry)}</p>
-          {showFloor(entry) ? <p className="spot-floor">Station floor {entry.floor}</p> : null}
-        </>
-      )}
+      {entry.mode === 'outside' ? <p className="spot-summary">{entry.outsideDescription}</p> : null}
 
-      <DetailRow label="Station" value={entry.stationName} />
       {stationDetails.map((detail) => (
         <DetailRow key={detail.label} label={detail.label} value={detail.value} />
       ))}
