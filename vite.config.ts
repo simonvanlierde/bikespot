@@ -2,7 +2,6 @@ import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-  base: '/bikespot/',
   build: {
     chunkSizeWarningLimit: 235,
   },
@@ -24,24 +23,23 @@ export default defineConfig({
         name: 'Bikespot',
         short_name: 'Bikespot',
         description: 'Save and reopen the bike spot you last used.',
-        start_url: '.',
-        scope: '/bikespot/',
+        start_url: '/',
         display: 'standalone',
         theme_color: '#15231d',
         background_color: '#f4f3ef',
         icons: [
           {
-            src: 'icons/icon-192.png',
+            src: '/icons/icon-192.png',
             sizes: '192x192',
             type: 'image/png',
           },
           {
-            src: 'icons/icon-512.png',
+            src: '/icons/icon-512.png',
             sizes: '512x512',
             type: 'image/png',
           },
           {
-            src: 'icons/icon-maskable-512.png',
+            src: '/icons/icon-maskable-512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable',
@@ -50,7 +48,7 @@ export default defineConfig({
       },
       workbox: {
         cleanupOutdatedCaches: true,
-        navigateFallback: '/bikespot/index.html',
+        navigateFallback: 'index.html',
         globPatterns: ['**/*.{html,js,css,png,svg,webmanifest}'],
         runtimeCaching: [],
       },

@@ -14,7 +14,7 @@ By design, the app is single-device: no cross-device sync. State lives in `local
 
 ## Install
 
-Open [duinlab.nl/bikespot](https://duinlab.nl/bikespot) and add it to your home screen:
+Open [bikespot.duinlab.nl](https://bikespot.duinlab.nl) and add it to your home screen:
 
 - **iPhone / iPad (Safari):** tap **Share** → **Add to Home Screen** → **Add**.
 - **Android (Chrome):** tap **⋮** → **Add to Home screen** → **Install**.
