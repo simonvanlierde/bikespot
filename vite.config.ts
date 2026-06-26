@@ -1,4 +1,5 @@
 import { fileURLToPath, URL } from 'node:url';
+import { cloudflare } from '@cloudflare/vite-plugin';
 import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig } from 'vitest/config';
 
@@ -55,6 +56,7 @@ export default defineConfig({
         runtimeCaching: [],
       },
     }),
+    cloudflare(),
   ],
   test: {
     environment: 'jsdom',
