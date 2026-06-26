@@ -14,11 +14,11 @@
     "typecheck": "tsc -b",
     "build": "tsc -b && vite build",
     "check": "pnpm lint && pnpm test && pnpm build",
-    "preview": "pnpm run build && wrangler dev",
+    "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "deploy": "pnpm run build && wrangler deploy"
+    "deploy": "pnpm run build && wrangler pages deploy"
   },
   "dependencies": {
     "@preact/signals": "^2.9.2",
@@ -28,7 +28,6 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.1",
-    "@cloudflare/vite-plugin": "^1.42.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/preact": "3.2.4",
     "@testing-library/user-event": "^14.6.1",
