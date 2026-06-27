@@ -18,6 +18,12 @@ An offline-first PWA for remembering where you parked your bike. Everything stay
 
 By design, the app is single-device: no cross-device sync. State lives in `localStorage`; photos live in IndexedDB.
 
+## Roadmap
+
+- [ ] Add a map view for saved spots.
+- [ ] Show photo preview in the history list and the editor.
+- [ ] Consider server-side sync for multi-device support, with optional end-to-end encryption.
+
 ## Install
 
 Bikespot runs in the browser and installs as an app — no app store needed.
