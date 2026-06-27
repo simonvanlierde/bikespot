@@ -1,6 +1,6 @@
 import { createId } from './id';
 
-const PHOTO_DB_NAME = 'bike-storage-tracker-photos';
+const PHOTO_DB_NAME = 'bikespot-photos';
 const PHOTO_STORE_NAME = 'photos';
 
 const memoryPhotoStore = new Map<string, Blob>();
