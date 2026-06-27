@@ -383,7 +383,7 @@ describe('location storage', () => {
 
   it('rejects the old storage shape and starts fresh', async () => {
     window.localStorage.setItem(
-      'bike-storage-tracker-state',
+      'bikespot-state',
       JSON.stringify({
         station: defaultState.station,
         current: {

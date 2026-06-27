@@ -12,7 +12,7 @@ import { defaultAppData, defaultStationConfig } from './defaults';
 import { normalizeStationConfig } from './domain';
 import { clearPhotoBlobs, loadPhotoBlob, savePhotoBlob } from './photos';
 
-export const APP_DATA_STORAGE_KEY = 'bike-storage-tracker-app';
+export const APP_DATA_STORAGE_KEY = 'bikespot-app';
 
 export async function loadAppData(): Promise<AppData> {
   if (typeof window === 'undefined') {

@@ -1,7 +1,7 @@
 # Bikespot
 
-[![CI](https://github.com/simonvanlierde/bike-storage-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/simonvanlierde/bike-storage-tracker/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/simonvanlierde/bike-storage-tracker/branch/main/graph/badge.svg)](https://codecov.io/gh/simonvanlierde/bike-storage-tracker)
+[![CI](https://github.com/simonvanlierde/bikespot/actions/workflows/ci.yml/badge.svg)](https://github.com/simonvanlierde/bikespot/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/simonvanlierde/bikespot/branch/main/graph/badge.svg)](https://codecov.io/gh/simonvanlierde/bikespot)
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Fbikespot.duinlab.nl&label=bikespot.duinlab.nl)](https://bikespot.duinlab.nl)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![PWA](https://img.shields.io/badge/PWA-installable-5a3.svg)](https://bikespot.duinlab.nl)
