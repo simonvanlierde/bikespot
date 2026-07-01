@@ -5,20 +5,21 @@ updates:
     directory: /
     schedule:
       interval: weekly
-      day: monday
-      time: "05:00"
-      timezone: Europe/Amsterdam
     labels:
       - dependencies
-    open-pull-requests-limit: 3
+    groups:
+      npm-updates:
+        patterns:
+          - "*" 
 
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
-      day: monday
-      time: "05:00"
-      timezone: Europe/Amsterdam
     labels:
       - dependencies
       - infrastructure
+    groups:
+      action-updates:
+        patterns:
+          - "*"
