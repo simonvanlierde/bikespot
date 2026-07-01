@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@preact/signals": "^2.9.2",
-    "lucide-preact": "1.21.0",
+    "lucide-preact": "1.22.0",
     "preact": "^10.29.1",
     "workbox-window": "^7.4.1"
   },
