@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/preact';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { LocationDetailContent } from '../src/features/location/LocationDetailContent';
-import { clearPhotoStore, savePhoto } from '../src/lib/repository';
+import { clearPhotoBlobs, savePhotoBlob } from '../src/lib/photos';
 
 describe('location detail content', () => {
   const createObjectUrl = vi.fn(() => 'blob:bike-photo');
@@ -10,7 +10,7 @@ describe('location detail content', () => {
 
   beforeEach(async () => {
     window.localStorage.clear();
-    await clearPhotoStore();
+    await clearPhotoBlobs();
     vi.stubGlobal('URL', {
       ...URL,
       createObjectURL: createObjectUrl,
@@ -25,7 +25,9 @@ describe('location detail content', () => {
   });
 
   it('renders a persisted outside photo after the async photo lookup resolves', async () => {
-    const photoId = await savePhoto(new File(['bike-photo'], 'bike.png', { type: 'image/png' }));
+    const photoId = await savePhotoBlob(
+      new File(['bike-photo'], 'bike.png', { type: 'image/png' }),
+    );
 
     render(
       <LocationDetailContent

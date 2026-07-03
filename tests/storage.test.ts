@@ -8,14 +8,15 @@ import {
   updateStationConfig,
 } from '../src/lib/domain';
 import { buildLocationRecordInput } from '../src/lib/drafts';
-import { APP_DATA_STORAGE_KEY, clearPhotoStore, loadAppData } from '../src/lib/repository';
+import { clearPhotoBlobs } from '../src/lib/photos';
+import { APP_DATA_STORAGE_KEY, loadAppData } from '../src/lib/repository';
 
 describe('location storage', () => {
   const defaultState: AppData = defaultAppData;
 
   beforeEach(async () => {
     window.localStorage.clear();
-    await clearPhotoStore();
+    await clearPhotoBlobs();
   });
 
   it('saves a new current spot and moves the previous one into recent history', () => {

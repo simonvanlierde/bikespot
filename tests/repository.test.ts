@@ -1,18 +1,13 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { defaultAppData } from '../src/lib/defaults';
-import {
-  APP_DATA_STORAGE_KEY,
-  clearPhotoStore,
-  loadAppData,
-  saveAppData,
-  savePhoto,
-} from '../src/lib/repository';
+import { clearPhotoBlobs, savePhotoBlob } from '../src/lib/photos';
+import { APP_DATA_STORAGE_KEY, loadAppData, saveAppData } from '../src/lib/repository';
 
 describe('app data repository', () => {
   beforeEach(async () => {
     window.localStorage.clear();
-    await clearPhotoStore();
+    await clearPhotoBlobs();
   });
 
   it('hydrates the default app data when nothing has been stored yet', async () => {
@@ -20,7 +15,9 @@ describe('app data repository', () => {
   });
 
   it('stores photo blobs outside localStorage and can read them back by photo id', async () => {
-    const photoId = await savePhoto(new File(['bike-photo'], 'bike.png', { type: 'image/png' }));
+    const photoId = await savePhotoBlob(
+      new File(['bike-photo'], 'bike.png', { type: 'image/png' }),
+    );
 
     const nextData = {
       ...defaultAppData,
@@ -55,7 +52,7 @@ describe('app data repository', () => {
   it('round-trips valid coordinates and drops invalid ones on load', async () => {
     const base = defaultAppData.current;
 
-    if (!base || base.mode !== 'station') {
+    if (base?.mode !== 'station') {
       throw new Error('expected a station current record in defaults');
     }
 

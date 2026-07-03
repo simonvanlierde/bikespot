@@ -10,7 +10,6 @@ import type {
 import { VISIBLE_FIELD_KEYS } from './app-data';
 import { defaultAppData, defaultStationConfig } from './defaults';
 import { normalizeStationConfig } from './domain';
-import { clearPhotoBlobs, loadPhotoBlob, savePhotoBlob } from './photos';
 
 export const APP_DATA_STORAGE_KEY = 'bikespot-app';
 
@@ -38,24 +37,6 @@ export async function saveAppData(data: AppData): Promise<void> {
   }
 
   window.localStorage.setItem(APP_DATA_STORAGE_KEY, JSON.stringify(data));
-}
-
-export async function savePhoto(file: Blob): Promise<string> {
-  return savePhotoBlob(file);
-}
-
-export async function getPhotoUrl(photoId?: string): Promise<string | null> {
-  if (!photoId) {
-    return null;
-  }
-
-  const blob = await loadPhotoBlob(photoId);
-
-  return blob ? URL.createObjectURL(blob) : null;
-}
-
-export async function clearPhotoStore(): Promise<void> {
-  await clearPhotoBlobs();
 }
 
 function normalizeAppData(value: unknown): AppData {

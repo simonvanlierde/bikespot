@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'preact/hooks';
 
-import { getPhotoUrl } from '@/lib/repository';
+import { loadPhotoBlob } from '@/lib/photos';
 
 export function usePhotoUrl(photoId?: string, photoFile?: File | null) {
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
@@ -27,7 +27,8 @@ export function usePhotoUrl(photoId?: string, photoFile?: File | null) {
         return;
       }
 
-      objectUrl = await getPhotoUrl(photoId);
+      const blob = await loadPhotoBlob(photoId);
+      objectUrl = blob ? URL.createObjectURL(blob) : null;
 
       if (isActive) {
         setPhotoUrl(objectUrl);

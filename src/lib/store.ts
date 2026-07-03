@@ -14,7 +14,8 @@ import {
   type StationSettingsDraft,
 } from './drafts';
 import { captureCoords } from './geolocation';
-import { loadAppData, saveAppData, savePhoto } from './repository';
+import { savePhotoBlob } from './photos';
+import { loadAppData, saveAppData } from './repository';
 
 export const data = signal<AppData>(defaultAppData);
 export const overlay = signal<OverlayState>({ kind: 'closed' });
@@ -104,7 +105,7 @@ export async function handleLocationSubmit(event: TargetedEvent<HTMLFormElement>
     return;
   }
 
-  const photoId = draft.photoFile ? await savePhoto(draft.photoFile) : undefined;
+  const photoId = draft.photoFile ? await savePhotoBlob(draft.photoFile) : undefined;
   const nextLocation = buildLocationRecordInput(draft, data.value.station, photoId);
 
   if (!nextLocation) {
