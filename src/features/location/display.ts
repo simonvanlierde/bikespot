@@ -26,10 +26,6 @@ export function shouldShowEntryField(entry: LocationRecord, field: keyof Enabled
 }
 
 export function showFloor(entry: LocationRecord) {
-  if (entry.mode !== 'station' || !entry.floor?.trim()) {
-    return false;
-  }
-
   return shouldShowEntryField(entry, 'floor');
 }
 
