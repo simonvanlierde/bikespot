@@ -8,7 +8,6 @@ import type {
 } from './app-data';
 import { ENABLED_FIELD_KEYS, RECENT_LIMIT, VISIBLE_FIELD_KEYS } from './app-data';
 import { defaultStationConfig } from './defaults';
-import { createId } from './id';
 
 type StationLocationRecordSeed = Omit<
   Extract<LocationRecord, { mode: 'station' }>,
@@ -25,7 +24,7 @@ export function createLocationRecord(
   updatedAt: string = new Date().toISOString(),
 ): LocationRecord {
   return {
-    id: createId(),
+    id: crypto.randomUUID(),
     updatedAt,
     ...record,
   };

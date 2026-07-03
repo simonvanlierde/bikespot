@@ -21,12 +21,14 @@ import {
   stationDraft,
   toggleEditorDetails,
 } from '@/lib/store';
-import { getSelectedRecent } from './overlay-state';
 
 export function AppOverlays() {
   const appData = data.value;
   const current = overlay.value;
-  const selectedRecent = getSelectedRecent(current, appData.recent);
+  const selectedRecent =
+    current.kind === 'recent-preview'
+      ? (appData.recent.find((entry) => entry.id === current.id) ?? null)
+      : null;
 
   return (
     <>

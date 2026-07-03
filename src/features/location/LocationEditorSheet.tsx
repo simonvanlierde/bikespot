@@ -2,10 +2,11 @@ import { ArrowRightLeft, Undo2 } from 'lucide-preact';
 import type { TargetedEvent } from 'preact';
 import type { Dispatch, SetStateAction } from 'preact/compat';
 import { CoordsField } from '@/components/CoordsField';
+import { NotesField } from '@/components/NotesField';
+import { PhotoField } from '@/components/PhotoField';
 import { SheetDialog } from '@/components/SheetDialog';
 import type { StationConfig } from '@/lib/app-data';
 import { createLocationDraft, createOutsideLocationDraft, type LocationDraft } from '@/lib/drafts';
-import { OutsideLocationFields } from './OutsideLocationFields';
 import { StationLocationFields, type UpdateStationField } from './StationLocationFields';
 
 export function LocationEditorSheet({
@@ -88,11 +89,8 @@ export function LocationEditorSheet({
               status={geoStatus}
               onCapture={onCaptureLocation}
             />
-            <OutsideLocationFields
-              formState={formState}
-              onNotesChange={updateNotes}
-              onPhotoChange={onPhotoChange}
-            />
+            <NotesField value={formState.notes} onChange={updateNotes} />
+            <PhotoField onPhotoChange={onPhotoChange} />
           </>
         ) : (
           <StationLocationFields
