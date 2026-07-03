@@ -78,7 +78,6 @@ export function StationLocationFields({
               </span>
             </button>
           }
-          layout="fit"
           options={['close', 'medium', 'far']}
           value={formState.distance}
           onChange={(distance) => updateStationField('distance', distance)}
@@ -89,7 +88,6 @@ export function StationLocationFields({
       {station.enabledFields.side ? (
         <SegmentedControl
           label="Side"
-          layout="fit"
           options={['left', 'right']}
           value={formState.side}
           onChange={(side) => updateStationField('side', side)}
@@ -100,7 +98,6 @@ export function StationLocationFields({
       {station.enabledFields.rackLevel ? (
         <SegmentedControl
           label="Rack level"
-          layout="fit"
           options={['top', 'bottom']}
           value={formState.rackLevel}
           onChange={(rackLevel) => updateStationField('rackLevel', rackLevel)}
