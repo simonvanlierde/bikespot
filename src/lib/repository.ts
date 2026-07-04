@@ -7,7 +7,7 @@ import type {
   Side,
   VisibleFields,
 } from './app-data';
-import { VISIBLE_FIELD_KEYS } from './app-data';
+import { RECENT_LIMIT, VISIBLE_FIELD_KEYS } from './app-data';
 import { defaultAppData, defaultStationConfig } from './defaults';
 import { normalizeStationConfig } from './domain';
 
@@ -51,10 +51,13 @@ function normalizeAppData(value: unknown): AppData {
     ? candidate.recent
         .map((entry) => normalizeLocationRecord(entry))
         .filter((entry): entry is LocationRecord => entry !== null)
-        .slice(0, 5)
-    : null;
+        .slice(0, RECENT_LIMIT)
+    : [];
 
-  if (!recent) {
+  // Each field degrades independently: a malformed `recent` becomes empty rather
+  // than discarding a valid current spot. Only a blob with nothing salvageable
+  // falls back to the friendly starter state.
+  if (!current && recent.length === 0) {
     return defaultAppData;
   }
 

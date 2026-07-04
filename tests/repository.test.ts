@@ -88,6 +88,24 @@ describe('app data repository', () => {
     expect(hydrated.recent[1]?.coords).toBeUndefined();
   });
 
+  it('keeps a valid current spot when the stored recent list is malformed', async () => {
+    const base = defaultAppData.current;
+
+    if (base?.mode !== 'station') {
+      throw new Error('expected a station current record in defaults');
+    }
+
+    window.localStorage.setItem(
+      APP_DATA_STORAGE_KEY,
+      JSON.stringify({ ...defaultAppData, recent: 'not-an-array' }),
+    );
+
+    const hydrated = await loadAppData();
+
+    expect(hydrated.current).toMatchObject({ id: base.id, lane: base.lane });
+    expect(hydrated.recent).toEqual([]);
+  });
+
   it('starts fresh when legacy versioned state is found', async () => {
     window.localStorage.setItem(
       APP_DATA_STORAGE_KEY,
