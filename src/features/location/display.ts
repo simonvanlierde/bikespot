@@ -34,10 +34,16 @@ export function formatTimestamp(value?: string) {
     return 'not saved yet';
   }
 
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return 'not saved yet';
+  }
+
   return new Intl.DateTimeFormat(undefined, {
     dateStyle: 'medium',
     timeStyle: 'short',
-  }).format(new Date(value));
+  }).format(date);
 }
 
 export function getSummary(entry: LocationRecord | null): string {
