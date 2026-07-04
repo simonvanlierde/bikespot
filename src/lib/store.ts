@@ -14,7 +14,7 @@ import {
   type StationSettingsDraft,
 } from './drafts';
 import { captureCoords } from './geolocation';
-import { savePhotoBlob } from './photos';
+import { deletePhotoBlob, savePhotoBlob } from './photos';
 import { loadAppData, saveAppData } from './repository';
 
 export const data = signal<AppData>(defaultAppData);
@@ -67,6 +67,36 @@ export function initStore(): () => void {
   };
 }
 
+function referencedPhotoIds(value: AppData): Set<string> {
+  const ids = new Set<string>();
+
+  if (value.current?.photoId) {
+    ids.add(value.current.photoId);
+  }
+
+  for (const entry of value.recent) {
+    if (entry.photoId) {
+      ids.add(entry.photoId);
+    }
+  }
+
+  return ids;
+}
+
+// Applies a data mutation and deletes any photo blobs the mutation orphaned
+// (record overwritten or evicted from recent), so IndexedDB doesn't grow forever.
+async function commitData(next: AppData): Promise<void> {
+  const previousIds = referencedPhotoIds(data.value);
+  data.value = next;
+  const nextIds = referencedPhotoIds(next);
+
+  for (const id of previousIds) {
+    if (!nextIds.has(id)) {
+      await deletePhotoBlob(id);
+    }
+  }
+}
+
 export function openOverlay(next: OverlayState): void {
   overlay.value = next;
   showEditorDetails.value = false;
@@ -105,14 +135,19 @@ export async function handleLocationSubmit(event: TargetedEvent<HTMLFormElement>
     return;
   }
 
-  const photoId = draft.photoFile ? await savePhotoBlob(draft.photoFile) : undefined;
-  const nextLocation = buildLocationRecordInput(draft, data.value.station, photoId);
+  const input = buildLocationRecordInput(draft, data.value.station);
 
-  if (!nextLocation) {
+  if (!input) {
     return;
   }
 
-  data.value = saveLocation(data.value, nextLocation);
+  // Persist a newly attached photo only once we know the record is valid,
+  // otherwise a failed save would leave an orphaned blob behind. With no new
+  // file, keep the photo already on the record being edited.
+  const photoId = draft.photoFile ? await savePhotoBlob(draft.photoFile) : draft.photoId;
+  const nextLocation = photoId ? { ...input, photoId } : input;
+
+  await commitData(saveLocation(data.value, nextLocation));
   notice.value = 'Location updated';
   closeOverlay();
 }
@@ -131,8 +166,8 @@ export function handleStationSubmit(event: TargetedEvent<HTMLFormElement>): void
   closeOverlay();
 }
 
-export function handleUseRecent(id: string): void {
-  data.value = promoteRecentLocation(data.value, id);
+export async function handleUseRecent(id: string): Promise<void> {
+  await commitData(promoteRecentLocation(data.value, id));
   notice.value = 'Location updated from recent';
   closeOverlay();
 }

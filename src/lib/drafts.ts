@@ -21,6 +21,7 @@ export type StationLocationDraft = {
   rackNumber: string;
   notes: string;
   photoFile: File | null;
+  photoId?: string;
   coords: Coords | null;
 };
 
@@ -28,6 +29,7 @@ export type OutsideLocationDraft = {
   kind: 'outside';
   notes: string;
   photoFile: File | null;
+  photoId?: string;
   coords: Coords | null;
 };
 
@@ -72,19 +74,27 @@ export function createLocationDraft(
     };
   }
 
+  if (current.mode === 'outside') {
+    return {
+      kind: 'outside',
+      notes: current.outsideDescription,
+      photoFile: null,
+      photoId: current.photoId,
+      coords: current.coords ?? null,
+    };
+  }
+
   return {
     kind: 'station',
-    lane: current.mode === 'station' ? (current.lane ?? station.laneLabels[0] ?? '') : '',
-    side: current.mode === 'station' ? (current.side ?? 'right') : 'right',
-    rackLevel: current.mode === 'station' ? (current.rackLevel ?? 'bottom') : 'bottom',
-    distance: current.mode === 'station' ? (current.distance ?? 'medium') : 'medium',
-    floor:
-      current.mode === 'station'
-        ? (current.floor ?? station.floorLabels[0] ?? '')
-        : (station.floorLabels[0] ?? ''),
-    rackNumber: current.mode === 'station' ? (current.rackNumber ?? '') : '',
-    notes: current.mode === 'station' ? (current.notes ?? '') : '',
+    lane: current.lane ?? station.laneLabels[0] ?? '',
+    side: current.side ?? 'right',
+    rackLevel: current.rackLevel ?? 'bottom',
+    distance: current.distance ?? 'medium',
+    floor: current.floor ?? station.floorLabels[0] ?? '',
+    rackNumber: current.rackNumber ?? '',
+    notes: current.notes ?? '',
     photoFile: null,
+    photoId: current.photoId,
     coords: current.coords ?? null,
   };
 }
@@ -101,7 +111,6 @@ export function createOutsideLocationDraft(): OutsideLocationDraft {
 export function buildLocationRecordInput(
   draft: LocationDraft,
   station: StationConfig,
-  photoId?: string,
 ): LocationRecordInput | null {
   if (draft.kind === 'outside') {
     const outsideDescription = draft.notes.trim();
@@ -113,7 +122,6 @@ export function buildLocationRecordInput(
     return {
       mode: 'outside',
       outsideDescription,
-      photoId,
       coords: draft.coords ?? undefined,
     };
   }
@@ -134,7 +142,6 @@ export function buildLocationRecordInput(
     floor: station.enabledFields.floor ? emptyToUndefined(draft.floor) : undefined,
     rackNumber: station.enabledFields.rackNumber ? emptyToUndefined(draft.rackNumber) : undefined,
     notes: emptyToUndefined(draft.notes),
-    photoId,
     coords: draft.coords ?? undefined,
   };
 }

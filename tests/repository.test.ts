@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { defaultAppData } from '../src/lib/defaults';
-import { clearPhotoBlobs, savePhotoBlob } from '../src/lib/photos';
+import { clearPhotoBlobs, deletePhotoBlob, loadPhotoBlob, savePhotoBlob } from '../src/lib/photos';
 import { APP_DATA_STORAGE_KEY, loadAppData, saveAppData } from '../src/lib/repository';
 
 describe('app data repository', () => {
@@ -47,6 +47,18 @@ describe('app data repository', () => {
     expect(hydrated.current).toMatchObject({
       photoId,
     });
+  });
+
+  it('deletes a stored photo blob so orphaned photos do not accumulate', async () => {
+    const photoId = await savePhotoBlob(
+      new File(['bike-photo'], 'bike.png', { type: 'image/png' }),
+    );
+
+    expect(await loadPhotoBlob(photoId)).not.toBeNull();
+
+    await deletePhotoBlob(photoId);
+
+    expect(await loadPhotoBlob(photoId)).toBeNull();
   });
 
   it('round-trips valid coordinates and drops invalid ones on load', async () => {
