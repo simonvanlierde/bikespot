@@ -14,8 +14,7 @@ export function CurrentSpotCard({
   onEdit: () => void;
   onOpenDetails: () => void;
 }) {
-  const summary =
-    current?.mode === 'station' ? getSummary(current) : (current?.outsideDescription ?? '');
+  const summary = getSummary(current);
 
   return (
     <section className="current-card current-card--tappable" aria-label="Current spot">
