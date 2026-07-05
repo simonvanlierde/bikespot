@@ -1,5 +1,7 @@
 import { Plus, X } from 'lucide-preact';
+import { useRef } from 'preact/hooks';
 
+import { titleCase } from '@/features/location/display';
 import type { FieldInputMode } from '@/lib/app-data';
 
 // Settings-side config for one location field (lane or floor): a Quick/Number
@@ -19,17 +21,30 @@ export function FieldInputSettings({
   onModeChange: (mode: FieldInputMode) => void;
   onLabelsChange: (labels: string[]) => void;
 }) {
-  const Noun = noun.charAt(0).toUpperCase() + noun.slice(1);
+  const Noun = titleCase(noun);
+
+  // Stable identity per row: keying by index would reuse DOM inputs by
+  // position when a middle row is removed, dropping caret/focus onto the
+  // wrong field. Handlers update the ids in lockstep with the labels; the
+  // render-time resync covers mount and external label changes.
+  const nextRowId = useRef(0);
+  const rowIds = useRef<number[]>([]);
+
+  if (rowIds.current.length !== labels.length) {
+    rowIds.current = labels.map(() => nextRowId.current++);
+  }
 
   function updateLabel(index: number, value: string) {
     onLabelsChange(labels.map((label, labelIndex) => (labelIndex === index ? value : label)));
   }
 
   function addLabel() {
+    rowIds.current = [...rowIds.current, nextRowId.current++];
     onLabelsChange([...labels, '']);
   }
 
   function removeLabel(index: number) {
+    rowIds.current = rowIds.current.filter((_, idIndex) => idIndex !== index);
     onLabelsChange(labels.filter((_, labelIndex) => labelIndex !== index));
   }
 
@@ -60,7 +75,7 @@ export function FieldInputSettings({
       {mode === 'quick' ? (
         <div className="labels-editor">
           {labels.map((label, index) => (
-            <div className="labels-editor__row" key={`${noun}-label-${index + 1}`}>
+            <div className="labels-editor__row" key={`${noun}-label-${rowIds.current[index]}`}>
               <label className="field labels-editor__field">
                 <span>
                   {Noun} {index + 1}
