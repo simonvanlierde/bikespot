@@ -2,7 +2,7 @@ import { effect, signal } from '@preact/signals';
 import type { TargetedEvent } from 'preact';
 import type { Dispatch, SetStateAction } from 'preact/compat';
 
-import type { AppData, OverlayState } from './app-data';
+import type { AppData, LocationRecord, OverlayState } from './app-data';
 import { defaultAppData } from './defaults';
 import { promoteRecentLocation, saveLocation, updateStationConfig } from './domain';
 import {
@@ -14,7 +14,7 @@ import {
   type StationSettingsDraft,
 } from './drafts';
 import { captureCoords } from './geolocation';
-import { deletePhotoBlob, savePhotoBlob } from './photos';
+import { deletePhotoBlob, listPhotoIds, savePhotoBlob } from './photos';
 import { loadAppData, saveAppData } from './repository';
 
 export const data = signal<AppData>(defaultAppData);
@@ -60,11 +60,46 @@ export function initStore(): () => void {
 
     data.value = loaded;
     hydrated.value = true;
+    void reconcilePhotoBlobs(() => active);
   });
 
   return () => {
     active = false;
   };
+}
+
+// Load-time sweep pairing the commitData diff: deletes stored blobs no record
+// references (e.g. the record was dropped by load-normalization) and strips
+// photoIds whose blob is gone (e.g. saved via the in-memory fallback in a past
+// session), so neither side can leak or dangle forever.
+async function reconcilePhotoBlobs(isActive: () => boolean): Promise<void> {
+  try {
+    const stored = new Set(await listPhotoIds());
+
+    if (!isActive()) {
+      return;
+    }
+
+    const referenced = referencedPhotoIds(data.value);
+    await Promise.all([...stored].filter((id) => !referenced.has(id)).map(deletePhotoBlob));
+
+    const dropMissing = (entry: LocationRecord): LocationRecord =>
+      entry.photoId && !stored.has(entry.photoId) ? { ...entry, photoId: undefined } : entry;
+    const value = data.value;
+    const hasDangling =
+      (value.current?.photoId && !stored.has(value.current.photoId)) ||
+      value.recent.some((entry) => entry.photoId && !stored.has(entry.photoId));
+
+    if (isActive() && hasDangling) {
+      data.value = {
+        ...value,
+        current: value.current ? dropMissing(value.current) : null,
+        recent: value.recent.map(dropMissing),
+      };
+    }
+  } catch {
+    // Best-effort cleanup; never block or break startup on it.
+  }
 }
 
 function referencedPhotoIds(value: AppData): Set<string> {
@@ -90,11 +125,7 @@ async function commitData(next: AppData): Promise<void> {
   data.value = next;
   const nextIds = referencedPhotoIds(next);
 
-  for (const id of previousIds) {
-    if (!nextIds.has(id)) {
-      await deletePhotoBlob(id);
-    }
-  }
+  await Promise.all([...previousIds].filter((id) => !nextIds.has(id)).map(deletePhotoBlob));
 }
 
 export function openOverlay(next: OverlayState): void {
