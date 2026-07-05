@@ -1,24 +1,24 @@
-import type { TargetedEvent } from 'preact';
-import { Fragment } from 'preact';
-import type { Dispatch, SetStateAction } from 'preact/compat';
+import type { TargetedEvent } from "preact";
+import { Fragment } from "preact";
+import type { Dispatch, SetStateAction } from "preact/compat";
 
-import { SegmentedControl } from '@/components/SegmentedControl';
-import { SheetDialog } from '@/components/SheetDialog';
-import { ToggleField } from '@/components/ToggleField';
-import type { StationSettingsDraft } from '@/lib/drafts';
-import { setTheme, THEMES, theme } from '@/lib/theme';
-import { titleCase } from './display';
-import { FieldInputSettings } from './FieldInputSettings';
+import { SegmentedControl } from "@/components/SegmentedControl";
+import { SheetDialog } from "@/components/SheetDialog";
+import { ToggleField } from "@/components/ToggleField";
+import type { StationSettingsDraft } from "@/lib/drafts";
+import { setTheme, THEMES, theme } from "@/lib/theme";
+import { titleCase } from "./display";
+import { FieldInputSettings } from "./FieldInputSettings";
 
 // Field toggles in broad → specific order (floor → rack number), matching the
 // editor and details views.
 const FIELD_TOGGLE_OPTIONS = [
-  { key: 'floor', label: 'Floor' },
-  { key: 'lane', label: 'Lane' },
-  { key: 'distance', label: 'Distance' },
-  { key: 'side', label: 'Side' },
-  { key: 'rackLevel', label: 'Rack level' },
-  { key: 'rackNumber', label: 'Rack number' },
+  { key: "floor", label: "Floor" },
+  { key: "lane", label: "Lane" },
+  { key: "distance", label: "Distance" },
+  { key: "side", label: "Side" },
+  { key: "rackLevel", label: "Rack level" },
+  { key: "rackNumber", label: "Rack number" },
 ] as const;
 
 export function StationSettingsSheet({
@@ -42,7 +42,7 @@ export function StationSettingsSheet({
     }));
   }
 
-  function updateFieldToggle(key: (typeof FIELD_TOGGLE_OPTIONS)[number]['key'], checked: boolean) {
+  function updateFieldToggle(key: (typeof FIELD_TOGGLE_OPTIONS)[number]["key"], checked: boolean) {
     setStationForm((previous) => ({
       ...previous,
       enabledFields: { ...previous.enabledFields, [key]: checked },
@@ -64,24 +64,24 @@ export function StationSettingsSheet({
                     label={option.label}
                     onChange={(checked) => updateFieldToggle(option.key, checked)}
                   />
-                  {option.key === 'floor' && stationForm.enabledFields.floor ? (
+                  {option.key === "floor" && stationForm.enabledFields.floor ? (
                     <FieldInputSettings
                       noun="floor"
                       legend="Floor input"
                       mode={stationForm.floorInputMode}
                       labels={stationForm.floorLabels}
-                      onModeChange={(mode) => updateStationField('floorInputMode', mode)}
-                      onLabelsChange={(labels) => updateStationField('floorLabels', labels)}
+                      onModeChange={(mode) => updateStationField("floorInputMode", mode)}
+                      onLabelsChange={(labels) => updateStationField("floorLabels", labels)}
                     />
                   ) : null}
-                  {option.key === 'lane' && stationForm.enabledFields.lane ? (
+                  {option.key === "lane" && stationForm.enabledFields.lane ? (
                     <FieldInputSettings
                       noun="lane"
                       legend="Lane input"
                       mode={stationForm.laneInputMode}
                       labels={stationForm.laneLabels}
-                      onModeChange={(mode) => updateStationField('laneInputMode', mode)}
-                      onLabelsChange={(labels) => updateStationField('laneLabels', labels)}
+                      onModeChange={(mode) => updateStationField("laneInputMode", mode)}
+                      onLabelsChange={(labels) => updateStationField("laneLabels", labels)}
                     />
                   ) : null}
                 </Fragment>

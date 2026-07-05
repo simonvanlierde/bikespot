@@ -8,10 +8,10 @@ import type {
   RackLevel,
   Side,
   StationConfig,
-} from './app-data';
+} from "./app-data";
 
 export type StationLocationDraft = {
-  kind: 'station';
+  kind: "station";
   lane: string;
   side: Side;
   rackLevel: RackLevel;
@@ -24,7 +24,7 @@ export type StationLocationDraft = {
 };
 
 export type OutsideLocationDraft = {
-  kind: 'outside';
+  kind: "outside";
   notes: string;
   photoFile: File | null;
   coords: Coords | null;
@@ -61,32 +61,32 @@ export function createLocationDraft(
 ): LocationDraft {
   if (!current) {
     return {
-      kind: 'station',
-      lane: station.laneLabels[0] ?? '',
-      side: 'right',
-      rackLevel: 'bottom',
-      distance: 'middle',
-      floor: station.floorLabels[0] ?? '',
-      rackNumber: '',
-      notes: '',
+      kind: "station",
+      lane: station.laneLabels[0] ?? "",
+      side: "right",
+      rackLevel: "bottom",
+      distance: "middle",
+      floor: station.floorLabels[0] ?? "",
+      rackNumber: "",
+      notes: "",
       photoFile: null,
       coords: null,
     };
   }
 
-  if (current.mode === 'outside') {
+  if (current.mode === "outside") {
     return createOutsideLocationDraft();
   }
 
   return {
-    kind: 'station',
-    lane: current.lane ?? station.laneLabels[0] ?? '',
-    side: current.side ?? 'right',
-    rackLevel: current.rackLevel ?? 'bottom',
-    distance: current.distance ?? 'middle',
-    floor: current.floor ?? station.floorLabels[0] ?? '',
-    rackNumber: '',
-    notes: '',
+    kind: "station",
+    lane: current.lane ?? station.laneLabels[0] ?? "",
+    side: current.side ?? "right",
+    rackLevel: current.rackLevel ?? "bottom",
+    distance: current.distance ?? "middle",
+    floor: current.floor ?? station.floorLabels[0] ?? "",
+    rackNumber: "",
+    notes: "",
     photoFile: null,
     coords: null,
   };
@@ -94,8 +94,8 @@ export function createLocationDraft(
 
 export function createOutsideLocationDraft(): OutsideLocationDraft {
   return {
-    kind: 'outside',
-    notes: '',
+    kind: "outside",
+    notes: "",
     photoFile: null,
     coords: null,
   };
@@ -105,17 +105,17 @@ export function buildLocationRecordInput(
   draft: LocationDraft,
   station: StationConfig,
 ): LocationRecordInput | null {
-  if (draft.kind === 'outside') {
+  if (draft.kind === "outside") {
     const outsideDescription = draft.notes.trim();
 
     // Savable as long as the spot carries something to find it by: a note, a
     // photo, or a GPS fix.
-    if (!outsideDescription && !draft.photoFile && !draft.coords) {
+    if (!(outsideDescription || draft.photoFile || draft.coords)) {
       return null;
     }
 
     return {
-      mode: 'outside',
+      mode: "outside",
       outsideDescription: outsideDescription || undefined,
       coords: draft.coords ?? undefined,
     };
@@ -129,7 +129,7 @@ export function buildLocationRecordInput(
   }
 
   return {
-    mode: 'station',
+    mode: "station",
     lane,
     side: station.enabledFields.side ? draft.side : undefined,
     rackLevel: station.enabledFields.rackLevel ? draft.rackLevel : undefined,

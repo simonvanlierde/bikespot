@@ -1,4 +1,4 @@
-import type { FieldInputMode } from '@/lib/app-data';
+import type { FieldInputMode } from "@/lib/app-data";
 
 // Editor-side value input for one location field (lane or floor): quick preset
 // buttons when configured, otherwise a free-text input.
@@ -15,7 +15,7 @@ export function FieldValueInput({
   value: string;
   onChange: (value: string) => void;
 }) {
-  if (mode === 'quick') {
+  if (mode === "quick") {
     return (
       <fieldset className="segmented-field">
         <legend>{noun}</legend>
@@ -26,7 +26,7 @@ export function FieldValueInput({
               aria-label={`${noun} ${label}`}
               aria-pressed={value === label}
               className={
-                value === label ? 'segment segment--dense is-active' : 'segment segment--dense'
+                value === label ? "segment segment--dense is-active" : "segment segment--dense"
               }
               type="button"
               onClick={() => onChange(label)}

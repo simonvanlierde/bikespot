@@ -1,4 +1,4 @@
-import type { ReactNode } from 'preact/compat';
+import type { ReactNode } from "preact/compat";
 
 export function SegmentedControl<T extends string>({
   label,
@@ -27,7 +27,7 @@ export function SegmentedControl<T extends string>({
             key={option}
             aria-label={`${label} ${titleCase(option)}`}
             aria-pressed={value === option}
-            className={`segment${value === option ? ' is-active' : ''}`}
+            className={`segment${value === option ? " is-active" : ""}`}
             onClick={() => onChange(option)}
             type="button"
           >

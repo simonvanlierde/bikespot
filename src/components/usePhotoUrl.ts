@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useState } from "preact/hooks";
 
-import { loadPhotoBlob } from '@/lib/photos';
+import { loadPhotoBlob } from "@/lib/photos";
 
 export function usePhotoUrl(photoId?: string, photoFile?: File | null) {
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);

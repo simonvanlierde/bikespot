@@ -1,9 +1,9 @@
-import { useEffect, useLayoutEffect } from 'preact/hooks';
+import { useEffect, useLayoutEffect } from "preact/hooks";
 
-import { AppOverlays } from '@/features/app/AppOverlays';
-import { CurrentSpotCard } from '@/features/location/CurrentSpotCard';
-import { UtilityActions } from '@/features/location/UtilityActions';
-import { data, initStore, notice, openOverlay } from '@/lib/store';
+import { AppOverlays } from "@/features/app/AppOverlays";
+import { CurrentSpotCard } from "@/features/location/CurrentSpotCard";
+import { UtilityActions } from "@/features/location/UtilityActions";
+import { data, initStore, notice, openOverlay } from "@/lib/store";
 
 export default function App() {
   // Layout effect so hydration resolves before first paint — a passive effect
@@ -33,15 +33,15 @@ export default function App() {
     <main className="app-shell">
       <CurrentSpotCard
         current={current}
-        notice={currentNotice?.text ?? ''}
-        onEdit={() => openOverlay({ kind: 'edit-location' })}
-        onOpenDetails={() => openOverlay({ kind: 'location-details' })}
+        notice={currentNotice?.text ?? ""}
+        onEdit={() => openOverlay({ kind: "edit-location" })}
+        onOpenDetails={() => openOverlay({ kind: "location-details" })}
       />
 
       <UtilityActions
         recentCount={data.value.recent.length}
-        onOpenRecent={() => openOverlay({ kind: 'recent-list' })}
-        onOpenStationSettings={() => openOverlay({ kind: 'station-settings' })}
+        onOpenRecent={() => openOverlay({ kind: "recent-list" })}
+        onOpenStationSettings={() => openOverlay({ kind: "station-settings" })}
       />
 
       <AppOverlays />

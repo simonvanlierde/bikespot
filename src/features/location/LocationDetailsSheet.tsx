@@ -1,7 +1,7 @@
-import { SheetDialog } from '@/components/SheetDialog';
-import type { LocationRecord } from '@/lib/app-data';
-import { formatTimestamp } from './display';
-import { LocationDetailContent } from './LocationDetailContent';
+import { SheetDialog } from "@/components/SheetDialog";
+import type { LocationRecord } from "@/lib/app-data";
+import { formatTimestamp } from "./display";
+import { LocationDetailContent } from "./LocationDetailContent";
 
 export function LocationDetailsSheet({
   current,

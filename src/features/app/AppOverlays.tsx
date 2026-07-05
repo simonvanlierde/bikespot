@@ -1,8 +1,8 @@
-import { RecentLocationPreviewSheet } from '@/features/history/RecentLocationPreviewSheet';
-import { RecentLocationsSheet } from '@/features/history/RecentLocationsSheet';
-import { LocationDetailsSheet } from '@/features/location/LocationDetailsSheet';
-import { LocationEditorSheet } from '@/features/location/LocationEditorSheet';
-import { StationSettingsSheet } from '@/features/location/StationSettingsSheet';
+import { RecentLocationPreviewSheet } from "@/features/history/RecentLocationPreviewSheet";
+import { RecentLocationsSheet } from "@/features/history/RecentLocationsSheet";
+import { LocationDetailsSheet } from "@/features/location/LocationDetailsSheet";
+import { LocationEditorSheet } from "@/features/location/LocationEditorSheet";
+import { StationSettingsSheet } from "@/features/location/StationSettingsSheet";
 import {
   closeOverlay,
   data,
@@ -21,19 +21,19 @@ import {
   showEditorDetails,
   stationDraft,
   toggleEditorDetails,
-} from '@/lib/store';
+} from "@/lib/store";
 
 export function AppOverlays() {
   const appData = data.value;
   const current = overlay.value;
   const selectedRecent =
-    current.kind === 'recent-preview'
+    current.kind === "recent-preview"
       ? (appData.recent.find((entry) => entry.id === current.id) ?? null)
       : null;
 
   return (
     <>
-      {current.kind === 'edit-location' && locationDraft.value ? (
+      {current.kind === "edit-location" && locationDraft.value ? (
         <LocationEditorSheet
           formState={locationDraft.value}
           station={appData.station}
@@ -49,7 +49,7 @@ export function AppOverlays() {
         />
       ) : null}
 
-      {current.kind === 'station-settings' && stationDraft.value ? (
+      {current.kind === "station-settings" && stationDraft.value ? (
         <StationSettingsSheet
           stationForm={stationDraft.value}
           setStationForm={setStationDraft}
@@ -58,22 +58,22 @@ export function AppOverlays() {
         />
       ) : null}
 
-      {current.kind === 'location-details' ? (
+      {current.kind === "location-details" ? (
         <LocationDetailsSheet current={appData.current} onClose={closeOverlay} />
       ) : null}
 
-      {current.kind === 'recent-list' ? (
+      {current.kind === "recent-list" ? (
         <RecentLocationsSheet
           recent={appData.recent}
           onClose={closeOverlay}
-          onPreview={(id) => openOverlay({ kind: 'recent-preview', id })}
+          onPreview={(id) => openOverlay({ kind: "recent-preview", id })}
         />
       ) : null}
 
       {selectedRecent ? (
         <RecentLocationPreviewSheet
           selectedRecent={selectedRecent}
-          onClose={() => openOverlay({ kind: 'recent-list' })}
+          onClose={() => openOverlay({ kind: "recent-list" })}
           onUse={handleUseRecent}
         />
       ) : null}

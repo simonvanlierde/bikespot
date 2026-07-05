@@ -1,13 +1,13 @@
-import { ArrowRightLeft, Undo2 } from 'lucide-preact';
-import type { TargetedEvent } from 'preact';
-import type { Dispatch, SetStateAction } from 'preact/compat';
-import { CoordsField } from '@/components/CoordsField';
-import { NotesField } from '@/components/NotesField';
-import { PhotoField } from '@/components/PhotoField';
-import { SheetDialog } from '@/components/SheetDialog';
-import type { StationConfig } from '@/lib/app-data';
-import { createLocationDraft, createOutsideLocationDraft, type LocationDraft } from '@/lib/drafts';
-import { StationLocationFields, type UpdateStationField } from './StationLocationFields';
+import { ArrowRightLeft, Undo2 } from "lucide-preact";
+import type { TargetedEvent } from "preact";
+import type { Dispatch, SetStateAction } from "preact/compat";
+import { CoordsField } from "@/components/CoordsField";
+import { NotesField } from "@/components/NotesField";
+import { PhotoField } from "@/components/PhotoField";
+import { SheetDialog } from "@/components/SheetDialog";
+import type { StationConfig } from "@/lib/app-data";
+import { createLocationDraft, createOutsideLocationDraft, type LocationDraft } from "@/lib/drafts";
+import { StationLocationFields, type UpdateStationField } from "./StationLocationFields";
 
 export function LocationEditorSheet({
   formState,
@@ -25,7 +25,7 @@ export function LocationEditorSheet({
   formState: LocationDraft;
   station: StationConfig;
   showDetails: boolean;
-  geoStatus: 'idle' | 'capturing' | 'error';
+  geoStatus: "idle" | "capturing" | "error";
   setFormState: Dispatch<SetStateAction<LocationDraft>>;
   onClose: () => void;
   onSubmit: (event: TargetedEvent<HTMLFormElement>) => void;
@@ -43,7 +43,7 @@ export function LocationEditorSheet({
 
   const updateStationField: UpdateStationField = (field, value) => {
     setFormState((previous) =>
-      previous.kind === 'station'
+      previous.kind === "station"
         ? {
             ...previous,
             [field]: value,
@@ -61,7 +61,7 @@ export function LocationEditorSheet({
     >
       <div className="sheet-header__main">
         <div className="mode-switch">
-          {formState.kind === 'station' ? (
+          {formState.kind === "station" ? (
             <button
               className="text-button text-button--switch"
               type="button"
@@ -84,7 +84,7 @@ export function LocationEditorSheet({
       </div>
 
       <form className="editor-form" onSubmit={onSubmit}>
-        {formState.kind === 'outside' ? (
+        {formState.kind === "outside" ? (
           <>
             <CoordsField
               coords={formState.coords}

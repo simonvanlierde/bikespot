@@ -6,12 +6,12 @@ import type {
   RackLevel,
   Side,
   VisibleFields,
-} from './app-data';
-import { RECENT_LIMIT, VISIBLE_FIELD_KEYS } from './app-data';
-import { defaultAppData, defaultStationConfig } from './defaults';
-import { normalizeStationConfig } from './domain';
+} from "./app-data";
+import { RECENT_LIMIT, VISIBLE_FIELD_KEYS } from "./app-data";
+import { defaultAppData, defaultStationConfig } from "./defaults";
+import { normalizeStationConfig } from "./domain";
 
-export const APP_DATA_STORAGE_KEY = 'bikespot-app';
+export const APP_DATA_STORAGE_KEY = "bikespot-app";
 
 export async function loadAppData(): Promise<AppData> {
   const raw = window.localStorage.getItem(APP_DATA_STORAGE_KEY);
@@ -32,7 +32,7 @@ export async function saveAppData(data: AppData): Promise<void> {
 }
 
 function normalizeAppData(value: unknown): AppData {
-  if (!value || typeof value !== 'object') {
+  if (!value || typeof value !== "object") {
     return defaultAppData;
   }
 
@@ -61,31 +61,31 @@ function normalizeAppData(value: unknown): AppData {
 }
 
 function normalizeLocationRecord(value: unknown): LocationRecord | null {
-  if (!value || typeof value !== 'object') {
+  if (!value || typeof value !== "object") {
     return null;
   }
 
   const entry = value as Partial<LocationRecord>;
-  const id = typeof entry.id === 'string' ? entry.id : null;
+  const id = typeof entry.id === "string" ? entry.id : null;
   // Must parse to a real date so no consumer downstream ever sees Invalid Date.
   const updatedAt =
-    typeof entry.updatedAt === 'string' && !Number.isNaN(Date.parse(entry.updatedAt))
+    typeof entry.updatedAt === "string" && !Number.isNaN(Date.parse(entry.updatedAt))
       ? entry.updatedAt
       : null;
-  const stationName = typeof entry.stationName === 'string' ? entry.stationName.trim() : '';
+  const stationName = typeof entry.stationName === "string" ? entry.stationName.trim() : "";
 
-  if (!id || !updatedAt || !stationName) {
+  if (!(id && updatedAt && stationName)) {
     return null;
   }
 
-  if (entry.mode === 'outside') {
+  if (entry.mode === "outside") {
     const outsideDescription =
-      typeof entry.outsideDescription === 'string' ? entry.outsideDescription.trim() : '';
+      typeof entry.outsideDescription === "string" ? entry.outsideDescription.trim() : "";
 
     return {
       id,
       updatedAt,
-      mode: 'outside',
+      mode: "outside",
       stationName,
       outsideDescription: outsideDescription || undefined,
       notes: normalizeOptionalString(entry.notes),
@@ -94,19 +94,19 @@ function normalizeLocationRecord(value: unknown): LocationRecord | null {
     };
   }
 
-  if (entry.mode !== 'station') {
+  if (entry.mode !== "station") {
     return null;
   }
 
   return {
     id,
     updatedAt,
-    mode: 'station',
+    mode: "station",
     stationName,
     lane: normalizeOptionalString(entry.lane),
-    side: normalizeEnum<Side>(entry.side, ['left', 'right']),
-    rackLevel: normalizeEnum<RackLevel>(entry.rackLevel, ['top', 'bottom']),
-    distance: normalizeEnum<Distance>(entry.distance, ['close', 'middle', 'far']),
+    side: normalizeEnum<Side>(entry.side, ["left", "right"]),
+    rackLevel: normalizeEnum<RackLevel>(entry.rackLevel, ["top", "bottom"]),
+    distance: normalizeEnum<Distance>(entry.distance, ["close", "middle", "far"]),
     floor: normalizeOptionalString(entry.floor),
     rackNumber: normalizeOptionalString(entry.rackNumber),
     notes: normalizeOptionalString(entry.notes),
@@ -117,20 +117,20 @@ function normalizeLocationRecord(value: unknown): LocationRecord | null {
 }
 
 function normalizeCoords(value: unknown): Coords | undefined {
-  if (!value || typeof value !== 'object') {
-    return undefined;
+  if (!value || typeof value !== "object") {
+    return;
   }
 
   const candidate = value as Partial<Record<keyof Coords, unknown>>;
   const lat = candidate.lat;
   const lng = candidate.lng;
 
-  if (!isFiniteNumber(lat) || !isFiniteNumber(lng)) {
-    return undefined;
+  if (!(isFiniteNumber(lat) && isFiniteNumber(lng))) {
+    return;
   }
 
   if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-    return undefined;
+    return;
   }
 
   const accuracy = candidate.accuracy;
@@ -143,11 +143,11 @@ function normalizeCoords(value: unknown): Coords | undefined {
 }
 
 function isFiniteNumber(value: unknown): value is number {
-  return typeof value === 'number' && Number.isFinite(value);
+  return typeof value === "number" && Number.isFinite(value);
 }
 
 function normalizeVisibleFields(value: unknown): VisibleFields {
-  if (!value || typeof value !== 'object') {
+  if (!value || typeof value !== "object") {
     return {};
   }
 
@@ -164,8 +164,8 @@ function normalizeVisibleFields(value: unknown): VisibleFields {
 }
 
 function normalizeOptionalString(value: unknown): string | undefined {
-  if (typeof value !== 'string') {
-    return undefined;
+  if (typeof value !== "string") {
+    return;
   }
 
   const trimmed = value.trim();
@@ -173,5 +173,5 @@ function normalizeOptionalString(value: unknown): string | undefined {
 }
 
 function normalizeEnum<T extends string>(value: unknown, options: readonly T[]): T | undefined {
-  return typeof value === 'string' && options.includes(value as T) ? (value as T) : undefined;
+  return typeof value === "string" && options.includes(value as T) ? (value as T) : undefined;
 }

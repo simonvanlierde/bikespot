@@ -1,14 +1,14 @@
-import { createId } from './domain';
+import { createId } from "./domain";
 
-const PHOTO_DB_NAME = 'bikespot-photos';
-const PHOTO_STORE_NAME = 'photos';
+const PHOTO_DB_NAME = "bikespot-photos";
+const PHOTO_STORE_NAME = "photos";
 
 const memoryPhotoStore = new Map<string, Blob>();
 
 let dbPromise: Promise<IDBDatabase> | null = null;
 
 function hasIndexedDb(): boolean {
-  return typeof indexedDB !== 'undefined';
+  return typeof indexedDB !== "undefined";
 }
 
 function openPhotoDb(): Promise<IDBDatabase> {
@@ -25,7 +25,7 @@ function openPhotoDb(): Promise<IDBDatabase> {
       // Drop the cached promise so a later call can retry instead of
       // rejecting forever.
       dbPromise = null;
-      reject(request.error ?? new Error('Could not open photo database'));
+      reject(request.error ?? new Error("Could not open photo database"));
     };
   });
 
@@ -42,7 +42,7 @@ async function withStore<T>(
     const request = run(database.transaction(PHOTO_STORE_NAME, mode).objectStore(PHOTO_STORE_NAME));
 
     request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error ?? new Error('Photo store request failed'));
+    request.onerror = () => reject(request.error ?? new Error("Photo store request failed"));
   });
 }
 
@@ -56,7 +56,7 @@ export async function savePhotoBlob(blob: Blob): Promise<string> {
     return photoId;
   }
 
-  await withStore('readwrite', (store) => store.put(blob, photoId));
+  await withStore("readwrite", (store) => store.put(blob, photoId));
   return photoId;
 }
 
@@ -65,7 +65,7 @@ export async function loadPhotoBlob(photoId: string): Promise<Blob | null> {
     return memoryPhotoStore.get(photoId) ?? null;
   }
 
-  return ((await withStore('readonly', (store) => store.get(photoId))) as Blob | undefined) ?? null;
+  return ((await withStore("readonly", (store) => store.get(photoId))) as Blob | undefined) ?? null;
 }
 
 export async function deletePhotoBlob(photoId: string): Promise<void> {
@@ -75,7 +75,7 @@ export async function deletePhotoBlob(photoId: string): Promise<void> {
     return;
   }
 
-  await withStore('readwrite', (store) => store.delete(photoId));
+  await withStore("readwrite", (store) => store.delete(photoId));
 }
 
 export async function listPhotoIds(): Promise<string[]> {
@@ -83,8 +83,8 @@ export async function listPhotoIds(): Promise<string[]> {
     return [...memoryPhotoStore.keys()];
   }
 
-  const keys = await withStore('readonly', (store) => store.getAllKeys());
-  return keys.filter((key): key is string => typeof key === 'string');
+  const keys = await withStore("readonly", (store) => store.getAllKeys());
+  return keys.filter((key): key is string => typeof key === "string");
 }
 
 // NOTE: only tests call this — kept here because it needs the store internals.
@@ -95,5 +95,5 @@ export async function clearPhotoBlobs(): Promise<void> {
     return;
   }
 
-  await withStore('readwrite', (store) => store.clear());
+  await withStore("readwrite", (store) => store.clear());
 }

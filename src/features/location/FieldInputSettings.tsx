@@ -1,8 +1,8 @@
-import { Plus, X } from 'lucide-preact';
-import { useRef } from 'preact/hooks';
+import { Plus, X } from "lucide-preact";
+import { useRef } from "preact/hooks";
 
-import { titleCase } from '@/features/location/display';
-import type { FieldInputMode } from '@/lib/app-data';
+import { titleCase } from "@/features/location/display";
+import type { FieldInputMode } from "@/lib/app-data";
 
 // Settings-side config for one location field (lane or floor): a Quick/Number
 // mode switch plus, in quick mode, an add/remove editor for the preset labels.
@@ -40,7 +40,7 @@ export function FieldInputSettings({
 
   function addLabel() {
     rowIds.current = [...rowIds.current, nextRowId.current++];
-    onLabelsChange([...labels, '']);
+    onLabelsChange([...labels, ""]);
   }
 
   function removeLabel(index: number) {
@@ -54,25 +54,25 @@ export function FieldInputSettings({
         <legend>{legend}</legend>
         <div className="segmented-field__options segmented-field__options--two">
           <button
-            aria-pressed={mode === 'number'}
-            className={mode === 'number' ? 'segment is-active' : 'segment'}
+            aria-pressed={mode === "number"}
+            className={mode === "number" ? "segment is-active" : "segment"}
             type="button"
-            onClick={() => onModeChange('number')}
+            onClick={() => onModeChange("number")}
           >
             Number input
           </button>
           <button
-            aria-pressed={mode === 'quick'}
-            className={mode === 'quick' ? 'segment is-active' : 'segment'}
+            aria-pressed={mode === "quick"}
+            className={mode === "quick" ? "segment is-active" : "segment"}
             type="button"
-            onClick={() => onModeChange('quick')}
+            onClick={() => onModeChange("quick")}
           >
             Quick {noun}s
           </button>
         </div>
       </fieldset>
 
-      {mode === 'quick' ? (
+      {mode === "quick" ? (
         <div className="labels-editor">
           {labels.map((label, index) => (
             <div className="labels-editor__row" key={`${noun}-label-${rowIds.current[index]}`}>

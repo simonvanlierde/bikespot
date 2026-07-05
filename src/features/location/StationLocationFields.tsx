@@ -1,13 +1,13 @@
-import { ChevronDown, ChevronRight, CircleHelp } from 'lucide-preact';
-import type { TargetedEvent } from 'preact';
-import { CoordsField } from '@/components/CoordsField';
-import { NotesField } from '@/components/NotesField';
-import { PhotoField } from '@/components/PhotoField';
-import { SegmentedControl } from '@/components/SegmentedControl';
-import type { StationConfig } from '@/lib/app-data';
-import type { StationLocationDraft } from '@/lib/drafts';
-import { titleCase } from './display';
-import { FieldValueInput } from './FieldValueInput';
+import { ChevronDown, ChevronRight, CircleHelp } from "lucide-preact";
+import type { TargetedEvent } from "preact";
+import { CoordsField } from "@/components/CoordsField";
+import { NotesField } from "@/components/NotesField";
+import { PhotoField } from "@/components/PhotoField";
+import { SegmentedControl } from "@/components/SegmentedControl";
+import type { StationConfig } from "@/lib/app-data";
+import type { StationLocationDraft } from "@/lib/drafts";
+import { titleCase } from "./display";
+import { FieldValueInput } from "./FieldValueInput";
 
 export type UpdateStationField = <K extends keyof StationLocationDraft>(
   field: K,
@@ -37,7 +37,7 @@ export function StationLocationFields({
   formState: StationLocationDraft;
   station: StationConfig;
   showDetails: boolean;
-  geoStatus: 'idle' | 'capturing' | 'error';
+  geoStatus: "idle" | "capturing" | "error";
   updateStationField: UpdateStationField;
   onNotesChange: (notes: string) => void;
   onToggleDetails: () => void;
@@ -55,7 +55,7 @@ export function StationLocationFields({
           mode={station.floorInputMode}
           labels={station.floorLabels}
           value={formState.floor}
-          onChange={(value) => updateStationField('floor', value)}
+          onChange={(value) => updateStationField("floor", value)}
         />
       ) : null}
 
@@ -65,7 +65,7 @@ export function StationLocationFields({
           mode={station.laneInputMode}
           labels={station.laneLabels}
           value={formState.lane}
-          onChange={(value) => updateStationField('lane', value)}
+          onChange={(value) => updateStationField("lane", value)}
         />
       ) : null}
 
@@ -80,9 +80,9 @@ export function StationLocationFields({
               </span>
             </button>
           }
-          options={['close', 'middle', 'far']}
+          options={["close", "middle", "far"]}
           value={formState.distance}
-          onChange={(distance) => updateStationField('distance', distance)}
+          onChange={(distance) => updateStationField("distance", distance)}
           titleCase={titleCase}
         />
       ) : null}
@@ -90,9 +90,9 @@ export function StationLocationFields({
       {station.enabledFields.side ? (
         <SegmentedControl
           label="Side"
-          options={['left', 'right']}
+          options={["left", "right"]}
           value={formState.side}
-          onChange={(side) => updateStationField('side', side)}
+          onChange={(side) => updateStationField("side", side)}
           titleCase={titleCase}
         />
       ) : null}
@@ -100,9 +100,9 @@ export function StationLocationFields({
       {station.enabledFields.rackLevel ? (
         <SegmentedControl
           label="Rack level"
-          options={['top', 'bottom']}
+          options={["top", "bottom"]}
           value={formState.rackLevel}
-          onChange={(rackLevel) => updateStationField('rackLevel', rackLevel)}
+          onChange={(rackLevel) => updateStationField("rackLevel", rackLevel)}
           titleCase={titleCase}
         />
       ) : null}
@@ -113,7 +113,7 @@ export function StationLocationFields({
           <input
             aria-label="Rack number"
             value={formState.rackNumber}
-            onChange={(event) => updateStationField('rackNumber', event.currentTarget.value)}
+            onChange={(event) => updateStationField("rackNumber", event.currentTarget.value)}
           />
         </label>
       ) : null}

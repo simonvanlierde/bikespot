@@ -1,6 +1,6 @@
-import { X } from 'lucide-preact';
-import type { ReactNode } from 'preact/compat';
-import { useEffect, useRef } from 'preact/hooks';
+import { X } from "lucide-preact";
+import type { ReactNode } from "preact/compat";
+import { useEffect, useRef } from "preact/hooks";
 
 export function SheetDialog({
   children,
@@ -8,7 +8,7 @@ export function SheetDialog({
   title,
   titleIcon,
   onClose,
-  closeLabel = 'Close',
+  closeLabel = "Close",
 }: {
   children: ReactNode;
   label: string;
@@ -26,7 +26,7 @@ export function SheetDialog({
     sheetRef.current?.focus();
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         event.preventDefault();
         onClose();
         return;
@@ -34,7 +34,7 @@ export function SheetDialog({
 
       // aria-modal promises the background is inert, so keep Tab inside the
       // sheet: wrap at the edges and pull focus back if it escaped.
-      if (event.key === 'Tab') {
+      if (event.key === "Tab") {
         const sheet = sheetRef.current;
 
         if (!sheet) {
@@ -66,13 +66,13 @@ export function SheetDialog({
         }
       }
     };
-    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener("keydown", onKeyDown);
 
     const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
 
     return () => {
-      document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = previousOverflow;
       previousFocusRef.current?.focus?.();
     };

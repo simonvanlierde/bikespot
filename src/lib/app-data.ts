@@ -1,7 +1,7 @@
-export type Side = 'left' | 'right';
-export type RackLevel = 'top' | 'bottom';
-export type Distance = 'close' | 'middle' | 'far';
-export type FieldInputMode = 'quick' | 'number';
+export type Side = "left" | "right";
+export type RackLevel = "top" | "bottom";
+export type Distance = "close" | "middle" | "far";
+export type FieldInputMode = "quick" | "number";
 
 export type Coords = {
   lat: number;
@@ -18,10 +18,10 @@ export type EnabledFields = {
   rackNumber: boolean;
 };
 
-export const VISIBLE_FIELD_KEYS = ['side', 'rackLevel', 'distance', 'floor', 'rackNumber'] as const;
+export const VISIBLE_FIELD_KEYS = ["side", "rackLevel", "distance", "floor", "rackNumber"] as const;
 
 export const ENABLED_FIELD_KEYS = [
-  'lane',
+  "lane",
   ...VISIBLE_FIELD_KEYS,
 ] as const satisfies readonly (keyof EnabledFields)[];
 
@@ -46,7 +46,7 @@ type RecordBase = {
 };
 
 export type StationLocationRecord = RecordBase & {
-  mode: 'station';
+  mode: "station";
   lane?: string;
   visibleFields: VisibleFields;
   side?: Side;
@@ -57,14 +57,14 @@ export type StationLocationRecord = RecordBase & {
 };
 
 export type OutsideLocationRecord = RecordBase & {
-  mode: 'outside';
+  mode: "outside";
   outsideDescription?: string;
 };
 
 export type LocationRecord = StationLocationRecord | OutsideLocationRecord;
 
 export type StationLocationRecordInput = {
-  mode: 'station';
+  mode: "station";
   lane?: string;
   side?: Side;
   rackLevel?: RackLevel;
@@ -77,7 +77,7 @@ export type StationLocationRecordInput = {
 };
 
 export type OutsideLocationRecordInput = {
-  mode: 'outside';
+  mode: "outside";
   outsideDescription?: string;
   photoId?: string;
   coords?: Coords;
@@ -92,11 +92,11 @@ export type AppData = {
 };
 
 export type OverlayState =
-  | { kind: 'closed' }
-  | { kind: 'edit-location' }
-  | { kind: 'station-settings' }
-  | { kind: 'location-details' }
-  | { kind: 'recent-list' }
-  | { kind: 'recent-preview'; id: string };
+  | { kind: "closed" }
+  | { kind: "edit-location" }
+  | { kind: "station-settings" }
+  | { kind: "location-details" }
+  | { kind: "recent-list" }
+  | { kind: "recent-preview"; id: string };
 
 export const RECENT_LIMIT = 5;

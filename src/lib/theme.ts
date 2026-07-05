@@ -1,16 +1,16 @@
-import { effect, signal } from '@preact/signals';
+import { effect, signal } from "@preact/signals";
 
 // 'system' follows the OS via prefers-color-scheme (the default); 'light'/'dark'
 // force the palette regardless. Stored separately from app data so it applies at
 // import time, before the async data load, avoiding a flash of the wrong theme.
-export type Theme = 'system' | 'light' | 'dark';
-export const THEMES: Theme[] = ['system', 'light', 'dark'];
+export type Theme = "system" | "light" | "dark";
+export const THEMES: Theme[] = ["system", "light", "dark"];
 
-const STORAGE_KEY = 'bikespot-theme';
+const STORAGE_KEY = "bikespot-theme";
 
 function readStoredTheme(): Theme {
   const stored = window.localStorage.getItem(STORAGE_KEY);
-  return stored === 'light' || stored === 'dark' ? stored : 'system';
+  return stored === "light" || stored === "dark" ? stored : "system";
 }
 
 export const theme = signal<Theme>(readStoredTheme());
@@ -22,7 +22,7 @@ effect(() => {
   const value = theme.value;
   const root = document.documentElement;
 
-  if (value === 'system') {
+  if (value === "system") {
     delete root.dataset.theme;
     window.localStorage.removeItem(STORAGE_KEY);
   } else {

@@ -1,8 +1,8 @@
-import { History, MapPin } from 'lucide-preact';
+import { History, MapPin } from "lucide-preact";
 
-import { SheetDialog } from '@/components/SheetDialog';
-import { formatTimestamp, getDetailFacts, getPrimaryLabel } from '@/features/location/display';
-import type { LocationRecord } from '@/lib/app-data';
+import { SheetDialog } from "@/components/SheetDialog";
+import { formatTimestamp, getDetailFacts, getPrimaryLabel } from "@/features/location/display";
+import type { LocationRecord } from "@/lib/app-data";
 
 export function RecentLocationsSheet({
   recent,
@@ -54,9 +54,9 @@ export function RecentLocationsSheet({
 // Mirror the main card's priority: the headline is the primary locator, the
 // meta line is the same labeled fact set (or the outside description).
 function getRecentMeta(entry: LocationRecord) {
-  if (entry.mode === 'outside') {
-    return entry.outsideDescription ?? '';
+  if (entry.mode === "outside") {
+    return entry.outsideDescription ?? "";
   }
 
-  return getDetailFacts(entry).join(' · ');
+  return getDetailFacts(entry).join(" · ");
 }

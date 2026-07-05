@@ -1,23 +1,23 @@
-import { effect, type Signal, signal } from '@preact/signals';
-import type { TargetedEvent } from 'preact';
-import type { Dispatch, SetStateAction } from 'preact/compat';
+import { effect, type Signal, signal } from "@preact/signals";
+import type { TargetedEvent } from "preact";
+import type { Dispatch, SetStateAction } from "preact/compat";
 
-import type { AppData, LocationRecord, OverlayState } from './app-data';
-import { defaultAppData } from './defaults';
-import { promoteRecentLocation, saveLocation, updateStationConfig } from './domain';
+import type { AppData, LocationRecord, OverlayState } from "./app-data";
+import { defaultAppData } from "./defaults";
+import { promoteRecentLocation, saveLocation, updateStationConfig } from "./domain";
 import {
   buildLocationRecordInput,
   createLocationDraft,
   createStationSettingsDraft,
   type LocationDraft,
   type StationSettingsDraft,
-} from './drafts';
-import { captureCoords } from './geolocation';
-import { deletePhotoBlob, listPhotoIds, savePhotoBlob } from './photos';
-import { loadAppData, saveAppData } from './repository';
+} from "./drafts";
+import { captureCoords } from "./geolocation";
+import { deletePhotoBlob, listPhotoIds, savePhotoBlob } from "./photos";
+import { loadAppData, saveAppData } from "./repository";
 
 export const data = signal<AppData>(defaultAppData);
-export const overlay = signal<OverlayState>({ kind: 'closed' });
+export const overlay = signal<OverlayState>({ kind: "closed" });
 export const locationDraft = signal<LocationDraft | null>(null);
 export const stationDraft = signal<StationSettingsDraft | null>(null);
 export const showEditorDetails = signal(false);
@@ -25,7 +25,7 @@ export const showEditorDetails = signal(false);
 // auto-dismiss timer keyed on it.
 export const notice = signal<{ text: string } | null>(null);
 export const hydrated = signal(false);
-export const geoStatus = signal<'idle' | 'capturing' | 'error'>('idle');
+export const geoStatus = signal<"idle" | "capturing" | "error">("idle");
 
 // Persist app data whenever it changes, but only after the initial load so we
 // never overwrite stored data with the default placeholder.
@@ -38,7 +38,7 @@ effect(() => {
   }
 
   saveAppData(snapshot).catch(() => {
-    notice.value = { text: 'Could not save — storage is full or blocked' };
+    notice.value = { text: "Could not save — storage is full or blocked" };
   });
 });
 
@@ -46,13 +46,13 @@ effect(() => {
 // which keeps the single production instance and remounting tests consistent.
 export function initStore(): () => void {
   data.value = defaultAppData;
-  overlay.value = { kind: 'closed' };
+  overlay.value = { kind: "closed" };
   locationDraft.value = null;
   stationDraft.value = null;
   showEditorDetails.value = false;
   notice.value = null;
   hydrated.value = false;
-  geoStatus.value = 'idle';
+  geoStatus.value = "idle";
 
   let active = true;
 
@@ -137,15 +137,15 @@ async function commitData(next: AppData): Promise<void> {
 export function openOverlay(next: OverlayState): void {
   overlay.value = next;
   showEditorDetails.value = false;
-  geoStatus.value = 'idle';
+  geoStatus.value = "idle";
 
-  if (next.kind === 'edit-location') {
+  if (next.kind === "edit-location") {
     locationDraft.value = createLocationDraft(data.value.current, data.value.station);
     stationDraft.value = null;
     return;
   }
 
-  if (next.kind === 'station-settings') {
+  if (next.kind === "station-settings") {
     locationDraft.value = null;
     stationDraft.value = createStationSettingsDraft(data.value.station);
     return;
@@ -156,11 +156,11 @@ export function openOverlay(next: OverlayState): void {
 }
 
 export function closeOverlay(): void {
-  overlay.value = { kind: 'closed' };
+  overlay.value = { kind: "closed" };
   locationDraft.value = null;
   stationDraft.value = null;
   showEditorDetails.value = false;
-  geoStatus.value = 'idle';
+  geoStatus.value = "idle";
 }
 
 export async function handleLocationSubmit(event: TargetedEvent<HTMLFormElement>): Promise<void> {
@@ -184,7 +184,7 @@ export async function handleLocationSubmit(event: TargetedEvent<HTMLFormElement>
   const nextLocation = photoId ? { ...input, photoId } : input;
 
   await commitData(saveLocation(data.value, nextLocation));
-  notice.value = { text: 'Location updated' };
+  notice.value = { text: "Location updated" };
   closeOverlay();
 }
 
@@ -200,7 +200,7 @@ export function handleStationSubmit(event: TargetedEvent<HTMLFormElement>): void
   // The draft already has StationConfig's shape; normalizeStationConfig inside
   // updateStationConfig owns all sanitization.
   data.value = updateStationConfig(data.value, draft);
-  notice.value = { text: 'Station settings updated' };
+  notice.value = { text: "Station settings updated" };
   closeOverlay();
 }
 
@@ -211,14 +211,14 @@ export async function handleUseRecent(id: string): Promise<void> {
   // `recent`, which would leave the still-open preview sheet rendering nothing
   // while the async blob cleanup runs.
   closeOverlay();
-  notice.value = { text: 'Location updated from recent' };
+  notice.value = { text: "Location updated from recent" };
   await commitData(next);
 }
 
 export function handlePhotoChange(event: TargetedEvent<HTMLInputElement>): void {
   const file = event.currentTarget.files?.[0] ?? null;
   // Reset the input so picking the same file after a remove still fires change.
-  event.currentTarget.value = '';
+  event.currentTarget.value = "";
   const draft = locationDraft.value;
 
   if (!draft) {
@@ -245,20 +245,20 @@ export async function handleCaptureLocation(): Promise<void> {
     return;
   }
 
-  geoStatus.value = 'capturing';
+  geoStatus.value = "capturing";
 
   try {
     const coords = await captureCoords();
 
     if (!coords || locationDraft.value === null) {
-      geoStatus.value = coords ? 'idle' : 'error';
+      geoStatus.value = coords ? "idle" : "error";
       return;
     }
 
     locationDraft.value = { ...locationDraft.value, coords };
-    geoStatus.value = 'idle';
+    geoStatus.value = "idle";
   } catch {
-    geoStatus.value = 'error';
+    geoStatus.value = "error";
   }
 }
 
@@ -275,7 +275,7 @@ function signalSetter<T>(target: Signal<T | null>): Dispatch<SetStateAction<T>> 
     }
 
     target.value =
-      typeof updater === 'function' ? (updater as (previous: T) => T)(previous) : updater;
+      typeof updater === "function" ? (updater as (previous: T) => T)(previous) : updater;
   };
 }
 

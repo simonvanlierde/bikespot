@@ -1,8 +1,8 @@
-import { ChevronRight, MapPin, Pencil } from 'lucide-preact';
+import { ChevronRight, MapPin, Pencil } from "lucide-preact";
 
-import { usePhotoUrl } from '@/components/usePhotoUrl';
-import type { LocationRecord } from '@/lib/app-data';
-import { formatTimestamp, getDetailFacts, getPrimaryLabel } from './display';
+import { usePhotoUrl } from "@/components/usePhotoUrl";
+import type { LocationRecord } from "@/lib/app-data";
+import { formatTimestamp, getDetailFacts, getPrimaryLabel } from "./display";
 
 export function CurrentSpotCard({
   current,
@@ -38,12 +38,12 @@ export function CurrentSpotCard({
                 <img src={photoUrl} alt="Current bike reference" />
               </figure>
             ) : null}
-            <h1 className={current?.mode === 'outside' ? 'headline headline--outside' : 'headline'}>
+            <h1 className={current?.mode === "outside" ? "headline headline--outside" : "headline"}>
               {getPrimaryLabel(current)}
             </h1>
           </div>
           <div className="current-card__body">
-            {current?.mode === 'outside' && current.outsideDescription ? (
+            {current?.mode === "outside" && current.outsideDescription ? (
               <p className="spot-summary">{current.outsideDescription}</p>
             ) : null}
             {facts.length ? (

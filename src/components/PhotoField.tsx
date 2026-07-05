@@ -1,8 +1,8 @@
-import { ImagePlus, Trash2 } from 'lucide-preact';
+import { ImagePlus, Trash2 } from "lucide-preact";
 
-import type { TargetedEvent } from 'preact';
+import type { TargetedEvent } from "preact";
 
-import { usePhotoUrl } from './usePhotoUrl';
+import { usePhotoUrl } from "./usePhotoUrl";
 
 export function PhotoField({
   photoFile,
@@ -26,7 +26,7 @@ export function PhotoField({
       <div className="photo-field__actions">
         <label className="file-trigger">
           <ImagePlus aria-hidden="true" className="button-icon" />
-          <span>{photoUrl ? 'Replace photo' : 'Add a photo'}</span>
+          <span>{photoUrl ? "Replace photo" : "Add a photo"}</span>
           <input
             accept="image/*"
             aria-label="Photo"
