@@ -4,9 +4,9 @@
 
 .detail-row {
   padding: 0.8rem 0.95rem;
-  border-radius: 1rem;
-  border: 1px solid var(--line-soft);
-  background: var(--surface-strong);
+  border-radius: var(--radius-control);
+  border: 1px solid var(--line);
+  background: var(--surface);
 }
 
 .detail-row__value {
@@ -17,19 +17,19 @@
 
 .detail-note {
   padding: 0.95rem 1rem;
-  border-radius: 1rem;
-  background: rgba(24, 36, 31, 0.05);
-  color: var(--ink-soft);
+  border-radius: var(--radius-control);
+  background: var(--surface-sunken);
+  color: var(--ink);
 }
 
 .coords-field__status {
   margin: 0;
   font-size: 0.85rem;
-  color: var(--ink-soft);
+  color: var(--muted);
 }
 
 .coords-field__status--error {
-  color: #a3372b;
+  color: var(--danger);
 }
 
 .maps-link {
@@ -37,26 +37,35 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.8rem 1rem;
-  border-radius: 1rem;
-  border: 1px solid var(--line-soft);
-  background: var(--accent-soft);
-  color: var(--accent);
+  border-radius: var(--radius-control);
+  border: 1px solid var(--sign);
+  background: transparent;
+  color: var(--sign);
   font-weight: 700;
   text-decoration: none;
 }
 
+@media (prefers-color-scheme: dark) {
+  .maps-link {
+    border-color: var(--line-strong);
+    color: var(--ink);
+  }
+}
+
 .maps-link__accuracy {
   margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
   font-weight: 500;
-  color: var(--ink-soft);
+  color: var(--muted);
 }
 
 .photo-preview {
   margin: 0;
   overflow: hidden;
-  border-radius: 1.1rem;
-  border: 1px solid var(--line-soft);
-  background: var(--surface-strong);
+  border-radius: var(--radius-control);
+  border: 1px solid var(--line);
+  background: var(--surface);
 }
 
 .photo-preview img {
@@ -77,8 +86,8 @@
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  background: var(--surface-strong);
-  border: 1px solid var(--line-soft);
+  background: var(--surface);
+  border: 1px solid var(--line);
   padding: 1rem;
 }
 
@@ -116,11 +125,14 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  /* Wide screens: the sheet becomes a centered top-anchored dialog. */
   .sheet-overlay {
-    padding-top: 2rem;
+    align-items: flex-start;
+    padding: 2rem 1rem 1rem;
   }
 
   .editor-sheet {
+    border-radius: var(--radius-sheet);
     padding: 1.15rem;
   }
 

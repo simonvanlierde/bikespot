@@ -27,8 +27,8 @@ export default defineConfig({
         description: 'Save and reopen the bike spot you last used.',
         start_url: '/',
         display: 'standalone',
-        theme_color: '#15231d',
-        background_color: '#f4f3ef',
+        theme_color: '#1d3d91',
+        background_color: '#f2f4f7',
         icons: [
           {
             src: '/icons/icon-192.png',

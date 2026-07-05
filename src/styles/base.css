@@ -1,24 +1,62 @@
+/* "Stationsbord" design tokens — the visual language of Dutch station
+   wayfinding: sign blue, concrete white, signal yellow, road-sign type. */
 :root {
-  font-family: "DM Sans", "Segoe UI", sans-serif;
-  color: #18241f;
-  background: #f3f1ea;
+  color-scheme: light dark;
+  font-family: "Overpass Variable", "Segoe UI", sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  --ink: #18241f;
-  --ink-soft: #31433b;
-  --muted: #617169;
-  --surface: rgba(255, 255, 255, 0.82);
-  --surface-strong: rgba(255, 255, 255, 0.95);
-  --surface-soft: rgba(245, 242, 234, 0.94);
-  --accent: #305846;
-  --accent-soft: rgba(48, 88, 70, 0.1);
-  --line: rgba(24, 36, 31, 0.12);
-  --line-strong: rgba(24, 36, 31, 0.2);
-  --line-soft: rgba(24, 36, 31, 0.08);
-  --shadow: 0 20px 48px rgba(24, 36, 31, 0.09);
-  --shadow-strong: 0 18px 36px rgba(24, 36, 31, 0.12);
+
+  --font-mono: "Overpass Mono Variable", ui-monospace, monospace;
+
+  --bg: #f2f4f7;
+  --surface: #ffffff;
+  --surface-sunken: #eceff4;
+  --ink: #16233f;
+  --muted: #5c6880;
+  --line: #e1e5ec;
+  --line-strong: #c9cfda;
+
+  --sign: #1d3d91;
+  --sign-edge: #16307a;
+  --sign-ink: #ffffff;
+  --sign-ink-soft: rgba(255, 255, 255, 0.78);
+  --sign-keyline: rgba(255, 255, 255, 0.55);
+
+  --signal: #ffc917;
+  --signal-ink: #231d02;
+  --danger: #b5372a;
+
+  --radius-control: 0.75rem;
+  --radius-card: 1rem;
+  --radius-sheet: 1.25rem;
+
+  --shadow-sheet: 0 -8px 32px rgba(14, 21, 34, 0.18);
+  --shadow-sign: 0 12px 28px rgba(29, 61, 145, 0.22);
+
+  color: var(--ink);
+  background: var(--bg);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1522;
+    --surface: #1a2135;
+    --surface-sunken: #141a2b;
+    --ink: #e9edf5;
+    --muted: #9aa4bb;
+    --line: #2b3450;
+    --line-strong: #3c4666;
+
+    --sign: #2450b4;
+    --sign-edge: #1d4098;
+
+    --danger: #f08d7e;
+
+    --shadow-sheet: 0 -8px 32px rgba(0, 0, 0, 0.5);
+    --shadow-sign: 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
 }
 
 * {
@@ -26,9 +64,7 @@
 }
 
 html {
-  background:
-    radial-gradient(circle at top, rgba(255, 255, 255, 0.95), transparent 34%),
-    linear-gradient(180deg, #faf8f2 0%, #f3f1ea 52%, #ece7de 100%);
+  background: var(--bg);
 }
 
 body {
@@ -55,7 +91,7 @@ button {
 button:focus-visible,
 input:focus-visible,
 textarea:focus-visible {
-  outline: 3px solid rgba(48, 88, 70, 0.22);
+  outline: 2px solid var(--sign);
   outline-offset: 2px;
 }
 
@@ -71,7 +107,8 @@ textarea {
 .app-shell {
   width: min(40rem, 100%);
   margin: 0 auto;
-  padding: 1.15rem 0.95rem 3rem;
+  padding: max(1.15rem, env(safe-area-inset-top)) max(0.95rem, env(safe-area-inset-right))
+    max(3rem, env(safe-area-inset-bottom)) max(0.95rem, env(safe-area-inset-left));
   display: grid;
   gap: 1rem;
 }

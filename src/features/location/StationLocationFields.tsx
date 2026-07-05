@@ -1,4 +1,4 @@
-import { CircleHelp } from 'lucide-preact';
+import { ChevronDown, ChevronRight, CircleHelp } from 'lucide-preact';
 import type { TargetedEvent } from 'preact';
 import { CoordsField } from '@/components/CoordsField';
 import { NotesField } from '@/components/NotesField';
@@ -15,10 +15,10 @@ export type UpdateStationField = <K extends keyof StationLocationDraft>(
 ) => void;
 
 function Chevron({ expanded }: { expanded: boolean }) {
-  return (
-    <span aria-hidden="true" className="chevron">
-      {expanded ? '⌄' : '›'}
-    </span>
+  return expanded ? (
+    <ChevronDown aria-hidden="true" className="button-icon" />
+  ) : (
+    <ChevronRight aria-hidden="true" className="button-icon" />
   );
 }
 
