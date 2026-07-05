@@ -2,9 +2,12 @@ import type { TargetedEvent } from 'preact';
 import { Fragment } from 'preact';
 import type { Dispatch, SetStateAction } from 'preact/compat';
 
+import { SegmentedControl } from '@/components/SegmentedControl';
 import { SheetDialog } from '@/components/SheetDialog';
 import { ToggleField } from '@/components/ToggleField';
 import type { StationSettingsDraft } from '@/lib/drafts';
+import { setTheme, THEMES, theme } from '@/lib/theme';
+import { titleCase } from './display';
 import { FieldInputSettings } from './FieldInputSettings';
 
 // Field toggles in broad → specific order (floor → rack number), matching the
@@ -47,50 +50,63 @@ export function StationSettingsSheet({
   }
 
   return (
-    <SheetDialog
-      closeLabel="Cancel"
-      label="Station settings"
-      title="Station settings"
-      onClose={onClose}
-    >
-      <form className="editor-form" onSubmit={onSubmit}>
-        <fieldset className="settings-fieldset">
-          <legend>Enabled fields</legend>
-          {FIELD_TOGGLE_OPTIONS.map((option) => (
-            <Fragment key={option.key}>
-              <ToggleField
-                checked={stationForm.enabledFields[option.key]}
-                label={option.label}
-                onChange={(checked) => updateFieldToggle(option.key, checked)}
-              />
-              {option.key === 'floor' && stationForm.enabledFields.floor ? (
-                <FieldInputSettings
-                  noun="floor"
-                  legend="Floor input"
-                  mode={stationForm.floorInputMode}
-                  labels={stationForm.floorLabels}
-                  onModeChange={(mode) => updateStationField('floorInputMode', mode)}
-                  onLabelsChange={(labels) => updateStationField('floorLabels', labels)}
-                />
-              ) : null}
-              {option.key === 'lane' && stationForm.enabledFields.lane ? (
-                <FieldInputSettings
-                  noun="lane"
-                  legend="Lane input"
-                  mode={stationForm.laneInputMode}
-                  labels={stationForm.laneLabels}
-                  onModeChange={(mode) => updateStationField('laneInputMode', mode)}
-                  onLabelsChange={(labels) => updateStationField('laneLabels', labels)}
-                />
-              ) : null}
-            </Fragment>
-          ))}
-        </fieldset>
+    <SheetDialog closeLabel="Cancel" label="Settings" title="Settings" onClose={onClose}>
+      <div className="settings-stack">
+        <section className="settings-section">
+          <p className="section-kicker">Station</p>
+          <form className="editor-form" onSubmit={onSubmit}>
+            <fieldset className="settings-fieldset">
+              <legend>Enabled fields</legend>
+              {FIELD_TOGGLE_OPTIONS.map((option) => (
+                <Fragment key={option.key}>
+                  <ToggleField
+                    checked={stationForm.enabledFields[option.key]}
+                    label={option.label}
+                    onChange={(checked) => updateFieldToggle(option.key, checked)}
+                  />
+                  {option.key === 'floor' && stationForm.enabledFields.floor ? (
+                    <FieldInputSettings
+                      noun="floor"
+                      legend="Floor input"
+                      mode={stationForm.floorInputMode}
+                      labels={stationForm.floorLabels}
+                      onModeChange={(mode) => updateStationField('floorInputMode', mode)}
+                      onLabelsChange={(labels) => updateStationField('floorLabels', labels)}
+                    />
+                  ) : null}
+                  {option.key === 'lane' && stationForm.enabledFields.lane ? (
+                    <FieldInputSettings
+                      noun="lane"
+                      legend="Lane input"
+                      mode={stationForm.laneInputMode}
+                      labels={stationForm.laneLabels}
+                      onModeChange={(mode) => updateStationField('laneInputMode', mode)}
+                      onLabelsChange={(labels) => updateStationField('laneLabels', labels)}
+                    />
+                  ) : null}
+                </Fragment>
+              ))}
+            </fieldset>
 
-        <button className="primary-button primary-button--wide" type="submit">
-          Save station settings
-        </button>
-      </form>
+            <button className="primary-button primary-button--wide" type="submit">
+              Save station settings
+            </button>
+          </form>
+        </section>
+
+        <hr className="settings-divider" />
+
+        <section className="settings-section">
+          <p className="section-kicker">General</p>
+          <SegmentedControl
+            label="Theme"
+            options={THEMES}
+            value={theme.value}
+            onChange={setTheme}
+            titleCase={titleCase}
+          />
+        </section>
+      </div>
     </SheetDialog>
   );
 }

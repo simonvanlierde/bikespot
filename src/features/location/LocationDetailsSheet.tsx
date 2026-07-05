@@ -1,4 +1,3 @@
-import { CircleEllipsis } from 'lucide-preact';
 import { SheetDialog } from '@/components/SheetDialog';
 import type { LocationRecord } from '@/lib/app-data';
 import { formatTimestamp } from './display';
@@ -16,7 +15,6 @@ export function LocationDetailsSheet({
       closeLabel="Close details"
       label="Location details"
       title="Location details"
-      titleIcon={<CircleEllipsis aria-hidden="true" className="button-icon" />}
       onClose={onClose}
     >
       {current ? (

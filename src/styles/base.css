@@ -39,8 +39,11 @@
   background: var(--bg);
 }
 
+/* Dark palette. Applied when the OS asks for it (unless the user forced light),
+   or whenever the user forces dark from Settings. Keep both selectors' tokens in
+   sync — CSS can't share one block across the media-query boundary. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #0f1522;
     --surface: #1a2135;
     --surface-sunken: #141a2b;
@@ -57,6 +60,24 @@
     --shadow-sheet: 0 -8px 32px rgba(0, 0, 0, 0.5);
     --shadow-sign: 0 12px 28px rgba(0, 0, 0, 0.35);
   }
+}
+
+:root[data-theme="dark"] {
+  --bg: #0f1522;
+  --surface: #1a2135;
+  --surface-sunken: #141a2b;
+  --ink: #e9edf5;
+  --muted: #9aa4bb;
+  --line: #2b3450;
+  --line-strong: #3c4666;
+
+  --sign: #2450b4;
+  --sign-edge: #1d4098;
+
+  --danger: #f08d7e;
+
+  --shadow-sheet: 0 -8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-sign: 0 12px 28px rgba(0, 0, 0, 0.35);
 }
 
 * {

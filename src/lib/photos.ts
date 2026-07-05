@@ -87,7 +87,7 @@ export async function listPhotoIds(): Promise<string[]> {
   return keys.filter((key): key is string => typeof key === 'string');
 }
 
-// ponytail: only tests call this — kept here because it needs the store internals.
+// NOTE: only tests call this — kept here because it needs the store internals.
 export async function clearPhotoBlobs(): Promise<void> {
   memoryPhotoStore.clear();
 
