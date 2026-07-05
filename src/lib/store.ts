@@ -76,28 +76,31 @@ export function initStore(): () => void {
 // photoIds whose blob is gone (e.g. saved via the in-memory fallback in a past
 // session), so neither side can leak or dangle forever.
 async function reconcilePhotoBlobs(isActive: () => boolean): Promise<void> {
+  const snapshot = data.value;
   try {
     const stored = new Set(await listPhotoIds());
 
-    if (!isActive()) {
+    // A save landing during our IO mints a new data.value; its blob and photoId
+    // could be misread as orphaned/dangling against these stale snapshots. Bail
+    // and let its own commitData (and the next startup) handle cleanup.
+    if (!isActive() || data.value !== snapshot) {
       return;
     }
 
-    const referenced = referencedPhotoIds(data.value);
+    const referenced = referencedPhotoIds(snapshot);
     await Promise.all([...stored].filter((id) => !referenced.has(id)).map(deletePhotoBlob));
 
     const dropMissing = (entry: LocationRecord): LocationRecord =>
       entry.photoId && !stored.has(entry.photoId) ? { ...entry, photoId: undefined } : entry;
-    const value = data.value;
     const hasDangling =
-      (value.current?.photoId && !stored.has(value.current.photoId)) ||
-      value.recent.some((entry) => entry.photoId && !stored.has(entry.photoId));
+      (snapshot.current?.photoId && !stored.has(snapshot.current.photoId)) ||
+      snapshot.recent.some((entry) => entry.photoId && !stored.has(entry.photoId));
 
-    if (isActive() && hasDangling) {
+    if (isActive() && data.value === snapshot && hasDangling) {
       data.value = {
-        ...value,
-        current: value.current ? dropMissing(value.current) : null,
-        recent: value.recent.map(dropMissing),
+        ...snapshot,
+        current: snapshot.current ? dropMissing(snapshot.current) : null,
+        recent: snapshot.recent.map(dropMissing),
       };
     }
   } catch {
