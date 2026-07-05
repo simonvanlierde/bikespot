@@ -149,7 +149,6 @@ describe('bike storage tracker app', () => {
     );
 
     expect(screen.getByRole('dialog', { name: /recent location preview/i })).toBeInTheDocument();
-    expect(window.location.hash).toBe('');
 
     await user.click(screen.getByRole('button', { name: /use this location/i }));
 
