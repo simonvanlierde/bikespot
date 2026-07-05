@@ -8,7 +8,7 @@
     />
     <!-- Apply a forced light/dark choice before first paint to avoid a flash.
          Kept in sync with src/lib/theme.ts (same key, same attribute). -->
-    <script>
+    <script>'use strict';
       try {
         const t = localStorage.getItem("bikespot-theme");
         if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
