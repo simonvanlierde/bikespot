@@ -65,7 +65,7 @@ export function createLocationDraft(
       lane: station.laneLabels[0] ?? '',
       side: 'right',
       rackLevel: 'bottom',
-      distance: 'medium',
+      distance: 'middle',
       floor: station.floorLabels[0] ?? '',
       rackNumber: '',
       notes: '',
@@ -83,7 +83,7 @@ export function createLocationDraft(
     lane: current.lane ?? station.laneLabels[0] ?? '',
     side: current.side ?? 'right',
     rackLevel: current.rackLevel ?? 'bottom',
-    distance: current.distance ?? 'medium',
+    distance: current.distance ?? 'middle',
     floor: current.floor ?? station.floorLabels[0] ?? '',
     rackNumber: '',
     notes: '',
@@ -108,13 +108,15 @@ export function buildLocationRecordInput(
   if (draft.kind === 'outside') {
     const outsideDescription = draft.notes.trim();
 
-    if (!outsideDescription) {
+    // Savable as long as the spot carries something to find it by: a note, a
+    // photo, or a GPS fix.
+    if (!outsideDescription && !draft.photoFile && !draft.coords) {
       return null;
     }
 
     return {
       mode: 'outside',
-      outsideDescription,
+      outsideDescription: outsideDescription || undefined,
       coords: draft.coords ?? undefined,
     };
   }

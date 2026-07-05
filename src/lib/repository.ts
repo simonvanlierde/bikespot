@@ -82,16 +82,12 @@ function normalizeLocationRecord(value: unknown): LocationRecord | null {
     const outsideDescription =
       typeof entry.outsideDescription === 'string' ? entry.outsideDescription.trim() : '';
 
-    if (!outsideDescription) {
-      return null;
-    }
-
     return {
       id,
       updatedAt,
       mode: 'outside',
       stationName,
-      outsideDescription,
+      outsideDescription: outsideDescription || undefined,
       notes: normalizeOptionalString(entry.notes),
       photoId: normalizeOptionalString(entry.photoId),
       coords: normalizeCoords(entry.coords),
@@ -110,7 +106,7 @@ function normalizeLocationRecord(value: unknown): LocationRecord | null {
     lane: normalizeOptionalString(entry.lane),
     side: normalizeEnum<Side>(entry.side, ['left', 'right']),
     rackLevel: normalizeEnum<RackLevel>(entry.rackLevel, ['top', 'bottom']),
-    distance: normalizeEnum<Distance>(entry.distance, ['close', 'medium', 'far']),
+    distance: normalizeEnum<Distance>(entry.distance, ['close', 'middle', 'far']),
     floor: normalizeOptionalString(entry.floor),
     rackNumber: normalizeOptionalString(entry.rackNumber),
     notes: normalizeOptionalString(entry.notes),

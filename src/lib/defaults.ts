@@ -24,7 +24,7 @@ const starterCurrent: LocationRecord = createLocationRecord(
     lane: '4',
     side: 'right',
     rackLevel: 'bottom',
-    distance: 'medium',
+    distance: 'middle',
     floor: '1',
     notes: 'Starter spot - update this to your real location.',
     visibleFields: {

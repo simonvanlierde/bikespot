@@ -26,7 +26,7 @@ describe('location storage', () => {
         lane: '5',
         side: 'right',
         rackLevel: 'bottom',
-        distance: 'medium',
+        distance: 'middle',
         stationName: 'My station',
         visibleFields: {
           side: true,
@@ -71,7 +71,7 @@ describe('location storage', () => {
       stationName: 'My station',
       side: 'right',
       rackLevel: 'bottom',
-      distance: 'medium',
+      distance: 'middle',
     });
   });
 
@@ -116,7 +116,7 @@ describe('location storage', () => {
           lane: '6',
           side: 'left',
           rackLevel: 'bottom',
-          distance: 'medium',
+          distance: 'middle',
           stationName: 'My station',
           visibleFields: {
             side: true,
@@ -156,7 +156,7 @@ describe('location storage', () => {
           lane: 'Bike shed',
           side: 'right',
           rackLevel: 'bottom',
-          distance: 'medium',
+          distance: 'middle',
           stationName: 'My station',
           visibleFields: {
             side: true,
@@ -183,7 +183,7 @@ describe('location storage', () => {
       lane: '6',
       side: 'left',
       rackLevel: 'bottom',
-      distance: 'medium',
+      distance: 'middle',
     });
     expect(nextState.current?.updatedAt).toBe('2026-04-19T07:10:00.000Z');
     expect(nextState.recent).toHaveLength(5);
@@ -231,7 +231,7 @@ describe('location storage', () => {
         lane: '5',
         side: 'right',
         rackLevel: 'bottom',
-        distance: 'medium',
+        distance: 'middle',
         stationName: 'Old station',
         visibleFields: {
           side: true,
@@ -348,7 +348,7 @@ describe('location storage', () => {
         lane: '4',
         side: 'right',
         rackLevel: 'bottom',
-        distance: 'medium',
+        distance: 'middle',
         floor: '',
         rackNumber: '',
         notes: '',
@@ -367,6 +367,31 @@ describe('location storage', () => {
     );
 
     expect(nextState.current?.coords).toEqual({ lat: 52.379189, lng: 4.899431, accuracy: 12 });
+  });
+
+  it('keeps an outside entry saved with only a photo or GPS, no description', async () => {
+    window.localStorage.setItem(
+      APP_DATA_STORAGE_KEY,
+      JSON.stringify({
+        station: defaultState.station,
+        current: {
+          id: 'outside-evidence',
+          updatedAt: '2026-04-19T08:00:00.000Z',
+          mode: 'outside',
+          stationName: 'My station',
+          coords: { lat: 52.08, lng: 4.32 },
+        },
+        recent: [],
+      }),
+    );
+
+    const loaded = await loadAppData();
+
+    expect(loaded.current).toMatchObject({
+      mode: 'outside',
+      outsideDescription: undefined,
+      coords: { lat: 52.08, lng: 4.32 },
+    });
   });
 
   it('resets malformed persisted state back to the default state', async () => {

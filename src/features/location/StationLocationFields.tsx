@@ -76,11 +76,11 @@ export function StationLocationFields({
             <button aria-label="Distance help" className="info-trigger" type="button">
               <CircleHelp aria-hidden="true" className="button-icon" />
               <span className="info-tooltip">
-                Close = near the entrance. Medium = around the middle. Far = deeper inside.
+                Close = near the entrance. Middle = around the middle. Far = deeper inside.
               </span>
             </button>
           }
-          options={['close', 'medium', 'far']}
+          options={['close', 'middle', 'far']}
           value={formState.distance}
           onChange={(distance) => updateStationField('distance', distance)}
           titleCase={titleCase}

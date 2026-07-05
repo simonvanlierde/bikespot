@@ -143,7 +143,7 @@ function buildRecord(
       {
         mode: 'outside',
         stationName: station.name,
-        outsideDescription: input.outsideDescription.trim(),
+        outsideDescription: input.outsideDescription?.trim(),
         photoId: input.photoId,
         coords: input.coords,
       },

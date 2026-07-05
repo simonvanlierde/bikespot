@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { defaultStationConfig } from '../src/lib/defaults';
 import { createLocationRecord } from '../src/lib/domain';
-import { createLocationDraft } from '../src/lib/drafts';
+import { buildLocationRecordInput, createLocationDraft } from '../src/lib/drafts';
 
 // "Change location" always records a new parking event, so the draft keeps
 // structural habits (lane, side, floor, ...) but never the previous spot's
@@ -57,5 +57,26 @@ describe('createLocationDraft', () => {
       photoFile: null,
       coords: null,
     });
+  });
+});
+
+// An outside spot is savable as long as it carries something to find it by.
+describe('buildLocationRecordInput (outside)', () => {
+  const base = { kind: 'outside', notes: '', photoFile: null, coords: null } as const;
+
+  it('rejects an outside spot with no note, photo, or GPS', () => {
+    expect(buildLocationRecordInput(base, defaultStationConfig)).toBeNull();
+  });
+
+  it('saves an outside spot carrying only a photo or GPS', () => {
+    const photoFile = new File(['x'], 'spot.jpg', { type: 'image/jpeg' });
+
+    expect(buildLocationRecordInput({ ...base, photoFile }, defaultStationConfig)).toMatchObject({
+      mode: 'outside',
+      outsideDescription: undefined,
+    });
+    expect(
+      buildLocationRecordInput({ ...base, coords: { lat: 1, lng: 2 } }, defaultStationConfig),
+    ).toMatchObject({ mode: 'outside', coords: { lat: 1, lng: 2 } });
   });
 });

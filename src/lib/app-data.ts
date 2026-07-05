@@ -1,6 +1,6 @@
 export type Side = 'left' | 'right';
 export type RackLevel = 'top' | 'bottom';
-export type Distance = 'close' | 'medium' | 'far';
+export type Distance = 'close' | 'middle' | 'far';
 export type FieldInputMode = 'quick' | 'number';
 
 export type Coords = {
@@ -58,7 +58,7 @@ export type StationLocationRecord = RecordBase & {
 
 export type OutsideLocationRecord = RecordBase & {
   mode: 'outside';
-  outsideDescription: string;
+  outsideDescription?: string;
 };
 
 export type LocationRecord = StationLocationRecord | OutsideLocationRecord;
@@ -78,7 +78,7 @@ export type StationLocationRecordInput = {
 
 export type OutsideLocationRecordInput = {
   mode: 'outside';
-  outsideDescription: string;
+  outsideDescription?: string;
   photoId?: string;
   coords?: Coords;
 };
