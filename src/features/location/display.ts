@@ -29,6 +29,13 @@ export function showFloor(entry: LocationRecord) {
   return shouldShowEntryField(entry, 'floor');
 }
 
+// Hoisted: Intl.DateTimeFormat construction is far pricier than .format() and
+// this runs per entry on every recent-list render.
+const timestampFormat = new Intl.DateTimeFormat(undefined, {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+});
+
 export function formatTimestamp(value?: string) {
   if (!value) {
     return 'not saved yet';
@@ -40,10 +47,7 @@ export function formatTimestamp(value?: string) {
     return 'not saved yet';
   }
 
-  return new Intl.DateTimeFormat(undefined, {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(date);
+  return timestampFormat.format(date);
 }
 
 export function getSummary(entry: LocationRecord | null): string {
