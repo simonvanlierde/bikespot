@@ -19,12 +19,23 @@ type OutsideLocationRecordSeed = Omit<
 >;
 type LocationRecordSeed = StationLocationRecordSeed | OutsideLocationRecordSeed;
 
+export function createId(): string {
+  if (typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+
+  // randomUUID needs a secure context; http-on-LAN testing lands here.
+  return Array.from(crypto.getRandomValues(new Uint8Array(16)), (byte) =>
+    byte.toString(16).padStart(2, '0'),
+  ).join('');
+}
+
 export function createLocationRecord(
   record: LocationRecordSeed,
   updatedAt: string = new Date().toISOString(),
 ): LocationRecord {
   return {
-    id: crypto.randomUUID(),
+    id: createId(),
     updatedAt,
     ...record,
   };
