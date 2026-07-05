@@ -31,7 +31,9 @@ export function CurrentSpotCard({
             {current?.mode === 'station' && showFloor(current) ? (
               <p className="spot-floor">Station floor {current.floor}</p>
             ) : null}
-            <p className="timestamp">Updated {formatTimestamp(current?.updatedAt)}</p>
+            {current ? (
+              <p className="timestamp">Updated {formatTimestamp(current.updatedAt)}</p>
+            ) : null}
           </div>
           <div className="action-stack">
             <button className="primary-button primary-button--hero" type="button" onClick={onEdit}>
