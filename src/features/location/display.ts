@@ -56,7 +56,7 @@ export function getSummary(entry: LocationRecord | null): string {
   }
 
   if (entry.mode === 'outside') {
-    return entry.outsideDescription;
+    return entry.outsideDescription ?? '';
   }
 
   const parts = [
@@ -76,8 +76,25 @@ export function formatAccuracy(coords: Coords): string {
   return typeof coords.accuracy === 'number' ? `±${coords.accuracy}m` : '';
 }
 
-// Headline for a spot: lane when set, otherwise the enabled-field summary, with
-// a final fallback so a lane-less station spot still reads sensibly.
+// Which field earns the headline: the most specific primary locator that's
+// filled — a rack number pinpoints a spot, a lane names a zone. Everything else
+// (floor, side, level, distance) is a supporting detail, not a headline.
+export function getPrimaryFieldKey(entry: LocationRecord): 'rackNumber' | 'lane' | null {
+  if (entry.mode !== 'station') {
+    return null;
+  }
+
+  if (shouldShowEntryField(entry, 'rackNumber')) {
+    return 'rackNumber';
+  }
+
+  if (shouldShowEntryField(entry, 'lane')) {
+    return 'lane';
+  }
+
+  return null;
+}
+
 export function getPrimaryLabel(entry: LocationRecord | null): string {
   if (!entry) {
     return '';
@@ -87,9 +104,53 @@ export function getPrimaryLabel(entry: LocationRecord | null): string {
     return 'Outside the station';
   }
 
-  if (entry.lane) {
+  const key = getPrimaryFieldKey(entry);
+
+  if (key === 'rackNumber') {
+    return `Rack ${entry.rackNumber}`;
+  }
+
+  if (key === 'lane') {
     return `Lane ${entry.lane}`;
   }
 
-  return getSummary(entry) || 'Bike spot';
+  return 'Bike spot';
+}
+
+// Supporting details as labeled facts in broad → specific order, each carrying
+// its own category word so it reads on its own. Skips whichever field became the
+// headline so it isn't repeated.
+export function getDetailFacts(entry: LocationRecord): string[] {
+  if (entry.mode !== 'station') {
+    return [];
+  }
+
+  const primary = getPrimaryFieldKey(entry);
+  const facts: string[] = [];
+
+  if (shouldShowEntryField(entry, 'floor')) {
+    facts.push(`Station floor ${entry.floor}`);
+  }
+
+  if (primary !== 'lane' && shouldShowEntryField(entry, 'lane')) {
+    facts.push(`Lane ${entry.lane}`);
+  }
+
+  if (shouldShowEntryField(entry, 'distance') && entry.distance) {
+    facts.push(`${titleCase(entry.distance)} distance`);
+  }
+
+  if (shouldShowEntryField(entry, 'side') && entry.side) {
+    facts.push(`${titleCase(entry.side)} side`);
+  }
+
+  if (shouldShowEntryField(entry, 'rackLevel') && entry.rackLevel) {
+    facts.push(`${titleCase(entry.rackLevel)} rack`);
+  }
+
+  if (primary !== 'rackNumber' && shouldShowEntryField(entry, 'rackNumber')) {
+    facts.push(`Rack ${entry.rackNumber}`);
+  }
+
+  return facts;
 }

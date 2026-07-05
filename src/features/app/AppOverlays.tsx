@@ -73,7 +73,7 @@ export function AppOverlays() {
       {selectedRecent ? (
         <RecentLocationPreviewSheet
           selectedRecent={selectedRecent}
-          onClose={closeOverlay}
+          onClose={() => openOverlay({ kind: 'recent-list' })}
           onUse={handleUseRecent}
         />
       ) : null}

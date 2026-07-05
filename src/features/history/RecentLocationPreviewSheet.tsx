@@ -16,6 +16,7 @@ export function RecentLocationPreviewSheet({
 }) {
   return (
     <SheetDialog
+      closeLabel="Back to recent locations"
       label="Recent location preview"
       title={getPrimaryLabel(selectedRecent)}
       onClose={onClose}

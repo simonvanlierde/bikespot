@@ -2,11 +2,20 @@
   margin-top: 0.2rem;
 }
 
-.detail-row {
-  padding: 0.8rem 0.95rem;
-  border-radius: var(--radius-control);
+/* Departures-board style: label left, value right, hairline between rows. */
+.detail-list {
   border: 1px solid var(--line);
-  background: var(--surface);
+  border-radius: var(--radius-control);
+  padding: 0 0.95rem;
+}
+
+.detail-row {
+  align-items: baseline;
+  padding: 0.7rem 0;
+}
+
+.detail-row + .detail-row {
+  border-top: 1px solid var(--line);
 }
 
 .detail-row__value {
@@ -110,8 +119,18 @@
 
 .recent-title {
   margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   color: var(--ink);
   font-weight: 700;
+}
+
+.recent-title__pin {
+  width: 0.9rem;
+  height: 0.9rem;
+  flex: 0 0 auto;
+  color: var(--muted);
 }
 
 .recent-meta {
@@ -125,12 +144,18 @@
   }
 
   .current-card {
-    padding: 1.45rem;
+    padding: 1.9rem;
   }
 
-  .current-card__header {
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: end;
+  /* Wide enough for the timestamp and the button to share the footer row, with
+     the button pushed to the trailing edge. */
+  .current-card__footer {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .current-card__action {
+    margin-left: auto;
   }
 
   .utility-actions {
@@ -154,10 +179,6 @@
 }
 
 @media (max-width: 639px) {
-  .detail-row {
-    flex-direction: column;
-  }
-
   .recent-item {
     flex-direction: column;
   }
@@ -166,8 +187,7 @@
     grid-template-columns: 1fr;
   }
 
-  .recent-time,
-  .detail-row__value {
+  .recent-time {
     text-align: left;
   }
 }

@@ -45,17 +45,23 @@ export function LocationDetailContent({
         ]
       : [];
 
+  // Outside spots keep their free text in outsideDescription; station spots in
+  // notes. Both are the same "notes" to the reader, so render them the same way.
+  const noteText = entry.mode === 'station' ? entry.notes : entry.outsideDescription;
+
+  // No wrapper here: both callers already place this inside a .preview-stack, so
+  // returning a fragment keeps the details on a single, even grid.
   return (
-    <div className="preview-stack">
-      {entry.mode === 'outside' ? <p className="spot-summary">{entry.outsideDescription}</p> : null}
-
-      {stationDetails.map((detail) => (
-        <DetailRow key={detail.label} label={detail.label} value={detail.value} />
-      ))}
-
-      {entry.mode === 'station' && entry.notes ? (
-        <p className="detail-note">{entry.notes}</p>
+    <>
+      {stationDetails.some((detail) => detail.value) ? (
+        <div className="detail-list">
+          {stationDetails.map((detail) => (
+            <DetailRow key={detail.label} label={detail.label} value={detail.value} />
+          ))}
+        </div>
       ) : null}
+
+      {noteText ? <p className="detail-note">{noteText}</p> : null}
 
       {entry.coords ? (
         <a
@@ -77,6 +83,6 @@ export function LocationDetailContent({
           <img src={photoUrl} alt={photoAlt} />
         </figure>
       ) : null}
-    </div>
+    </>
   );
 }

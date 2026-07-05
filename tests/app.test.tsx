@@ -26,16 +26,16 @@ describe('bike storage tracker app', () => {
     expect(
       within(quickActions).getByRole('button', { name: /recent locations/i }),
     ).toBeInTheDocument();
-    expect(
-      within(quickActions).getByRole('button', { name: /station settings/i }),
-    ).toBeInTheDocument();
+    expect(within(quickActions).getByRole('button', { name: /^settings$/i })).toBeInTheDocument();
   });
 
-  it('shows the enabled field summary directly on the current spot card', () => {
+  it('shows the enabled fields as labeled facts on the current spot card', () => {
     render(<App />);
 
     const currentSpotCard = screen.getByRole('region', { name: /current spot/i });
-    expect(within(currentSpotCard).getByText(/right · bottom · medium/i)).toBeInTheDocument();
+    expect(within(currentSpotCard).getByText(/middle distance/i)).toBeInTheDocument();
+    expect(within(currentSpotCard).getByText(/right side/i)).toBeInTheDocument();
+    expect(within(currentSpotCard).getByText(/bottom rack/i)).toBeInTheDocument();
   });
 
   it('auto-dismisses the status notice after a delay', async () => {
@@ -65,7 +65,7 @@ describe('bike storage tracker app', () => {
 
     render(<App />);
 
-    await user.click(screen.getByRole('button', { name: /station settings/i }));
+    await user.click(screen.getByRole('button', { name: /^settings$/i }));
 
     await user.click(screen.getByRole('button', { name: /quick lanes/i }));
     await user.clear(screen.getByLabelText(/^lane 1$/i));
@@ -187,7 +187,7 @@ describe('bike storage tracker app', () => {
 
     render(<App />);
 
-    await user.click(screen.getByRole('button', { name: /station settings/i }));
+    await user.click(screen.getByRole('button', { name: /^settings$/i }));
     await user.click(screen.getByRole('checkbox', { name: /side/i }));
     await user.click(screen.getByRole('button', { name: /save station settings/i }));
 
@@ -197,7 +197,7 @@ describe('bike storage tracker app', () => {
     await user.click(screen.getByRole('button', { name: /side left/i }));
     await user.click(screen.getByRole('button', { name: /save location/i }));
 
-    await user.click(screen.getByRole('button', { name: /station settings/i }));
+    await user.click(screen.getByRole('button', { name: /^settings$/i }));
     await user.click(screen.getByRole('checkbox', { name: /side/i }));
     await user.click(screen.getByRole('checkbox', { name: /floor/i }));
     await user.click(screen.getByRole('button', { name: /save station settings/i }));
