@@ -1,4 +1,4 @@
-import { useEffect } from 'preact/hooks';
+import { useEffect, useLayoutEffect } from 'preact/hooks';
 
 import { AppOverlays } from '@/features/app/AppOverlays';
 import { CurrentSpotCard } from '@/features/location/CurrentSpotCard';
@@ -6,22 +6,25 @@ import { UtilityActions } from '@/features/location/UtilityActions';
 import { data, initStore, notice, openOverlay } from '@/lib/store';
 
 export default function App() {
-  useEffect(() => initStore(), []);
+  // Layout effect so hydration resolves before first paint — a passive effect
+  // runs after paint and flashes the default demo data at returning users.
+  useLayoutEffect(() => initStore(), []);
 
-  const message = notice.value;
+  const currentNotice = notice.value;
 
-  // Auto-dismiss the status notice a few seconds after it appears.
+  // Auto-dismiss the status notice a few seconds after it appears. Keyed on
+  // the notice object, so repeating the same text still re-arms the timer.
   useEffect(() => {
-    if (!message) {
+    if (!currentNotice) {
       return;
     }
 
     const timeout = setTimeout(() => {
-      notice.value = '';
+      notice.value = null;
     }, 4000);
 
     return () => clearTimeout(timeout);
-  }, [message]);
+  }, [currentNotice]);
 
   const current = data.value.current;
 
@@ -29,7 +32,7 @@ export default function App() {
     <main className="app-shell">
       <CurrentSpotCard
         current={current}
-        notice={message}
+        notice={currentNotice?.text ?? ''}
         onEdit={() => openOverlay({ kind: 'edit-location' })}
         onOpenDetails={() => openOverlay({ kind: 'location-details' })}
       />

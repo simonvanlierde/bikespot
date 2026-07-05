@@ -1,4 +1,4 @@
-import { effect, signal } from '@preact/signals';
+import { effect, type Signal, signal } from '@preact/signals';
 import type { TargetedEvent } from 'preact';
 import type { Dispatch, SetStateAction } from 'preact/compat';
 
@@ -7,7 +7,6 @@ import { defaultAppData } from './defaults';
 import { promoteRecentLocation, saveLocation, updateStationConfig } from './domain';
 import {
   buildLocationRecordInput,
-  buildStationConfig,
   createLocationDraft,
   createStationSettingsDraft,
   type LocationDraft,
@@ -22,7 +21,9 @@ export const overlay = signal<OverlayState>({ kind: 'closed' });
 export const locationDraft = signal<LocationDraft | null>(null);
 export const stationDraft = signal<StationSettingsDraft | null>(null);
 export const showEditorDetails = signal(false);
-export const notice = signal('');
+// A fresh object per notice so posting the same text twice still re-arms the
+// auto-dismiss timer keyed on it.
+export const notice = signal<{ text: string } | null>(null);
 export const hydrated = signal(false);
 export const geoStatus = signal<'idle' | 'capturing' | 'error'>('idle');
 
@@ -36,7 +37,9 @@ effect(() => {
     return;
   }
 
-  void saveAppData(snapshot);
+  saveAppData(snapshot).catch(() => {
+    notice.value = { text: 'Could not save — storage is full or blocked' };
+  });
 });
 
 // Resets transient UI state and (re)loads persisted data. Called on App mount,
@@ -47,7 +50,7 @@ export function initStore(): () => void {
   locationDraft.value = null;
   stationDraft.value = null;
   showEditorDetails.value = false;
-  notice.value = '';
+  notice.value = null;
   hydrated.value = false;
   geoStatus.value = 'idle';
 
@@ -179,7 +182,7 @@ export async function handleLocationSubmit(event: TargetedEvent<HTMLFormElement>
   const nextLocation = photoId ? { ...input, photoId } : input;
 
   await commitData(saveLocation(data.value, nextLocation));
-  notice.value = 'Location updated';
+  notice.value = { text: 'Location updated' };
   closeOverlay();
 }
 
@@ -192,15 +195,22 @@ export function handleStationSubmit(event: TargetedEvent<HTMLFormElement>): void
     return;
   }
 
-  data.value = updateStationConfig(data.value, buildStationConfig(draft));
-  notice.value = 'Station settings updated';
+  // The draft already has StationConfig's shape; normalizeStationConfig inside
+  // updateStationConfig owns all sanitization.
+  data.value = updateStationConfig(data.value, draft);
+  notice.value = { text: 'Station settings updated' };
   closeOverlay();
 }
 
 export async function handleUseRecent(id: string): Promise<void> {
-  await commitData(promoteRecentLocation(data.value, id));
-  notice.value = 'Location updated from recent';
+  const next = promoteRecentLocation(data.value, id);
+
+  // Close before committing: commitData removes the previewed entry from
+  // `recent`, which would leave the still-open preview sheet rendering nothing
+  // while the async blob cleanup runs.
   closeOverlay();
+  notice.value = { text: 'Location updated from recent' };
+  await commitData(next);
 }
 
 export function handlePhotoChange(event: TargetedEvent<HTMLInputElement>): void {
@@ -242,28 +252,18 @@ export function toggleEditorDetails(): void {
   showEditorDetails.value = !showEditorDetails.value;
 }
 
-export const setLocationDraft: Dispatch<SetStateAction<LocationDraft>> = (updater) => {
-  const previous = locationDraft.value;
+function signalSetter<T>(target: Signal<T | null>): Dispatch<SetStateAction<T>> {
+  return (updater) => {
+    const previous = target.value;
 
-  if (previous === null) {
-    return;
-  }
+    if (previous === null) {
+      return;
+    }
 
-  locationDraft.value =
-    typeof updater === 'function'
-      ? (updater as (previous: LocationDraft) => LocationDraft)(previous)
-      : updater;
-};
+    target.value =
+      typeof updater === 'function' ? (updater as (previous: T) => T)(previous) : updater;
+  };
+}
 
-export const setStationDraft: Dispatch<SetStateAction<StationSettingsDraft>> = (updater) => {
-  const previous = stationDraft.value;
-
-  if (previous === null) {
-    return;
-  }
-
-  stationDraft.value =
-    typeof updater === 'function'
-      ? (updater as (previous: StationSettingsDraft) => StationSettingsDraft)(previous)
-      : updater;
-};
+export const setLocationDraft = signalSetter(locationDraft);
+export const setStationDraft = signalSetter(stationDraft);

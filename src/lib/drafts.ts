@@ -9,7 +9,6 @@ import type {
   Side,
   StationConfig,
 } from './app-data';
-import { defaultStationConfig } from './defaults';
 
 export type StationLocationDraft = {
   kind: 'station';
@@ -143,22 +142,6 @@ export function buildLocationRecordInput(
     rackNumber: station.enabledFields.rackNumber ? emptyToUndefined(draft.rackNumber) : undefined,
     notes: emptyToUndefined(draft.notes),
     coords: draft.coords ?? undefined,
-  };
-}
-
-export function buildStationConfig(draft: StationSettingsDraft): StationConfig {
-  const cleanLabels = (labels: string[], fallback: string[]) => {
-    const trimmed = labels.map((label) => label.trim()).filter(Boolean);
-    return trimmed.length > 0 ? trimmed : fallback;
-  };
-
-  return {
-    name: draft.name.trim() || defaultStationConfig.name,
-    laneInputMode: draft.laneInputMode,
-    laneLabels: cleanLabels(draft.laneLabels, defaultStationConfig.laneLabels),
-    floorInputMode: draft.floorInputMode,
-    floorLabels: cleanLabels(draft.floorLabels, defaultStationConfig.floorLabels),
-    enabledFields: { ...draft.enabledFields },
   };
 }
 
