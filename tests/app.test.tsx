@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, within } from '@testing-library/preact';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/preact';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -129,6 +129,33 @@ describe('bike storage tracker app', () => {
       within(detailsSheet).getByText(/at the fence near the station exit/i),
     ).toBeInTheDocument();
     expect(await within(detailsSheet).findByAltText(/saved bike reference/i)).toBeInTheDocument();
+  });
+
+  it('previews an added photo in the editor and removes it again', async () => {
+    const user = userEvent.setup();
+
+    render(<App />);
+
+    await user.click(screen.getByRole('button', { name: /change location/i }));
+    await user.click(screen.getByRole('button', { name: /parked outside/i }));
+
+    const editorSheet = screen.getByRole('dialog', { name: /change location/i });
+    expect(within(editorSheet).queryByRole('button', { name: /remove photo/i })).toBeNull();
+
+    await user.upload(
+      within(editorSheet).getByLabelText(/photo/i),
+      new File(['outside'], 'outside.png', { type: 'image/png' }),
+    );
+
+    expect(await within(editorSheet).findByAltText(/bike reference preview/i)).toBeInTheDocument();
+    expect(within(editorSheet).getByText(/replace photo/i)).toBeInTheDocument();
+
+    await user.click(within(editorSheet).getByRole('button', { name: /remove photo/i }));
+
+    await waitFor(() => {
+      expect(within(editorSheet).queryByAltText(/bike reference preview/i)).toBeNull();
+    });
+    expect(within(editorSheet).getByText(/add a photo/i)).toBeInTheDocument();
   });
 
   it('opens recent locations in a preview flow and only promotes after confirmation', async () => {

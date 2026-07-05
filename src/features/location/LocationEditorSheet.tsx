@@ -19,6 +19,7 @@ export function LocationEditorSheet({
   onSubmit,
   onToggleDetails,
   onPhotoChange,
+  onPhotoRemove,
   onCaptureLocation,
 }: {
   formState: LocationDraft;
@@ -30,6 +31,7 @@ export function LocationEditorSheet({
   onSubmit: (event: TargetedEvent<HTMLFormElement>) => void;
   onToggleDetails: () => void;
   onPhotoChange: (event: TargetedEvent<HTMLInputElement>) => void;
+  onPhotoRemove: () => void;
   onCaptureLocation: () => void;
 }) {
   function updateNotes(notes: string) {
@@ -90,7 +92,12 @@ export function LocationEditorSheet({
               onCapture={onCaptureLocation}
             />
             <NotesField value={formState.notes} onChange={updateNotes} />
-            <PhotoField onPhotoChange={onPhotoChange} />
+            <PhotoField
+              photoFile={formState.photoFile}
+              photoId={formState.photoId}
+              onPhotoChange={onPhotoChange}
+              onPhotoRemove={onPhotoRemove}
+            />
           </>
         ) : (
           <StationLocationFields
@@ -102,6 +109,7 @@ export function LocationEditorSheet({
             onNotesChange={updateNotes}
             onToggleDetails={onToggleDetails}
             onPhotoChange={onPhotoChange}
+            onPhotoRemove={onPhotoRemove}
             onCaptureLocation={onCaptureLocation}
           />
         )}

@@ -215,6 +215,8 @@ export async function handleUseRecent(id: string): Promise<void> {
 
 export function handlePhotoChange(event: TargetedEvent<HTMLInputElement>): void {
   const file = event.currentTarget.files?.[0] ?? null;
+  // Reset the input so picking the same file after a remove still fires change.
+  event.currentTarget.value = '';
   const draft = locationDraft.value;
 
   if (!draft) {
@@ -222,6 +224,18 @@ export function handlePhotoChange(event: TargetedEvent<HTMLInputElement>): void 
   }
 
   locationDraft.value = { ...draft, photoFile: file };
+}
+
+// Clears the photo from the draft only; on save the record drops the photoId
+// and commitData's orphan sweep deletes the blob if nothing else references it.
+export function handlePhotoRemove(): void {
+  const draft = locationDraft.value;
+
+  if (!draft) {
+    return;
+  }
+
+  locationDraft.value = { ...draft, photoFile: null, photoId: undefined };
 }
 
 export async function handleCaptureLocation(): Promise<void> {

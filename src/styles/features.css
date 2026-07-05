@@ -74,6 +74,18 @@
   height: auto;
 }
 
+/* Keep the in-editor preview compact so the form stays reachable. */
+.photo-preview--editor img {
+  max-height: 14rem;
+  object-fit: cover;
+}
+
+.photo-field__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
 .recent-list {
   display: grid;
   gap: 0.75rem;

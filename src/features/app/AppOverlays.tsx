@@ -10,6 +10,7 @@ import {
   handleCaptureLocation,
   handleLocationSubmit,
   handlePhotoChange,
+  handlePhotoRemove,
   handleStationSubmit,
   handleUseRecent,
   locationDraft,
@@ -43,6 +44,7 @@ export function AppOverlays() {
           onSubmit={handleLocationSubmit}
           onToggleDetails={toggleEditorDetails}
           onPhotoChange={handlePhotoChange}
+          onPhotoRemove={handlePhotoRemove}
           onCaptureLocation={handleCaptureLocation}
         />
       ) : null}

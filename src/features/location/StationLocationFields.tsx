@@ -31,6 +31,7 @@ export function StationLocationFields({
   onNotesChange,
   onToggleDetails,
   onPhotoChange,
+  onPhotoRemove,
   onCaptureLocation,
 }: {
   formState: StationLocationDraft;
@@ -41,6 +42,7 @@ export function StationLocationFields({
   onNotesChange: (notes: string) => void;
   onToggleDetails: () => void;
   onPhotoChange: (event: TargetedEvent<HTMLInputElement>) => void;
+  onPhotoRemove: () => void;
   onCaptureLocation: () => void;
 }) {
   return (
@@ -130,7 +132,12 @@ export function StationLocationFields({
         <div className="details-panel">
           <CoordsField coords={formState.coords} status={geoStatus} onCapture={onCaptureLocation} />
           <NotesField value={formState.notes} onChange={onNotesChange} />
-          <PhotoField onPhotoChange={onPhotoChange} />
+          <PhotoField
+            photoFile={formState.photoFile}
+            photoId={formState.photoId}
+            onPhotoChange={onPhotoChange}
+            onPhotoRemove={onPhotoRemove}
+          />
         </div>
       ) : null}
     </>
