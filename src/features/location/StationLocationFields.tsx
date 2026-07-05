@@ -134,7 +134,6 @@ export function StationLocationFields({
           <NotesField value={formState.notes} onChange={onNotesChange} />
           <PhotoField
             photoFile={formState.photoFile}
-            photoId={formState.photoId}
             onPhotoChange={onPhotoChange}
             onPhotoRemove={onPhotoRemove}
           />

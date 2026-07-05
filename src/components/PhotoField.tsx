@@ -6,16 +6,14 @@ import { usePhotoUrl } from './usePhotoUrl';
 
 export function PhotoField({
   photoFile,
-  photoId,
   onPhotoChange,
   onPhotoRemove,
 }: {
   photoFile: File | null;
-  photoId?: string;
   onPhotoChange: (event: TargetedEvent<HTMLInputElement>) => void;
   onPhotoRemove: () => void;
 }) {
-  const photoUrl = usePhotoUrl(photoId, photoFile);
+  const photoUrl = usePhotoUrl(undefined, photoFile);
 
   return (
     <div className="field">

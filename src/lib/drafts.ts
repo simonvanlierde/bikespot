@@ -20,7 +20,6 @@ export type StationLocationDraft = {
   rackNumber: string;
   notes: string;
   photoFile: File | null;
-  photoId?: string;
   coords: Coords | null;
 };
 
@@ -28,7 +27,6 @@ export type OutsideLocationDraft = {
   kind: 'outside';
   notes: string;
   photoFile: File | null;
-  photoId?: string;
   coords: Coords | null;
 };
 
@@ -54,6 +52,9 @@ export function createStationSettingsDraft(station: StationConfig): StationSetti
   };
 }
 
+// The draft describes a NEW parking event, so it carries over structural
+// habits (mode, lane, side, floor, ...) but never the previous spot's
+// evidence — notes, photo, GPS coords, and rack number belong to the old spot.
 export function createLocationDraft(
   current: LocationRecord | null,
   station: StationConfig,
@@ -74,13 +75,7 @@ export function createLocationDraft(
   }
 
   if (current.mode === 'outside') {
-    return {
-      kind: 'outside',
-      notes: current.outsideDescription,
-      photoFile: null,
-      photoId: current.photoId,
-      coords: current.coords ?? null,
-    };
+    return createOutsideLocationDraft();
   }
 
   return {
@@ -90,11 +85,10 @@ export function createLocationDraft(
     rackLevel: current.rackLevel ?? 'bottom',
     distance: current.distance ?? 'medium',
     floor: current.floor ?? station.floorLabels[0] ?? '',
-    rackNumber: current.rackNumber ?? '',
-    notes: current.notes ?? '',
+    rackNumber: '',
+    notes: '',
     photoFile: null,
-    photoId: current.photoId,
-    coords: current.coords ?? null,
+    coords: null,
   };
 }
 

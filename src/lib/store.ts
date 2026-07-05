@@ -176,9 +176,8 @@ export async function handleLocationSubmit(event: TargetedEvent<HTMLFormElement>
   }
 
   // Persist a newly attached photo only once we know the record is valid,
-  // otherwise a failed save would leave an orphaned blob behind. With no new
-  // file, keep the photo already on the record being edited.
-  const photoId = draft.photoFile ? await savePhotoBlob(draft.photoFile) : draft.photoId;
+  // otherwise a failed save would leave an orphaned blob behind.
+  const photoId = draft.photoFile ? await savePhotoBlob(draft.photoFile) : undefined;
   const nextLocation = photoId ? { ...input, photoId } : input;
 
   await commitData(saveLocation(data.value, nextLocation));
@@ -226,8 +225,6 @@ export function handlePhotoChange(event: TargetedEvent<HTMLInputElement>): void 
   locationDraft.value = { ...draft, photoFile: file };
 }
 
-// Clears the photo from the draft only; on save the record drops the photoId
-// and commitData's orphan sweep deletes the blob if nothing else references it.
 export function handlePhotoRemove(): void {
   const draft = locationDraft.value;
 
@@ -235,7 +232,7 @@ export function handlePhotoRemove(): void {
     return;
   }
 
-  locationDraft.value = { ...draft, photoFile: null, photoId: undefined };
+  locationDraft.value = { ...draft, photoFile: null };
 }
 
 export async function handleCaptureLocation(): Promise<void> {

@@ -94,7 +94,6 @@ export function LocationEditorSheet({
             <NotesField value={formState.notes} onChange={updateNotes} />
             <PhotoField
               photoFile={formState.photoFile}
-              photoId={formState.photoId}
               onPhotoChange={onPhotoChange}
               onPhotoRemove={onPhotoRemove}
             />
