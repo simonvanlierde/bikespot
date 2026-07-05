@@ -14,10 +14,6 @@ import { normalizeStationConfig } from './domain';
 export const APP_DATA_STORAGE_KEY = 'bikespot-app';
 
 export async function loadAppData(): Promise<AppData> {
-  if (typeof window === 'undefined') {
-    return defaultAppData;
-  }
-
   const raw = window.localStorage.getItem(APP_DATA_STORAGE_KEY);
 
   if (!raw) {
@@ -32,10 +28,6 @@ export async function loadAppData(): Promise<AppData> {
 }
 
 export async function saveAppData(data: AppData): Promise<void> {
-  if (typeof window === 'undefined') {
-    return;
-  }
-
   window.localStorage.setItem(APP_DATA_STORAGE_KEY, JSON.stringify(data));
 }
 
@@ -75,7 +67,11 @@ function normalizeLocationRecord(value: unknown): LocationRecord | null {
 
   const entry = value as Partial<LocationRecord>;
   const id = typeof entry.id === 'string' ? entry.id : null;
-  const updatedAt = typeof entry.updatedAt === 'string' ? entry.updatedAt : null;
+  // Must parse to a real date so no consumer downstream ever sees Invalid Date.
+  const updatedAt =
+    typeof entry.updatedAt === 'string' && !Number.isNaN(Date.parse(entry.updatedAt))
+      ? entry.updatedAt
+      : null;
   const stationName = typeof entry.stationName === 'string' ? entry.stationName.trim() : '';
 
   if (!id || !updatedAt || !stationName) {
