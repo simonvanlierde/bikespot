@@ -8,6 +8,15 @@
 
 An offline-first PWA for remembering where you parked your bike. Everything stays on your device — no account, no server.
 
+<!--
+Screenshots TODO: capture per docs/README.md, commit to docs/screenshots/,
+then delete these comment markers to make the table live.
+| Light | Dark |
+| --- | --- |
+| ![Bikespot home screen, light theme](docs/screenshots/home-light.png) | ![Bikespot home screen, dark theme](docs/screenshots/home-dark.png) |
+-->
+> **Screenshots pending** — see [`docs/README.md`](docs/README.md#screenshots--todo-needs-real-captures).
+
 ## Features
 
 - **Save your spot** as a structured *station* location (lane, side, rack level, distance, floor, rack number) or a free-text *outside* description.
@@ -43,15 +52,18 @@ Preact + `@preact/signals`, TypeScript, Vite, `vite-plugin-pwa` (Workbox), Biome
 
 The app is a small client-only PWA with a three-layer `src/` structure and a single global store:
 
-```text
-lib/         types, pure domain logic, persistence, and the signals store
-  ↓
-features/    domain modules (location, history, app) that wire the store to UI
-  ↓
-components/  presentational UI primitives (fields, sheet dialog, segmented control)
+```mermaid
+flowchart TD
+    components["components/ — presentational UI primitives<br/>(fields, sheet dialog, segmented control)"]
+    features["features/ — domain modules<br/>(location, history, app) wiring store to UI"]
+    lib["lib/ — types, pure domain logic,<br/>persistence, and the signals store"]
+
+    components --> features --> lib
+    lib -->|JSON app data| localStorage[("localStorage")]
+    lib -->|photo blobs| indexedDB[("IndexedDB")]
 ```
 
-State is a set of `@preact/signals` in [`lib/store.ts`](src/lib/store.ts). UI reads signals directly; updates go through **pure functions** in [`lib/domain.ts`](src/lib/domain.ts) rather than in-place mutation, and an `effect()` persists the `data` signal whenever it changes. There is no router — navigation is modal state, modelled as the `OverlayState` discriminated union and rendered by [`features/app/AppOverlays.tsx`](src/features/app/AppOverlays.tsx). Persistence is split: structured app data in `localStorage` ([`lib/repository.ts`](src/lib/repository.ts)) and photos in IndexedDB with an in-memory fallback ([`lib/photos.ts`](src/lib/photos.ts)).
+State is a set of `@preact/signals` in [`lib/store.ts`](src/lib/store.ts). UI reads signals directly; updates go through **pure functions** in [`lib/domain.ts`](src/lib/domain.ts) rather than in-place mutation, and an `effect()` persists the `data` signal whenever it changes. There is no router — navigation is modal state, modelled as the `OverlayState` discriminated union and rendered by [`features/app/AppOverlays.tsx`](src/features/app/AppOverlays.tsx). Persistence is split: structured app data in `localStorage` ([`lib/repository.ts`](src/lib/repository.ts)) and photos in IndexedDB with an in-memory fallback ([`lib/photos.ts`](src/lib/photos.ts)) — the reasoning is recorded in [ADR 0001](docs/adr/0001-split-persistence-across-localstorage-and-indexeddb.md).
 
 ## Development
 
