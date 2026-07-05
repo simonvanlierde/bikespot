@@ -21,7 +21,6 @@ By design, the app is single-device: no cross-device sync. State lives in `local
 ## Roadmap
 
 - [ ] Add a map view for saved spots.
-- [ ] Show photo preview in the history list and the editor.
 - [ ] Consider server-side sync for multi-device support, with optional end-to-end encryption.
 
 ## Install
