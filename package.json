@@ -3,9 +3,9 @@
   "private": true,
   "version": "0.1.1",
   "type": "module",
-  "packageManager": "pnpm@10.33.0",
+  "packageManager": "pnpm@11.10.0",
   "engines": {
-    "node": ">=24"
+    "node": ">=26"
   },
   "scripts": {
     "dev": "vite",
@@ -19,15 +19,6 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "deploy": "pnpm run build && wrangler pages deploy"
-  },
-  "pnpm": {
-    "overrides": {
-      "undici": "^7.28.0",
-      "@babel/core": "^7.29.6",
-      "@babel/plugin-transform-modules-systemjs": "^7.29.4",
-      "serialize-javascript": "^7.0.5",
-      "fast-uri": "^3.1.2"
-    }
   },
   "dependencies": {
     "@fontsource-variable/overpass": "^5.2.8",
