@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect } from "preact/hooks";
 
+import { AppFooter } from "@/components/AppFooter";
 import { AppOverlays } from "@/features/app/AppOverlays";
 import { CurrentSpotCard } from "@/features/location/CurrentSpotCard";
 import { UtilityActions } from "@/features/location/UtilityActions";
@@ -42,6 +43,8 @@ export default function App() {
         onOpenRecent={() => openOverlay({ kind: "recent-list" })}
         onOpenStationSettings={() => openOverlay({ kind: "station-settings" })}
       />
+
+      <AppFooter />
 
       <AppOverlays />
     </main>

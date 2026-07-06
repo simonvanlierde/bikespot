@@ -2,6 +2,7 @@ import process from "node:process";
 import { fileURLToPath, URL } from "node:url";
 import { VitePWA } from "vite-plugin-pwa";
 import { defineConfig } from "vitest/config";
+import pkg from "./package.json" with { type: "json" };
 
 // jsdom touches Node 26's experimental localStorage when it builds each test
 // window, which warns unless --localstorage-file is set. We shim localStorage in
@@ -9,6 +10,9 @@ import { defineConfig } from "vitest/config";
 process.env.NODE_OPTIONS = `${process.env.NODE_OPTIONS ?? ""} --disable-warning=ExperimentalWarning`;
 
 export default defineConfig({
+  define: {
+    __APP_VERSION__: JSON.stringify(pkg.version),
+  },
   build: {
     chunkSizeWarningLimit: 235,
   },

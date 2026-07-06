@@ -137,6 +137,53 @@
   font-size: 0.94rem;
 }
 
+/* Quiet sign-off. Hairline keyline, muted type; the version sits in mono like
+   the object code stamped in the corner of a station sign. */
+.app-footer {
+  margin-top: auto;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.55rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.app-footer__icon {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+/* The version is the source-code link: a quiet outlined chip, clearly
+   tappable, that warms to sign blue on hover (borrowing the .maps-link cue). */
+.app-footer__version {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.app-footer__version:hover {
+  border-color: var(--sign);
+  color: var(--sign);
+}
+
+@media (prefers-color-scheme: dark) {
+  .app-footer__version:hover {
+    border-color: var(--line-strong);
+    color: var(--ink);
+  }
+}
+
 @media (min-width: 640px) {
   .app-shell {
     padding-top: 1.4rem;
