@@ -56,6 +56,7 @@ export function initStore(): () => void {
 
   let active = true;
 
+  // biome-ignore lint/complexity/noVoid: deliberate fire-and-forget hydration
   void loadAppData().then((loaded) => {
     if (!active) {
       return;
@@ -63,6 +64,7 @@ export function initStore(): () => void {
 
     data.value = loaded;
     hydrated.value = true;
+    // biome-ignore lint/complexity/noVoid: deliberate fire-and-forget cleanup
     void reconcilePhotoBlobs(() => active);
   });
 

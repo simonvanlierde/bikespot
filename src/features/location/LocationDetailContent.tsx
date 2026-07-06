@@ -4,6 +4,7 @@ import { usePhotoUrl } from "@/components/usePhotoUrl";
 import type { LocationRecord } from "@/lib/app-data";
 import { formatAccuracy, mapsLink, shouldShowEntryField, showFloor, titleCase } from "./display";
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: conditional field rows are inherent to the detail view
 export function LocationDetailContent({
   entry,
   photoAlt,

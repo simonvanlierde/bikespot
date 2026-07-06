@@ -31,6 +31,18 @@
       "suspicious": "on"
     }
   },
+  "overrides": [
+    {
+      "includes": ["tests/**"],
+      "linter": {
+        "rules": {
+          "performance": { "useTopLevelRegex": "off" },
+          "security": { "noSecrets": "off" },
+          "complexity": { "noExcessiveLinesPerFunction": "off" }
+        }
+      }
+    }
+  ],
   "vcs": {
     "clientKind": "git",
     "enabled": true,

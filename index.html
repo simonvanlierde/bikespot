@@ -12,6 +12,7 @@
       try {
         const t = localStorage.getItem("bikespot-theme");
         if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
+        // biome-ignore lint/suspicious/noEmptyBlockStatements: no storage access is a fine reason to skip the theme override
       } catch {}
     </script>
     <meta name="theme-color" content="#f2f4f7" media="(prefers-color-scheme: light)" />

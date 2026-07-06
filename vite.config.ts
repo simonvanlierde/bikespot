@@ -1,3 +1,4 @@
+// biome-ignore lint/correctness/noNodejsModules: build config runs in Node, not the browser
 import { fileURLToPath, URL } from "node:url";
 import { VitePWA } from "vite-plugin-pwa";
 import { defineConfig } from "vitest/config";

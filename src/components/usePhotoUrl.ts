@@ -9,6 +9,7 @@ export function usePhotoUrl(photoId?: string, photoFile?: File | null) {
     let isActive = true;
     let objectUrl: string | null = null;
 
+    // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: isActive unmount guards on each branch
     async function resolvePhotoUrl() {
       if (photoFile) {
         objectUrl = URL.createObjectURL(photoFile);
@@ -37,6 +38,7 @@ export function usePhotoUrl(photoId?: string, photoFile?: File | null) {
       }
     }
 
+    // biome-ignore lint/complexity/noVoid: deliberate fire-and-forget of the async effect
     void resolvePhotoUrl();
 
     return () => {

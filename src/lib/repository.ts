@@ -13,6 +13,7 @@ import { normalizeStationConfig } from "./domain";
 
 export const APP_DATA_STORAGE_KEY = "bikespot-app";
 
+// biome-ignore lint/suspicious/useAwait: async is the storage-boundary contract (localStorage now, IndexedDB later)
 export async function loadAppData(): Promise<AppData> {
   const raw = window.localStorage.getItem(APP_DATA_STORAGE_KEY);
 
@@ -27,6 +28,7 @@ export async function loadAppData(): Promise<AppData> {
   }
 }
 
+// biome-ignore lint/suspicious/useAwait: async is the storage-boundary contract (localStorage now, IndexedDB later)
 export async function saveAppData(data: AppData): Promise<void> {
   window.localStorage.setItem(APP_DATA_STORAGE_KEY, JSON.stringify(data));
 }

@@ -22,6 +22,7 @@ function Chevron({ expanded }: { expanded: boolean }) {
   );
 }
 
+// biome-ignore lint/complexity/noExcessiveLinesPerFunction: JSX render fn; markup dominates the line count
 export function StationLocationFields({
   formState,
   station,

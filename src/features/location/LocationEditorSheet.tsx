@@ -9,6 +9,7 @@ import type { StationConfig } from "@/lib/app-data";
 import { createLocationDraft, createOutsideLocationDraft, type LocationDraft } from "@/lib/drafts";
 import { StationLocationFields, type UpdateStationField } from "./StationLocationFields";
 
+// biome-ignore lint/complexity/noExcessiveLinesPerFunction: JSX render fn; markup dominates the line count
 export function LocationEditorSheet({
   formState,
   station,

@@ -6,6 +6,7 @@ import type { FieldInputMode } from "@/lib/app-data";
 
 // Settings-side config for one location field (lane or floor): a Quick/Number
 // mode switch plus, in quick mode, an add/remove editor for the preset labels.
+// biome-ignore lint/complexity/noExcessiveLinesPerFunction: JSX render fn; markup dominates the line count
 export function FieldInputSettings({
   noun,
   legend,

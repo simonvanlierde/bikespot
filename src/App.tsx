@@ -14,7 +14,6 @@ export default function App() {
 
   // Auto-dismiss the status notice a few seconds after it appears. Keyed on
   // the notice object, so repeating the same text still re-arms the timer.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: currentNotice identity re-arms the timer
   useEffect(() => {
     if (!currentNotice) {
       return;

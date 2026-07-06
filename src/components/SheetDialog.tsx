@@ -2,6 +2,7 @@ import { X } from "lucide-preact";
 import type { ReactNode } from "preact/compat";
 import { useEffect, useRef } from "preact/hooks";
 
+// biome-ignore lint/complexity/noExcessiveLinesPerFunction: JSX render fn; markup dominates the line count
 export function SheetDialog({
   children,
   label,
@@ -25,6 +26,7 @@ export function SheetDialog({
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
     sheetRef.current?.focus();
 
+    // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: focus-trap Tab/Escape handling is irreducibly branchy
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
@@ -42,6 +44,7 @@ export function SheetDialog({
         }
 
         const focusable = sheet.querySelectorAll<HTMLElement>(
+          // biome-ignore lint/security/noSecrets: CSS focusable-elements selector, not a secret
           'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
         );
 
