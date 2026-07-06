@@ -151,39 +151,37 @@
   font-size: 0.8rem;
 }
 
-.app-footer__dot {
-  color: var(--line-strong);
-}
-
-.app-footer__link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  color: var(--muted);
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-}
-
-.app-footer__link:hover {
-  color: var(--sign);
-  border-bottom-color: currentColor;
-}
-
-@media (prefers-color-scheme: dark) {
-  .app-footer__link:hover {
-    color: var(--ink);
-  }
-}
-
 .app-footer__icon {
   width: 0.9rem;
   height: 0.9rem;
 }
 
+/* The version is the source-code link: a quiet outlined chip, clearly
+   tappable, that warms to sign blue on hover (borrowing the .maps-link cue). */
 .app-footer__version {
   margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
   font-family: var(--font-mono);
   letter-spacing: 0.02em;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.app-footer__version:hover {
+  border-color: var(--sign);
+  color: var(--sign);
+}
+
+@media (prefers-color-scheme: dark) {
+  .app-footer__version:hover {
+    border-color: var(--line-strong);
+    color: var(--ink);
+  }
 }
 
 @media (min-width: 640px) {

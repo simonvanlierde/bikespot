@@ -6,15 +6,17 @@ export function AppFooter() {
   return (
     <footer className="app-footer">
       <span>© {new Date().getFullYear()} Simon van Lierde</span>
-      <span aria-hidden="true" className="app-footer__dot">
-        ·
-      </span>
-      <a className="app-footer__link" href={SOURCE_URL} target="_blank" rel="noreferrer">
-        <Code2 aria-hidden="true" className="app-footer__icon" />
-        Source
+      {/* Version doubles as the source link: a mono chip that reads like the
+          object code stamped on a station sign, but is clearly tappable. */}
+      <a
+        className="app-footer__version"
+        href={SOURCE_URL}
+        target="_blank"
+        rel="noreferrer"
+        aria-label={`View source code, version ${__APP_VERSION__}`}
+      >
+        <Code2 aria-hidden="true" className="app-footer__icon" />v{__APP_VERSION__}
       </a>
-      {/* Mono version reads like the object code stamped on a station sign. */}
-      <span className="app-footer__version">v{__APP_VERSION__}</span>
     </footer>
   );
 }
