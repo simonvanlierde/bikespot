@@ -85,6 +85,12 @@ describe("store handlers", () => {
       expect(notice.value?.text).toBe("Station settings updated");
       expect(stationDraft.value).toBeNull();
     });
+
+    it("does nothing without a station draft", () => {
+      closeOverlay(); // stationDraft is null
+      handleStationSubmit({ preventDefault() {} } as TargetedEvent<HTMLFormElement>);
+      expect(notice.value).toBeNull();
+    });
   });
 
   describe("photo draft handlers", () => {
@@ -99,6 +105,15 @@ describe("store handlers", () => {
 
       handlePhotoRemove();
       expect(locationDraft.value?.photoFile).toBeNull();
+    });
+
+    it("ignores photo change and remove without a location draft", () => {
+      closeOverlay(); // locationDraft is null
+      handlePhotoChange({
+        currentTarget: { files: [], value: "" },
+      } as unknown as TargetedEvent<HTMLInputElement>);
+      handlePhotoRemove();
+      expect(locationDraft.value).toBeNull();
     });
   });
 

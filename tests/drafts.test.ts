@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { defaultStationConfig } from "../src/lib/defaults";
-import { createLocationRecord } from "../src/lib/domain";
-import { buildLocationRecordInput, createLocationDraft } from "../src/lib/drafts";
+import { defaultStationConfig } from "../src/lib/defaults.ts";
+import { createLocationRecord } from "../src/lib/domain.ts";
+import { buildLocationRecordInput, createLocationDraft } from "../src/lib/drafts.ts";
 
 // "Change location" always records a new parking event, so the draft keeps
 // structural habits (lane, side, floor, ...) but never the previous spot's
@@ -33,6 +33,27 @@ describe("createLocationDraft", () => {
       rackLevel: "top",
       distance: "far",
       floor: "2",
+      rackNumber: "",
+      notes: "",
+      photoFile: null,
+      coords: null,
+    });
+  });
+
+  it("seeds a fresh draft from the station's first lane and floor labels", () => {
+    const draft = createLocationDraft(null, {
+      ...defaultStationConfig,
+      laneLabels: ["A", "B"],
+      floorLabels: ["G", "1"],
+    });
+
+    expect(draft).toEqual({
+      kind: "station",
+      lane: "A",
+      side: "right",
+      rackLevel: "bottom",
+      distance: "middle",
+      floor: "G",
       rackNumber: "",
       notes: "",
       photoFile: null,
@@ -78,5 +99,54 @@ describe("buildLocationRecordInput (outside)", () => {
     expect(
       buildLocationRecordInput({ ...base, coords: { lat: 1, lng: 2 } }, defaultStationConfig),
     ).toMatchObject({ mode: "outside", coords: { lat: 1, lng: 2 } });
+  });
+});
+
+describe("buildLocationRecordInput (station)", () => {
+  const draft = {
+    kind: "station",
+    lane: "4",
+    side: "left",
+    rackLevel: "top",
+    distance: "close",
+    floor: "2",
+    rackNumber: "R9",
+    notes: "by the pillar",
+    photoFile: null,
+    coords: null,
+  } as const;
+
+  it("rejects a station spot when lane is enabled but blank", () => {
+    const station = {
+      ...defaultStationConfig,
+      enabledFields: { ...defaultStationConfig.enabledFields, lane: true },
+    };
+    expect(buildLocationRecordInput({ ...draft, lane: "   " }, station)).toBeNull();
+  });
+
+  it("keeps only the enabled fields on the built input", () => {
+    const station = {
+      ...defaultStationConfig,
+      enabledFields: {
+        lane: true,
+        side: true,
+        rackLevel: false,
+        distance: false,
+        floor: false,
+        rackNumber: false,
+      },
+    };
+
+    expect(buildLocationRecordInput(draft, station)).toEqual({
+      mode: "station",
+      lane: "4",
+      side: "left",
+      rackLevel: undefined,
+      distance: undefined,
+      floor: undefined,
+      rackNumber: undefined,
+      notes: "by the pillar",
+      coords: undefined,
+    });
   });
 });

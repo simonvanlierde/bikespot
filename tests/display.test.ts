@@ -1,6 +1,4 @@
 import { describe, expect, it } from "vitest";
-
-import type { LocationRecord } from "../src/lib/app-data";
 import {
   formatAccuracy,
   formatTimestamp,
@@ -10,7 +8,8 @@ import {
   mapsLink,
   showFloor,
   titleCase,
-} from "../src/features/location/display";
+} from "../src/features/location/display.ts";
+import type { LocationRecord } from "../src/lib/app-data.ts";
 
 function station(overrides: Partial<LocationRecord> = {}): LocationRecord {
   return {
