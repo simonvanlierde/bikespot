@@ -8,14 +8,10 @@
 
 An offline-first PWA for remembering where you parked your bike. Everything stays on your device — no account, no server.
 
-<!--
-Screenshots TODO: capture per docs/README.md, commit to docs/screenshots/,
-then delete these comment markers to make the table live.
-| Light | Dark |
-| --- | --- |
-| ![Bikespot home screen, light theme](docs/screenshots/home-light.png) | ![Bikespot home screen, dark theme](docs/screenshots/home-dark.png) |
--->
-> **Screenshots pending** — see [`docs/README.md`](docs/README.md#screenshots--todo-needs-real-captures).
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/home-dark.png">
+  <img alt="Bikespot home screen" src="docs/screenshots/home-light.png">
+</picture>
 
 ## Features
 
