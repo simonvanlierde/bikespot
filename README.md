@@ -8,10 +8,12 @@
 
 An offline-first PWA for remembering where you parked your bike. Everything stays on your device — no account, no server.
 
+<p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/home-dark.png">
-  <img alt="Bikespot home screen" src="docs/screenshots/home-light.png">
+  <img alt="Bikespot home screen" src="docs/screenshots/home-light.png" width="300">
 </picture>
+</p>
 
 ## Features
 
