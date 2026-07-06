@@ -1,29 +1,31 @@
-import { effect, signal } from '@preact/signals';
-import type { TargetedEvent } from 'preact';
-import type { Dispatch, SetStateAction } from 'preact/compat';
+import { effect, type Signal, signal } from "@preact/signals";
+import type { TargetedEvent } from "preact";
+import type { Dispatch, SetStateAction } from "preact/compat";
 
-import type { AppData, OverlayState } from './app-data';
-import { defaultAppData } from './defaults';
-import { promoteRecentLocation, saveLocation, updateStationConfig } from './domain';
+import type { AppData, LocationRecord, OverlayState } from "./app-data";
+import { defaultAppData } from "./defaults";
+import { promoteRecentLocation, saveLocation, updateStationConfig } from "./domain";
 import {
   buildLocationRecordInput,
-  buildStationConfig,
   createLocationDraft,
   createStationSettingsDraft,
   type LocationDraft,
   type StationSettingsDraft,
-} from './drafts';
-import { captureCoords } from './geolocation';
-import { loadAppData, saveAppData, savePhoto } from './repository';
+} from "./drafts";
+import { captureCoords } from "./geolocation";
+import { deletePhotoBlob, listPhotoIds, savePhotoBlob } from "./photos";
+import { loadAppData, saveAppData } from "./repository";
 
 export const data = signal<AppData>(defaultAppData);
-export const overlay = signal<OverlayState>({ kind: 'closed' });
+export const overlay = signal<OverlayState>({ kind: "closed" });
 export const locationDraft = signal<LocationDraft | null>(null);
 export const stationDraft = signal<StationSettingsDraft | null>(null);
 export const showEditorDetails = signal(false);
-export const notice = signal('');
+// A fresh object per notice so posting the same text twice still re-arms the
+// auto-dismiss timer keyed on it.
+export const notice = signal<{ text: string } | null>(null);
 export const hydrated = signal(false);
-export const geoStatus = signal<'idle' | 'capturing' | 'error'>('idle');
+export const geoStatus = signal<"idle" | "capturing" | "error">("idle");
 
 // Persist app data whenever it changes, but only after the initial load so we
 // never overwrite stored data with the default placeholder.
@@ -35,23 +37,26 @@ effect(() => {
     return;
   }
 
-  void saveAppData(snapshot);
+  saveAppData(snapshot).catch(() => {
+    notice.value = { text: "Could not save — storage is full or blocked" };
+  });
 });
 
 // Resets transient UI state and (re)loads persisted data. Called on App mount,
 // which keeps the single production instance and remounting tests consistent.
 export function initStore(): () => void {
   data.value = defaultAppData;
-  overlay.value = { kind: 'closed' };
+  overlay.value = { kind: "closed" };
   locationDraft.value = null;
   stationDraft.value = null;
   showEditorDetails.value = false;
-  notice.value = '';
+  notice.value = null;
   hydrated.value = false;
-  geoStatus.value = 'idle';
+  geoStatus.value = "idle";
 
   let active = true;
 
+  // biome-ignore lint/complexity/noVoid: deliberate fire-and-forget hydration
   void loadAppData().then((loaded) => {
     if (!active) {
       return;
@@ -59,6 +64,8 @@ export function initStore(): () => void {
 
     data.value = loaded;
     hydrated.value = true;
+    // biome-ignore lint/complexity/noVoid: deliberate fire-and-forget cleanup
+    void reconcilePhotoBlobs(() => active);
   });
 
   return () => {
@@ -66,18 +73,87 @@ export function initStore(): () => void {
   };
 }
 
+// Load-time sweep pairing the commitData diff: deletes stored blobs no record
+// references (e.g. the record was dropped by load-normalization) and strips
+// photoIds whose blob is gone (e.g. saved via the in-memory fallback in a past
+// session), so neither side can leak or dangle forever.
+async function reconcilePhotoBlobs(isActive: () => boolean): Promise<void> {
+  const snapshot = data.value;
+  try {
+    const stored = new Set(await listPhotoIds());
+
+    // A save landing during our IO mints a new data.value; its blob and photoId
+    // could be misread as orphaned/dangling against these stale snapshots. Bail
+    // and let its own commitData (and the next startup) handle cleanup.
+    if (!isActive() || data.value !== snapshot) {
+      return;
+    }
+
+    const referenced = referencedPhotoIds(snapshot);
+    await Promise.all([...stored].filter((id) => !referenced.has(id)).map(deletePhotoBlob));
+
+    const dropMissing = (entry: LocationRecord): LocationRecord =>
+      entry.photoId && !stored.has(entry.photoId) ? { ...entry, photoId: undefined } : entry;
+    const hasDangling =
+      (snapshot.current?.photoId && !stored.has(snapshot.current.photoId)) ||
+      snapshot.recent.some((entry) => entry.photoId && !stored.has(entry.photoId));
+
+    if (isActive() && data.value === snapshot && hasDangling) {
+      data.value = {
+        ...snapshot,
+        current: snapshot.current ? dropMissing(snapshot.current) : null,
+        recent: snapshot.recent.map(dropMissing),
+      };
+    }
+  } catch {
+    // Best-effort cleanup; never block or break startup on it.
+  }
+}
+
+function referencedPhotoIds(value: AppData): Set<string> {
+  const ids = new Set<string>();
+
+  if (value.current?.photoId) {
+    ids.add(value.current.photoId);
+  }
+
+  for (const entry of value.recent) {
+    if (entry.photoId) {
+      ids.add(entry.photoId);
+    }
+  }
+
+  return ids;
+}
+
+// Applies a data mutation and deletes any photo blobs the mutation orphaned
+// (record overwritten or evicted from recent), so IndexedDB doesn't grow forever.
+async function commitData(next: AppData): Promise<void> {
+  const previousIds = referencedPhotoIds(data.value);
+  data.value = next;
+  const nextIds = referencedPhotoIds(next);
+
+  // Best-effort: a cleanup failure must not reject the submit/promote flow after
+  // data.value has already changed (would leave the sheet open, no success notice).
+  await Promise.all(
+    [...previousIds]
+      .filter((id) => !nextIds.has(id))
+      .map((id) => deletePhotoBlob(id).catch(() => undefined)),
+  );
+}
+
 export function openOverlay(next: OverlayState): void {
   overlay.value = next;
   showEditorDetails.value = false;
-  geoStatus.value = 'idle';
+  geoStatus.value = "idle";
 
-  if (next.kind === 'edit-location') {
+  if (next.kind === "edit-location") {
     locationDraft.value = createLocationDraft(data.value.current, data.value.station);
     stationDraft.value = null;
     return;
   }
 
-  if (next.kind === 'station-settings') {
+  if (next.kind === "station-settings") {
     locationDraft.value = null;
     stationDraft.value = createStationSettingsDraft(data.value.station);
     return;
@@ -88,11 +164,11 @@ export function openOverlay(next: OverlayState): void {
 }
 
 export function closeOverlay(): void {
-  overlay.value = { kind: 'closed' };
+  overlay.value = { kind: "closed" };
   locationDraft.value = null;
   stationDraft.value = null;
   showEditorDetails.value = false;
-  geoStatus.value = 'idle';
+  geoStatus.value = "idle";
 }
 
 export async function handleLocationSubmit(event: TargetedEvent<HTMLFormElement>): Promise<void> {
@@ -104,15 +180,19 @@ export async function handleLocationSubmit(event: TargetedEvent<HTMLFormElement>
     return;
   }
 
-  const photoId = draft.photoFile ? await savePhoto(draft.photoFile) : undefined;
-  const nextLocation = buildLocationRecordInput(draft, data.value.station, photoId);
+  const input = buildLocationRecordInput(draft, data.value.station);
 
-  if (!nextLocation) {
+  if (!input) {
     return;
   }
 
-  data.value = saveLocation(data.value, nextLocation);
-  notice.value = 'Location updated';
+  // Persist a newly attached photo only once we know the record is valid,
+  // otherwise a failed save would leave an orphaned blob behind.
+  const photoId = draft.photoFile ? await savePhotoBlob(draft.photoFile) : undefined;
+  const nextLocation = photoId ? { ...input, photoId } : input;
+
+  await commitData(saveLocation(data.value, nextLocation));
+  notice.value = { text: "Location updated" };
   closeOverlay();
 }
 
@@ -125,19 +205,28 @@ export function handleStationSubmit(event: TargetedEvent<HTMLFormElement>): void
     return;
   }
 
-  data.value = updateStationConfig(data.value, buildStationConfig(draft));
-  notice.value = 'Station settings updated';
+  // The draft already has StationConfig's shape; normalizeStationConfig inside
+  // updateStationConfig owns all sanitization.
+  data.value = updateStationConfig(data.value, draft);
+  notice.value = { text: "Station settings updated" };
   closeOverlay();
 }
 
-export function handleUseRecent(id: string): void {
-  data.value = promoteRecentLocation(data.value, id);
-  notice.value = 'Location updated from recent';
+export async function handleUseRecent(id: string): Promise<void> {
+  const next = promoteRecentLocation(data.value, id);
+
+  // Close before committing: commitData removes the previewed entry from
+  // `recent`, which would leave the still-open preview sheet rendering nothing
+  // while the async blob cleanup runs.
   closeOverlay();
+  notice.value = { text: "Location updated from recent" };
+  await commitData(next);
 }
 
 export function handlePhotoChange(event: TargetedEvent<HTMLInputElement>): void {
   const file = event.currentTarget.files?.[0] ?? null;
+  // Reset the input so picking the same file after a remove still fires change.
+  event.currentTarget.value = "";
   const draft = locationDraft.value;
 
   if (!draft) {
@@ -147,6 +236,16 @@ export function handlePhotoChange(event: TargetedEvent<HTMLInputElement>): void 
   locationDraft.value = { ...draft, photoFile: file };
 }
 
+export function handlePhotoRemove(): void {
+  const draft = locationDraft.value;
+
+  if (!draft) {
+    return;
+  }
+
+  locationDraft.value = { ...draft, photoFile: null };
+}
+
 export async function handleCaptureLocation(): Promise<void> {
   const draft = locationDraft.value;
 
@@ -154,20 +253,20 @@ export async function handleCaptureLocation(): Promise<void> {
     return;
   }
 
-  geoStatus.value = 'capturing';
+  geoStatus.value = "capturing";
 
   try {
     const coords = await captureCoords();
 
     if (!coords || locationDraft.value === null) {
-      geoStatus.value = coords ? 'idle' : 'error';
+      geoStatus.value = coords ? "idle" : "error";
       return;
     }
 
     locationDraft.value = { ...locationDraft.value, coords };
-    geoStatus.value = 'idle';
+    geoStatus.value = "idle";
   } catch {
-    geoStatus.value = 'error';
+    geoStatus.value = "error";
   }
 }
 
@@ -175,28 +274,18 @@ export function toggleEditorDetails(): void {
   showEditorDetails.value = !showEditorDetails.value;
 }
 
-export const setLocationDraft: Dispatch<SetStateAction<LocationDraft>> = (updater) => {
-  const previous = locationDraft.value;
+function signalSetter<T>(target: Signal<T | null>): Dispatch<SetStateAction<T>> {
+  return (updater) => {
+    const previous = target.value;
 
-  if (previous === null) {
-    return;
-  }
+    if (previous === null) {
+      return;
+    }
 
-  locationDraft.value =
-    typeof updater === 'function'
-      ? (updater as (previous: LocationDraft) => LocationDraft)(previous)
-      : updater;
-};
+    target.value =
+      typeof updater === "function" ? (updater as (previous: T) => T)(previous) : updater;
+  };
+}
 
-export const setStationDraft: Dispatch<SetStateAction<StationSettingsDraft>> = (updater) => {
-  const previous = stationDraft.value;
-
-  if (previous === null) {
-    return;
-  }
-
-  stationDraft.value =
-    typeof updater === 'function'
-      ? (updater as (previous: StationSettingsDraft) => StationSettingsDraft)(previous)
-      : updater;
-};
+export const setLocationDraft = signalSetter(locationDraft);
+export const setStationDraft = signalSetter(stationDraft);

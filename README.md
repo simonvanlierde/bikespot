@@ -8,6 +8,13 @@
 
 An offline-first PWA for remembering where you parked your bike. Everything stays on your device — no account, no server.
 
+<p align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/home-dark.png">
+  <img alt="Bikespot home screen" src="docs/screenshots/home-light.png" width="300">
+</picture>
+</p>
+
 ## Features
 
 - **Save your spot** as a structured *station* location (lane, side, rack level, distance, floor, rack number) or a free-text *outside* description.
@@ -21,7 +28,6 @@ By design, the app is single-device: no cross-device sync. State lives in `local
 ## Roadmap
 
 - [ ] Add a map view for saved spots.
-- [ ] Show photo preview in the history list and the editor.
 - [ ] Consider server-side sync for multi-device support, with optional end-to-end encryption.
 
 ## Install
@@ -42,17 +48,9 @@ Preact + `@preact/signals`, TypeScript, Vite, `vite-plugin-pwa` (Workbox), Biome
 
 ## Architecture
 
-The app is a small client-only PWA with a three-layer `src/` structure and a single global store:
+The app is a small client-only PWA. `src/` has three layers — `components/` (presentational UI primitives) → `features/` (domain modules wiring store to UI) → `lib/` (types, pure domain logic, persistence, and the signals store) — over a single global store.
 
-```text
-lib/         types, pure domain logic, persistence, and the signals store
-  ↓
-features/    domain modules (location, history, app) that wire the store to UI
-  ↓
-components/  presentational UI primitives (fields, sheet dialog, segmented control)
-```
-
-State is a set of `@preact/signals` in [`lib/store.ts`](src/lib/store.ts). UI reads signals directly; updates go through **pure functions** in [`lib/domain.ts`](src/lib/domain.ts) rather than in-place mutation, and an `effect()` persists the `data` signal whenever it changes. There is no router — navigation is modal state, modelled as the `OverlayState` discriminated union and rendered by [`features/app/AppOverlays.tsx`](src/features/app/AppOverlays.tsx). Persistence is split: structured app data in `localStorage` ([`lib/repository.ts`](src/lib/repository.ts)) and photos in IndexedDB with an in-memory fallback ([`lib/photos.ts`](src/lib/photos.ts)).
+State is a set of `@preact/signals` in [`lib/store.ts`](src/lib/store.ts). UI reads signals directly; updates go through **pure functions** in [`lib/domain.ts`](src/lib/domain.ts) rather than in-place mutation, and an `effect()` persists the `data` signal whenever it changes. There is no router — navigation is modal state, modelled as the `OverlayState` discriminated union and rendered by [`features/app/AppOverlays.tsx`](src/features/app/AppOverlays.tsx). Persistence is split: structured app data in `localStorage` ([`lib/repository.ts`](src/lib/repository.ts)) and photos in IndexedDB with an in-memory fallback ([`lib/photos.ts`](src/lib/photos.ts)) — the reasoning is recorded in [ADR 0001](docs/adr/0001-split-persistence-across-localstorage-and-indexeddb.md).
 
 ## Development
 
@@ -66,4 +64,15 @@ pnpm check    # lint, test, and build
 
 `pnpm build` outputs a static site to `dist/`, deployable to any static host.
 
-Released under the [MIT License](LICENSE).
+## Deployment
+
+**[bikespot.duinlab.nl](https://bikespot.duinlab.nl)** is hosted on Cloudflare Pages via its Git
+integration: a push to `main` triggers a build (`pnpm build`) that publishes `dist/`. The build
+command and preview settings live in the Cloudflare dashboard; the repo only pins the output
+directory in [`wrangler.jsonc`](wrangler.jsonc).
+
+To deploy from a local checkout: `pnpm deploy` (`wrangler pages deploy`).
+
+## License
+
+[MIT](LICENSE) © Simon van Lierde

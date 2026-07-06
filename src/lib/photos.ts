@@ -1,92 +1,18 @@
-import { createId } from './id';
+import { createId } from "./domain";
 
-const PHOTO_DB_NAME = 'bikespot-photos';
-const PHOTO_STORE_NAME = 'photos';
+const PHOTO_DB_NAME = "bikespot-photos";
+const PHOTO_STORE_NAME = "photos";
 
 const memoryPhotoStore = new Map<string, Blob>();
 
-export async function savePhotoBlob(blob: Blob): Promise<string> {
-  const photoId = createId();
-
-  if (!hasIndexedDb()) {
-    memoryPhotoStore.set(photoId, blob);
-    return photoId;
-  }
-
-  const database = await openPhotoDb();
-
-  await new Promise<void>((resolve, reject) => {
-    const transaction = database.transaction(PHOTO_STORE_NAME, 'readwrite');
-    const store = transaction.objectStore(PHOTO_STORE_NAME);
-    const request = store.put(blob, photoId);
-
-    request.onsuccess = () => resolve();
-    request.onerror = () => reject(request.error ?? new Error('Could not save photo'));
-  });
-
-  return photoId;
-}
-
-export async function loadPhotoBlob(photoId: string): Promise<Blob | null> {
-  if (!hasIndexedDb()) {
-    return memoryPhotoStore.get(photoId) ?? null;
-  }
-
-  const database = await openPhotoDb();
-
-  return new Promise<Blob | null>((resolve, reject) => {
-    const transaction = database.transaction(PHOTO_STORE_NAME, 'readonly');
-    const store = transaction.objectStore(PHOTO_STORE_NAME);
-    const request = store.get(photoId);
-
-    request.onsuccess = () => resolve((request.result as Blob | undefined) ?? null);
-    request.onerror = () => reject(request.error ?? new Error('Could not load photo'));
-  });
-}
-
-export async function deletePhotoBlob(photoId: string): Promise<void> {
-  if (!hasIndexedDb()) {
-    memoryPhotoStore.delete(photoId);
-    return;
-  }
-
-  const database = await openPhotoDb();
-
-  await new Promise<void>((resolve, reject) => {
-    const transaction = database.transaction(PHOTO_STORE_NAME, 'readwrite');
-    const store = transaction.objectStore(PHOTO_STORE_NAME);
-    const request = store.delete(photoId);
-
-    request.onsuccess = () => resolve();
-    request.onerror = () => reject(request.error ?? new Error('Could not delete photo'));
-  });
-}
-
-export async function clearPhotoBlobs(): Promise<void> {
-  memoryPhotoStore.clear();
-
-  if (!hasIndexedDb()) {
-    return;
-  }
-
-  const database = await openPhotoDb();
-
-  await new Promise<void>((resolve, reject) => {
-    const transaction = database.transaction(PHOTO_STORE_NAME, 'readwrite');
-    const store = transaction.objectStore(PHOTO_STORE_NAME);
-    const request = store.clear();
-
-    request.onsuccess = () => resolve();
-    request.onerror = () => reject(request.error ?? new Error('Could not clear photo store'));
-  });
-}
+let dbPromise: Promise<IDBDatabase> | null = null;
 
 function hasIndexedDb(): boolean {
-  return typeof indexedDB !== 'undefined';
+  return typeof indexedDB !== "undefined";
 }
 
 function openPhotoDb(): Promise<IDBDatabase> {
-  return new Promise((resolve, reject) => {
+  dbPromise ??= new Promise((resolve, reject) => {
     const request = indexedDB.open(PHOTO_DB_NAME, 1);
 
     request.onupgradeneeded = () => {
@@ -95,6 +21,79 @@ function openPhotoDb(): Promise<IDBDatabase> {
       }
     };
     request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error ?? new Error('Could not open photo database'));
+    request.onerror = () => {
+      // Drop the cached promise so a later call can retry instead of
+      // rejecting forever.
+      dbPromise = null;
+      reject(request.error ?? new Error("Could not open photo database"));
+    };
   });
+
+  return dbPromise;
+}
+
+async function withStore<T>(
+  mode: IDBTransactionMode,
+  run: (store: IDBObjectStore) => IDBRequest<T>,
+): Promise<T> {
+  const database = await openPhotoDb();
+
+  return new Promise<T>((resolve, reject) => {
+    const request = run(database.transaction(PHOTO_STORE_NAME, mode).objectStore(PHOTO_STORE_NAME));
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error ?? new Error("Photo store request failed"));
+  });
+}
+
+export async function savePhotoBlob(blob: Blob): Promise<string> {
+  const photoId = createId();
+
+  if (!hasIndexedDb()) {
+    // Session-only fallback; reconcilePhotoBlobs drops the dangling id on the
+    // next load so records never keep pointing at a blob that is gone.
+    memoryPhotoStore.set(photoId, blob);
+    return photoId;
+  }
+
+  await withStore("readwrite", (store) => store.put(blob, photoId));
+  return photoId;
+}
+
+export async function loadPhotoBlob(photoId: string): Promise<Blob | null> {
+  if (!hasIndexedDb()) {
+    return memoryPhotoStore.get(photoId) ?? null;
+  }
+
+  return ((await withStore("readonly", (store) => store.get(photoId))) as Blob | undefined) ?? null;
+}
+
+export async function deletePhotoBlob(photoId: string): Promise<void> {
+  memoryPhotoStore.delete(photoId);
+
+  if (!hasIndexedDb()) {
+    return;
+  }
+
+  await withStore("readwrite", (store) => store.delete(photoId));
+}
+
+export async function listPhotoIds(): Promise<string[]> {
+  if (!hasIndexedDb()) {
+    return [...memoryPhotoStore.keys()];
+  }
+
+  const keys = await withStore("readonly", (store) => store.getAllKeys());
+  return keys.filter((key): key is string => typeof key === "string");
+}
+
+// NOTE: only tests call this — kept here because it needs the store internals.
+export async function clearPhotoBlobs(): Promise<void> {
+  memoryPhotoStore.clear();
+
+  if (!hasIndexedDb()) {
+    return;
+  }
+
+  await withStore("readwrite", (store) => store.clear());
 }

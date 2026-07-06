@@ -8,11 +8,10 @@ import type {
   RackLevel,
   Side,
   StationConfig,
-} from './app-data';
-import { defaultStationConfig } from './defaults';
+} from "./app-data";
 
 export type StationLocationDraft = {
-  kind: 'station';
+  kind: "station";
   lane: string;
   side: Side;
   rackLevel: RackLevel;
@@ -25,7 +24,7 @@ export type StationLocationDraft = {
 };
 
 export type OutsideLocationDraft = {
-  kind: 'outside';
+  kind: "outside";
   notes: string;
   photoFile: File | null;
   coords: Coords | null;
@@ -53,46 +52,50 @@ export function createStationSettingsDraft(station: StationConfig): StationSetti
   };
 }
 
+// The draft describes a NEW parking event, so it carries over structural
+// habits (mode, lane, side, floor, ...) but never the previous spot's
+// evidence — notes, photo, GPS coords, and rack number belong to the old spot.
 export function createLocationDraft(
   current: LocationRecord | null,
   station: StationConfig,
 ): LocationDraft {
   if (!current) {
     return {
-      kind: 'station',
-      lane: station.laneLabels[0] ?? '',
-      side: 'right',
-      rackLevel: 'bottom',
-      distance: 'medium',
-      floor: station.floorLabels[0] ?? '',
-      rackNumber: '',
-      notes: '',
+      kind: "station",
+      lane: station.laneLabels[0] ?? "",
+      side: "right",
+      rackLevel: "bottom",
+      distance: "middle",
+      floor: station.floorLabels[0] ?? "",
+      rackNumber: "",
+      notes: "",
       photoFile: null,
       coords: null,
     };
   }
 
+  if (current.mode === "outside") {
+    return createOutsideLocationDraft();
+  }
+
   return {
-    kind: 'station',
-    lane: current.mode === 'station' ? (current.lane ?? station.laneLabels[0] ?? '') : '',
-    side: current.mode === 'station' ? (current.side ?? 'right') : 'right',
-    rackLevel: current.mode === 'station' ? (current.rackLevel ?? 'bottom') : 'bottom',
-    distance: current.mode === 'station' ? (current.distance ?? 'medium') : 'medium',
-    floor:
-      current.mode === 'station'
-        ? (current.floor ?? station.floorLabels[0] ?? '')
-        : (station.floorLabels[0] ?? ''),
-    rackNumber: current.mode === 'station' ? (current.rackNumber ?? '') : '',
-    notes: current.mode === 'station' ? (current.notes ?? '') : '',
+    kind: "station",
+    lane: current.lane ?? station.laneLabels[0] ?? "",
+    side: current.side ?? "right",
+    rackLevel: current.rackLevel ?? "bottom",
+    distance: current.distance ?? "middle",
+    floor: current.floor ?? station.floorLabels[0] ?? "",
+    rackNumber: "",
+    notes: "",
     photoFile: null,
-    coords: current.coords ?? null,
+    coords: null,
   };
 }
 
 export function createOutsideLocationDraft(): OutsideLocationDraft {
   return {
-    kind: 'outside',
-    notes: '',
+    kind: "outside",
+    notes: "",
     photoFile: null,
     coords: null,
   };
@@ -101,19 +104,19 @@ export function createOutsideLocationDraft(): OutsideLocationDraft {
 export function buildLocationRecordInput(
   draft: LocationDraft,
   station: StationConfig,
-  photoId?: string,
 ): LocationRecordInput | null {
-  if (draft.kind === 'outside') {
+  if (draft.kind === "outside") {
     const outsideDescription = draft.notes.trim();
 
-    if (!outsideDescription) {
+    // Savable as long as the spot carries something to find it by: a note, a
+    // photo, or a GPS fix.
+    if (!(outsideDescription || draft.photoFile || draft.coords)) {
       return null;
     }
 
     return {
-      mode: 'outside',
-      outsideDescription,
-      photoId,
+      mode: "outside",
+      outsideDescription: outsideDescription || undefined,
       coords: draft.coords ?? undefined,
     };
   }
@@ -126,7 +129,7 @@ export function buildLocationRecordInput(
   }
 
   return {
-    mode: 'station',
+    mode: "station",
     lane,
     side: station.enabledFields.side ? draft.side : undefined,
     rackLevel: station.enabledFields.rackLevel ? draft.rackLevel : undefined,
@@ -134,24 +137,7 @@ export function buildLocationRecordInput(
     floor: station.enabledFields.floor ? emptyToUndefined(draft.floor) : undefined,
     rackNumber: station.enabledFields.rackNumber ? emptyToUndefined(draft.rackNumber) : undefined,
     notes: emptyToUndefined(draft.notes),
-    photoId,
     coords: draft.coords ?? undefined,
-  };
-}
-
-export function buildStationConfig(draft: StationSettingsDraft): StationConfig {
-  const cleanLabels = (labels: string[], fallback: string[]) => {
-    const trimmed = labels.map((label) => label.trim()).filter(Boolean);
-    return trimmed.length > 0 ? trimmed : fallback;
-  };
-
-  return {
-    name: draft.name.trim() || defaultStationConfig.name,
-    laneInputMode: draft.laneInputMode,
-    laneLabels: cleanLabels(draft.laneLabels, defaultStationConfig.laneLabels),
-    floorInputMode: draft.floorInputMode,
-    floorLabels: cleanLabels(draft.floorLabels, defaultStationConfig.floorLabels),
-    enabledFields: { ...draft.enabledFields },
   };
 }
 

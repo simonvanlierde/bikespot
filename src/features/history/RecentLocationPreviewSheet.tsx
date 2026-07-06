@@ -1,9 +1,9 @@
-import { RotateCcw } from 'lucide-preact';
+import { RotateCcw } from "lucide-preact";
 
-import { SheetDialog } from '@/components/SheetDialog';
-import { formatTimestamp, getPrimaryLabel } from '@/features/location/display';
-import { LocationDetailContent } from '@/features/location/LocationDetailContent';
-import type { LocationRecord } from '@/lib/app-data';
+import { SheetDialog } from "@/components/SheetDialog";
+import { formatTimestamp, getPrimaryLabel } from "@/features/location/display";
+import { LocationDetailContent } from "@/features/location/LocationDetailContent";
+import type { LocationRecord } from "@/lib/app-data";
 
 export function RecentLocationPreviewSheet({
   selectedRecent,
@@ -16,6 +16,7 @@ export function RecentLocationPreviewSheet({
 }) {
   return (
     <SheetDialog
+      closeLabel="Back to recent locations"
       label="Recent location preview"
       title={getPrimaryLabel(selectedRecent)}
       onClose={onClose}

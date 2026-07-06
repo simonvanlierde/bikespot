@@ -1,4 +1,4 @@
-import type { ReactNode } from 'preact/compat';
+import type { ReactNode } from "preact/compat";
 
 export function SegmentedControl<T extends string>({
   label,
@@ -6,8 +6,6 @@ export function SegmentedControl<T extends string>({
   options,
   value,
   titleCase,
-  layout = 'fit',
-  variant = 'default',
   labelSuffix,
 }: {
   label: string;
@@ -15,42 +13,21 @@ export function SegmentedControl<T extends string>({
   options: T[];
   value: T;
   titleCase: (value?: string) => string;
-  layout?: 'fit' | 'two';
-  variant?: 'default' | 'compact' | 'micro';
   labelSuffix?: ReactNode;
 }) {
-  const optionsClassName =
-    layout === 'two'
-      ? 'segmented-field__options segmented-field__options--two'
-      : 'segmented-field__options segmented-field__options--fit';
-
-  const fieldsetClassName =
-    variant === 'compact'
-      ? 'segmented-field segmented-field--compact'
-      : variant === 'micro'
-        ? 'segmented-field segmented-field--micro'
-        : 'segmented-field';
-
-  const segmentClassName =
-    variant === 'compact'
-      ? 'segment segment--compact'
-      : variant === 'micro'
-        ? 'segment segment--micro'
-        : 'segment';
-
   return (
-    <fieldset className={fieldsetClassName}>
+    <fieldset className="segmented-field">
       <legend className="segmented-field__legend">
         <span>{label}</span>
         {labelSuffix}
       </legend>
-      <div className={optionsClassName}>
+      <div className="segmented-field__options segmented-field__options--fit">
         {options.map((option) => (
           <button
             key={option}
             aria-label={`${label} ${titleCase(option)}`}
             aria-pressed={value === option}
-            className={`${segmentClassName}${value === option ? ' is-active' : ''}`}
+            className={`segment${value === option ? " is-active" : ""}`}
             onClick={() => onChange(option)}
             type="button"
           >

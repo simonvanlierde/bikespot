@@ -1,5 +1,13 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.5.1/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.2/schema.json",
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    },
+    "enabled": true
+  },
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
@@ -7,20 +15,63 @@
     "lineWidth": 100
   },
   "linter": {
+    "domains": {
+      "project": "recommended",
+      "test": "recommended",
+      "types": "recommended"
+    },
     "enabled": true,
     "rules": {
-      "recommended": true
+      "preset": "recommended",
+      "a11y": "on",
+      "complexity": "on",
+      "correctness": {
+        "recommended": true,
+        "useQwikValidLexicalScope": "off"
+      },
+      "performance": "on",
+      "security": "on",
+      "suspicious": "on"
     }
   },
+  "overrides": [
+    {
+      "includes": ["tests/**"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noNodejsModules": "off"
+          },
+          "performance": {
+            "useTopLevelRegex": "off",
+            "noJsxPropsBind": "off"
+          },
+          "security": {
+            "noSecrets": "off"
+          },
+          "complexity": {
+            "noExcessiveLinesPerFunction": "off"
+          },
+          "suspicious": {
+            "noEmptyBlockStatements": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["*.config.ts"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noNodejsModules": "off"
+          }
+        }
+      }
+    }
+  ],
   "vcs": {
-    "enabled": true,
     "clientKind": "git",
+    "enabled": true,
     "useIgnoreFile": true
-  },
-  "javascript": {
-    "formatter": {
-      "quoteStyle": "single",
-      "semicolons": "always"
-    }
   }
 }

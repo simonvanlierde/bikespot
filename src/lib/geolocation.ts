@@ -1,4 +1,4 @@
-import type { Coords } from './app-data';
+import type { Coords } from "./app-data";
 
 const GEOLOCATION_OPTIONS: PositionOptions = {
   enableHighAccuracy: true,
@@ -14,7 +14,7 @@ function round(value: number): number {
 // has no Geolocation API; rejects when the user denies permission or the lookup
 // times out, so callers can surface an error state.
 export function captureCoords(): Promise<Coords | null> {
-  if (typeof navigator === 'undefined' || !navigator.geolocation) {
+  if (typeof navigator === "undefined" || !navigator.geolocation) {
     return Promise.resolve(null);
   }
 
@@ -25,7 +25,7 @@ export function captureCoords(): Promise<Coords | null> {
           lat: round(position.coords.latitude),
           lng: round(position.coords.longitude),
           accuracy:
-            typeof position.coords.accuracy === 'number'
+            typeof position.coords.accuracy === "number"
               ? Math.round(position.coords.accuracy)
               : undefined,
         });

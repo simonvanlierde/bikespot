@@ -1,15 +1,15 @@
-import { render } from '@testing-library/preact';
-import { beforeEach, describe, expect, it } from 'vitest';
-import { axe } from 'vitest-axe';
+import { render } from "@testing-library/preact";
+import { beforeEach, describe, expect, it } from "vitest";
+import { axe } from "vitest-axe";
 
-import App from '../src/App';
+import App from "../src/App.tsx";
 
-describe('accessibility', () => {
+describe("accessibility", () => {
   beforeEach(() => {
     window.localStorage.clear();
   });
 
-  it('renders the main view with no axe violations', async () => {
+  it("renders the main view with no axe violations", async () => {
     const { container } = render(<App />);
 
     const results = await axe(container);

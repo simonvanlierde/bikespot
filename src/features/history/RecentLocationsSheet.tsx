@@ -1,8 +1,8 @@
-import { History } from 'lucide-preact';
+import { History, MapPin } from "lucide-preact";
 
-import { SheetDialog } from '@/components/SheetDialog';
-import { formatTimestamp, getSummary, showFloor } from '@/features/location/display';
-import type { LocationRecord } from '@/lib/app-data';
+import { SheetDialog } from "@/components/SheetDialog";
+import { formatTimestamp, getDetailFacts, getPrimaryLabel } from "@/features/location/display";
+import type { LocationRecord } from "@/lib/app-data";
 
 export function RecentLocationsSheet({
   recent,
@@ -22,20 +22,25 @@ export function RecentLocationsSheet({
     >
       <div className="recent-list recent-list--sheet">
         {recent.map((entry) => {
-          const title = getRecentTitle(entry);
+          const title = getPrimaryLabel(entry);
           const meta = getRecentMeta(entry);
 
           return (
             <button
-              aria-label={`Restore ${getRestoreLabel(entry)} from recent locations`}
+              aria-label={`Restore ${title} from recent locations`}
               key={entry.id}
               className="recent-item"
               type="button"
               onClick={() => onPreview(entry.id)}
             >
               <div className="recent-item__body">
-                <p className="recent-title">{title}</p>
-                <p className="recent-meta">{meta}</p>
+                <p className="recent-title">
+                  {title}
+                  {entry.coords ? (
+                    <MapPin aria-label="Has GPS location" className="recent-title__pin" />
+                  ) : null}
+                </p>
+                {meta ? <p className="recent-meta">{meta}</p> : null}
               </div>
               <span className="recent-time">{formatTimestamp(entry.updatedAt)}</span>
             </button>
@@ -46,32 +51,12 @@ export function RecentLocationsSheet({
   );
 }
 
-function getRestoreLabel(entry: LocationRecord) {
-  if (entry.mode === 'outside') {
-    return 'outside location';
-  }
-
-  return entry.lane ? `lane ${entry.lane}` : 'station spot';
-}
-
-function getRecentTitle(entry: LocationRecord) {
-  if (entry.mode === 'outside') {
-    return 'Outside the station';
-  }
-
-  const summary = getSummary(entry);
-
-  if (!entry.lane) {
-    return summary || 'Bike spot';
-  }
-
-  return `Lane ${entry.lane}${summary ? ` · ${summary}` : ''}`;
-}
-
+// Mirror the main card's priority: the headline is the primary locator, the
+// meta line is the same labeled fact set (or the outside description).
 function getRecentMeta(entry: LocationRecord) {
-  if (entry.mode === 'outside') {
-    return entry.outsideDescription;
+  if (entry.mode === "outside") {
+    return entry.outsideDescription ?? "";
   }
 
-  return [showFloor(entry) ? entry.floor : ''].filter(Boolean).join(' · ');
+  return getDetailFacts(entry).join(" · ");
 }

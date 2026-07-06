@@ -5,20 +5,30 @@ import type {
   LocationRecordInput,
   StationConfig,
   VisibleFields,
-} from './app-data';
-import { ENABLED_FIELD_KEYS, RECENT_LIMIT, VISIBLE_FIELD_KEYS } from './app-data';
-import { defaultStationConfig } from './defaults';
-import { createId } from './id';
+} from "./app-data";
+import { ENABLED_FIELD_KEYS, RECENT_LIMIT, VISIBLE_FIELD_KEYS } from "./app-data";
+import { defaultStationConfig } from "./defaults";
 
 type StationLocationRecordSeed = Omit<
-  Extract<LocationRecord, { mode: 'station' }>,
-  'id' | 'updatedAt'
+  Extract<LocationRecord, { mode: "station" }>,
+  "id" | "updatedAt"
 >;
 type OutsideLocationRecordSeed = Omit<
-  Extract<LocationRecord, { mode: 'outside' }>,
-  'id' | 'updatedAt'
+  Extract<LocationRecord, { mode: "outside" }>,
+  "id" | "updatedAt"
 >;
 type LocationRecordSeed = StationLocationRecordSeed | OutsideLocationRecordSeed;
+
+export function createId(): string {
+  if (typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+
+  // randomUUID needs a secure context; http-on-LAN testing lands here.
+  return Array.from(crypto.getRandomValues(new Uint8Array(16)), (byte) =>
+    byte.toString(16).padStart(2, "0"),
+  ).join("");
+}
 
 export function createLocationRecord(
   record: LocationRecordSeed,
@@ -115,9 +125,9 @@ export function normalizeStationConfig(
 
   return {
     name: value?.name?.trim() || fallback.name,
-    laneInputMode: value?.laneInputMode === 'quick' ? 'quick' : 'number',
+    laneInputMode: value?.laneInputMode === "quick" ? "quick" : "number",
     laneLabels: normalizeLabels(value?.laneLabels, fallback.laneLabels),
-    floorInputMode: value?.floorInputMode === 'quick' ? 'quick' : 'number',
+    floorInputMode: value?.floorInputMode === "quick" ? "quick" : "number",
     floorLabels: normalizeLabels(value?.floorLabels, fallback.floorLabels),
     enabledFields,
   };
@@ -128,12 +138,12 @@ function buildRecord(
   input: LocationRecordInput,
   timestamp: string,
 ): LocationRecord {
-  if (input.mode === 'outside') {
+  if (input.mode === "outside") {
     return createLocationRecord(
       {
-        mode: 'outside',
+        mode: "outside",
         stationName: station.name,
-        outsideDescription: input.outsideDescription.trim(),
+        outsideDescription: input.outsideDescription?.trim(),
         photoId: input.photoId,
         coords: input.coords,
       },
@@ -143,7 +153,7 @@ function buildRecord(
 
   return createLocationRecord(
     {
-      mode: 'station',
+      mode: "station",
       stationName: station.name,
       lane: input.lane?.trim(),
       side: input.side,

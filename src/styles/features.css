@@ -2,11 +2,20 @@
   margin-top: 0.2rem;
 }
 
+/* Departures-board style: label left, value right, hairline between rows. */
+.detail-list {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  padding: 0 0.95rem;
+}
+
 .detail-row {
-  padding: 0.8rem 0.95rem;
-  border-radius: 1rem;
-  border: 1px solid var(--line-soft);
-  background: var(--surface-strong);
+  align-items: baseline;
+  padding: 0.7rem 0;
+}
+
+.detail-row + .detail-row {
+  border-top: 1px solid var(--line);
 }
 
 .detail-row__value {
@@ -17,19 +26,19 @@
 
 .detail-note {
   padding: 0.95rem 1rem;
-  border-radius: 1rem;
-  background: rgba(24, 36, 31, 0.05);
-  color: var(--ink-soft);
+  border-radius: var(--radius-control);
+  background: var(--surface-sunken);
+  color: var(--ink);
 }
 
 .coords-field__status {
   margin: 0;
   font-size: 0.85rem;
-  color: var(--ink-soft);
+  color: var(--muted);
 }
 
 .coords-field__status--error {
-  color: #a3372b;
+  color: var(--danger);
 }
 
 .maps-link {
@@ -37,32 +46,53 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.8rem 1rem;
-  border-radius: 1rem;
-  border: 1px solid var(--line-soft);
-  background: var(--accent-soft);
-  color: var(--accent);
+  border-radius: var(--radius-control);
+  border: 1px solid var(--sign);
+  background: transparent;
+  color: var(--sign);
   font-weight: 700;
   text-decoration: none;
 }
 
+@media (prefers-color-scheme: dark) {
+  .maps-link {
+    border-color: var(--line-strong);
+    color: var(--ink);
+  }
+}
+
 .maps-link__accuracy {
   margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
   font-weight: 500;
-  color: var(--ink-soft);
+  color: var(--muted);
 }
 
 .photo-preview {
   margin: 0;
   overflow: hidden;
-  border-radius: 1.1rem;
-  border: 1px solid var(--line-soft);
-  background: var(--surface-strong);
+  border-radius: var(--radius-control);
+  border: 1px solid var(--line);
+  background: var(--surface);
 }
 
 .photo-preview img {
   display: block;
   width: 100%;
   height: auto;
+}
+
+/* Keep the in-editor preview compact so the form stays reachable. */
+.photo-preview--editor img {
+  max-height: 14rem;
+  object-fit: cover;
+}
+
+.photo-field__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
 }
 
 .recent-list {
@@ -77,8 +107,8 @@
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  background: var(--surface-strong);
-  border: 1px solid var(--line-soft);
+  background: var(--surface);
+  border: 1px solid var(--line);
   padding: 1rem;
 }
 
@@ -89,8 +119,18 @@
 
 .recent-title {
   margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   color: var(--ink);
   font-weight: 700;
+}
+
+.recent-title__pin {
+  width: 0.9rem;
+  height: 0.9rem;
+  flex: 0 0 auto;
+  color: var(--muted);
 }
 
 .recent-meta {
@@ -104,23 +144,32 @@
   }
 
   .current-card {
-    padding: 1.45rem;
+    padding: 1.9rem;
   }
 
-  .current-card__header {
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: end;
+  /* Wide enough for the timestamp and the button to share the footer row, with
+     the button pushed to the trailing edge. */
+  .current-card__footer {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .current-card__action {
+    margin-left: auto;
   }
 
   .utility-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  /* Wide screens: the sheet becomes a centered top-anchored dialog. */
   .sheet-overlay {
-    padding-top: 2rem;
+    align-items: flex-start;
+    padding: 2rem 1rem 1rem;
   }
 
   .editor-sheet {
+    border-radius: var(--radius-sheet);
     padding: 1.15rem;
   }
 
@@ -130,10 +179,6 @@
 }
 
 @media (max-width: 639px) {
-  .detail-row {
-    flex-direction: column;
-  }
-
   .recent-item {
     flex-direction: column;
   }
@@ -142,8 +187,7 @@
     grid-template-columns: 1fr;
   }
 
-  .recent-time,
-  .detail-row__value {
+  .recent-time {
     text-align: left;
   }
 }

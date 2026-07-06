@@ -1,13 +1,13 @@
-import { CircleHelp } from 'lucide-preact';
-import type { TargetedEvent } from 'preact';
-import { CoordsField } from '@/components/CoordsField';
-import { NotesField } from '@/components/NotesField';
-import { PhotoField } from '@/components/PhotoField';
-import { SegmentedControl } from '@/components/SegmentedControl';
-import type { StationConfig } from '@/lib/app-data';
-import type { StationLocationDraft } from '@/lib/drafts';
-import { titleCase } from './display';
-import { FieldValueInput } from './FieldValueInput';
+import { ChevronDown, ChevronRight, CircleHelp } from "lucide-preact";
+import type { TargetedEvent } from "preact";
+import { CoordsField } from "@/components/CoordsField";
+import { NotesField } from "@/components/NotesField";
+import { PhotoField } from "@/components/PhotoField";
+import { SegmentedControl } from "@/components/SegmentedControl";
+import type { StationConfig } from "@/lib/app-data";
+import type { StationLocationDraft } from "@/lib/drafts";
+import { titleCase } from "./display";
+import { FieldValueInput } from "./FieldValueInput";
 
 export type UpdateStationField = <K extends keyof StationLocationDraft>(
   field: K,
@@ -15,13 +15,14 @@ export type UpdateStationField = <K extends keyof StationLocationDraft>(
 ) => void;
 
 function Chevron({ expanded }: { expanded: boolean }) {
-  return (
-    <span aria-hidden="true" className="chevron">
-      {expanded ? '⌄' : '›'}
-    </span>
+  return expanded ? (
+    <ChevronDown aria-hidden="true" className="button-icon" />
+  ) : (
+    <ChevronRight aria-hidden="true" className="button-icon" />
   );
 }
 
+// biome-ignore lint/complexity/noExcessiveLinesPerFunction: JSX render fn; markup dominates the line count
 export function StationLocationFields({
   formState,
   station,
@@ -31,16 +32,18 @@ export function StationLocationFields({
   onNotesChange,
   onToggleDetails,
   onPhotoChange,
+  onPhotoRemove,
   onCaptureLocation,
 }: {
   formState: StationLocationDraft;
   station: StationConfig;
   showDetails: boolean;
-  geoStatus: 'idle' | 'capturing' | 'error';
+  geoStatus: "idle" | "capturing" | "error";
   updateStationField: UpdateStationField;
   onNotesChange: (notes: string) => void;
   onToggleDetails: () => void;
   onPhotoChange: (event: TargetedEvent<HTMLInputElement>) => void;
+  onPhotoRemove: () => void;
   onCaptureLocation: () => void;
 }) {
   return (
@@ -53,7 +56,7 @@ export function StationLocationFields({
           mode={station.floorInputMode}
           labels={station.floorLabels}
           value={formState.floor}
-          onChange={(value) => updateStationField('floor', value)}
+          onChange={(value) => updateStationField("floor", value)}
         />
       ) : null}
 
@@ -63,7 +66,7 @@ export function StationLocationFields({
           mode={station.laneInputMode}
           labels={station.laneLabels}
           value={formState.lane}
-          onChange={(value) => updateStationField('lane', value)}
+          onChange={(value) => updateStationField("lane", value)}
         />
       ) : null}
 
@@ -74,14 +77,13 @@ export function StationLocationFields({
             <button aria-label="Distance help" className="info-trigger" type="button">
               <CircleHelp aria-hidden="true" className="button-icon" />
               <span className="info-tooltip">
-                Close = near the entrance. Medium = around the middle. Far = deeper inside.
+                Close = near the entrance. Middle = around the middle. Far = deeper inside.
               </span>
             </button>
           }
-          layout="fit"
-          options={['close', 'medium', 'far']}
+          options={["close", "middle", "far"]}
           value={formState.distance}
-          onChange={(distance) => updateStationField('distance', distance)}
+          onChange={(distance) => updateStationField("distance", distance)}
           titleCase={titleCase}
         />
       ) : null}
@@ -89,10 +91,9 @@ export function StationLocationFields({
       {station.enabledFields.side ? (
         <SegmentedControl
           label="Side"
-          layout="fit"
-          options={['left', 'right']}
+          options={["left", "right"]}
           value={formState.side}
-          onChange={(side) => updateStationField('side', side)}
+          onChange={(side) => updateStationField("side", side)}
           titleCase={titleCase}
         />
       ) : null}
@@ -100,10 +101,9 @@ export function StationLocationFields({
       {station.enabledFields.rackLevel ? (
         <SegmentedControl
           label="Rack level"
-          layout="fit"
-          options={['top', 'bottom']}
+          options={["top", "bottom"]}
           value={formState.rackLevel}
-          onChange={(rackLevel) => updateStationField('rackLevel', rackLevel)}
+          onChange={(rackLevel) => updateStationField("rackLevel", rackLevel)}
           titleCase={titleCase}
         />
       ) : null}
@@ -114,7 +114,7 @@ export function StationLocationFields({
           <input
             aria-label="Rack number"
             value={formState.rackNumber}
-            onChange={(event) => updateStationField('rackNumber', event.currentTarget.value)}
+            onChange={(event) => updateStationField("rackNumber", event.currentTarget.value)}
           />
         </label>
       ) : null}
@@ -133,7 +133,11 @@ export function StationLocationFields({
         <div className="details-panel">
           <CoordsField coords={formState.coords} status={geoStatus} onCapture={onCaptureLocation} />
           <NotesField value={formState.notes} onChange={onNotesChange} />
-          <PhotoField onPhotoChange={onPhotoChange} />
+          <PhotoField
+            photoFile={formState.photoFile}
+            onPhotoChange={onPhotoChange}
+            onPhotoRemove={onPhotoRemove}
+          />
         </div>
       ) : null}
     </>

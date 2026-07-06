@@ -1,4 +1,4 @@
-import { History, Settings2 } from 'lucide-preact';
+import { History, Settings2 } from "lucide-preact";
 
 export function UtilityActions({
   recentCount,
@@ -23,7 +23,7 @@ export function UtilityActions({
       <button className="utility-button" type="button" onClick={onOpenStationSettings}>
         <span className="utility-button__title">
           <Settings2 aria-hidden="true" className="button-icon" />
-          <span>Station settings</span>
+          <span>Settings</span>
         </span>
       </button>
     </section>
