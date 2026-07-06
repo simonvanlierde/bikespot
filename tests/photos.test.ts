@@ -1,6 +1,6 @@
 import "fake-indexeddb/auto";
 // node:buffer's Blob survives fake-indexeddb's structured clone; jsdom's does not.
-import { Blob } from "node:buffer";
+import { Blob as NodeBlob } from "node:buffer";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import {
@@ -10,6 +10,9 @@ import {
   loadPhotoBlob,
   savePhotoBlob,
 } from "../src/lib/photos.ts";
+
+// Structurally identical to the DOM Blob our code expects; cast once so call sites type-check.
+const Blob = NodeBlob as unknown as typeof globalThis.Blob;
 
 describe("photo blob store (IndexedDB)", () => {
   beforeEach(async () => {
