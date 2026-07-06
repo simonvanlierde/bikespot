@@ -138,7 +138,7 @@ async function commitData(next: AppData): Promise<void> {
   await Promise.all(
     [...previousIds]
       .filter((id) => !nextIds.has(id))
-      .map((id) => deletePhotoBlob(id).catch(() => {})),
+      .map((id) => deletePhotoBlob(id).catch(() => undefined)),
   );
 }
 
