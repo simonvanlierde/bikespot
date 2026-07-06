@@ -1,7 +1,14 @@
 // biome-ignore lint/correctness/noNodejsModules: build config runs in Node, not the browser
+
+import process from "node:process";
 import { fileURLToPath, URL } from "node:url";
 import { VitePWA } from "vite-plugin-pwa";
 import { defineConfig } from "vitest/config";
+
+// jsdom touches Node 26's experimental localStorage when it builds each test
+// window, which warns unless --localstorage-file is set. We shim localStorage in
+// tests/setup.ts instead, so silence that one warning; test workers inherit this.
+process.env.NODE_OPTIONS = `${process.env.NODE_OPTIONS ?? ""} --disable-warning=ExperimentalWarning`;
 
 export default defineConfig({
   build: {
