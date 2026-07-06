@@ -133,7 +133,13 @@ async function commitData(next: AppData): Promise<void> {
   data.value = next;
   const nextIds = referencedPhotoIds(next);
 
-  await Promise.all([...previousIds].filter((id) => !nextIds.has(id)).map(deletePhotoBlob));
+  // Best-effort: a cleanup failure must not reject the submit/promote flow after
+  // data.value has already changed (would leave the sheet open, no success notice).
+  await Promise.all(
+    [...previousIds]
+      .filter((id) => !nextIds.has(id))
+      .map((id) => deletePhotoBlob(id).catch(() => {})),
+  );
 }
 
 export function openOverlay(next: OverlayState): void {

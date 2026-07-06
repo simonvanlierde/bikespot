@@ -9,8 +9,13 @@ export const THEMES: Theme[] = ["system", "light", "dark"];
 const STORAGE_KEY = "bikespot-theme";
 
 function readStoredTheme(): Theme {
-  const stored = window.localStorage.getItem(STORAGE_KEY);
-  return stored === "light" || stored === "dark" ? stored : "system";
+  try {
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    return stored === "light" || stored === "dark" ? stored : "system";
+  } catch {
+    // Storage blocked (private mode, disabled cookies): fall back to system.
+    return "system";
+  }
 }
 
 export const theme = signal<Theme>(readStoredTheme());
@@ -24,10 +29,18 @@ effect(() => {
 
   if (value === "system") {
     delete root.dataset.theme;
-    window.localStorage.removeItem(STORAGE_KEY);
   } else {
     root.dataset.theme = value;
-    window.localStorage.setItem(STORAGE_KEY, value);
+  }
+
+  try {
+    if (value === "system") {
+      window.localStorage.removeItem(STORAGE_KEY);
+    } else {
+      window.localStorage.setItem(STORAGE_KEY, value);
+    }
+  } catch {
+    // Storage blocked: theme still applies for this session via data-theme above.
   }
 });
 
