@@ -48,18 +48,7 @@ Preact + `@preact/signals`, TypeScript, Vite, `vite-plugin-pwa` (Workbox), Biome
 
 ## Architecture
 
-The app is a small client-only PWA with a three-layer `src/` structure and a single global store:
-
-```mermaid
-flowchart TD
-    components["components/ — presentational UI primitives<br/>(fields, sheet dialog, segmented control)"]
-    features["features/ — domain modules<br/>(location, history, app) wiring store to UI"]
-    lib["lib/ — types, pure domain logic,<br/>persistence, and the signals store"]
-
-    components --> features --> lib
-    lib -->|JSON app data| localStorage[("localStorage")]
-    lib -->|photo blobs| indexedDB[("IndexedDB")]
-```
+The app is a small client-only PWA. `src/` has three layers — `components/` (presentational UI primitives) → `features/` (domain modules wiring store to UI) → `lib/` (types, pure domain logic, persistence, and the signals store) — over a single global store.
 
 State is a set of `@preact/signals` in [`lib/store.ts`](src/lib/store.ts). UI reads signals directly; updates go through **pure functions** in [`lib/domain.ts`](src/lib/domain.ts) rather than in-place mutation, and an `effect()` persists the `data` signal whenever it changes. There is no router — navigation is modal state, modelled as the `OverlayState` discriminated union and rendered by [`features/app/AppOverlays.tsx`](src/features/app/AppOverlays.tsx). Persistence is split: structured app data in `localStorage` ([`lib/repository.ts`](src/lib/repository.ts)) and photos in IndexedDB with an in-memory fallback ([`lib/photos.ts`](src/lib/photos.ts)) — the reasoning is recorded in [ADR 0001](docs/adr/0001-split-persistence-across-localstorage-and-indexeddb.md).
 
