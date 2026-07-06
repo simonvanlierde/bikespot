@@ -10,7 +10,9 @@ updates:
     groups:
       npm-updates:
         patterns:
-          - "*" 
+          - "*"
+    cooldown:
+      default-days: 3
 
   - package-ecosystem: github-actions
     directory: /
@@ -23,3 +25,5 @@ updates:
       action-updates:
         patterns:
           - "*"
+    cooldown:
+      default-days: 3
