@@ -25,7 +25,10 @@
       "preset": "recommended",
       "a11y": "on",
       "complexity": "on",
-      "correctness": "on",
+      "correctness": {
+        "recommended": true,
+        "useQwikValidLexicalScope": "off"
+      },
       "performance": "on",
       "security": "on",
       "suspicious": "on"
@@ -40,13 +43,27 @@
             "noNodejsModules": "off"
           },
           "performance": {
-            "useTopLevelRegex": "off"
+            "useTopLevelRegex": "off",
+            "noJsxPropsBind": "off"
           },
           "security": {
             "noSecrets": "off"
           },
           "complexity": {
             "noExcessiveLinesPerFunction": "off"
+          },
+          "suspicious": {
+            "noEmptyBlockStatements": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["*.config.ts"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noNodejsModules": "off"
           }
         }
       }
