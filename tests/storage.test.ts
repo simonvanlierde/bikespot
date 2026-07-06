@@ -1,15 +1,15 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import type { AppData } from "../src/lib/app-data";
-import { defaultAppData, defaultStationConfig } from "../src/lib/defaults";
+import type { AppData } from "../src/lib/app-data.ts";
+import { defaultAppData, defaultStationConfig } from "../src/lib/defaults.ts";
 import {
   createLocationRecord,
   promoteRecentLocation,
   saveLocation,
   updateStationConfig,
-} from "../src/lib/domain";
-import { buildLocationRecordInput } from "../src/lib/drafts";
-import { clearPhotoBlobs } from "../src/lib/photos";
-import { APP_DATA_STORAGE_KEY, loadAppData } from "../src/lib/repository";
+} from "../src/lib/domain.ts";
+import { buildLocationRecordInput } from "../src/lib/drafts.ts";
+import { clearPhotoBlobs } from "../src/lib/photos.ts";
+import { APP_DATA_STORAGE_KEY, loadAppData } from "../src/lib/repository.ts";
 
 describe("location storage", () => {
   const defaultState: AppData = defaultAppData;

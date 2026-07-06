@@ -2,7 +2,7 @@ import { render } from "@testing-library/preact";
 import { beforeEach, describe, expect, it } from "vitest";
 import { axe } from "vitest-axe";
 
-import App from "../src/App";
+import App from "../src/App.tsx";
 
 describe("accessibility", () => {
   beforeEach(() => {

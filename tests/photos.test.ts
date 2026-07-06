@@ -9,7 +9,7 @@ import {
   listPhotoIds,
   loadPhotoBlob,
   savePhotoBlob,
-} from "../src/lib/photos";
+} from "../src/lib/photos.ts";
 
 describe("photo blob store (IndexedDB)", () => {
   beforeEach(async () => {

@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen, waitFor, within } from "@testing-librar
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import App from "../src/App";
+import App from "../src/App.tsx";
 
 describe("bike storage tracker app", () => {
   beforeEach(() => {

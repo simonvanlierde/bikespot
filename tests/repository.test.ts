@@ -1,8 +1,13 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { defaultAppData } from "../src/lib/defaults";
-import { clearPhotoBlobs, deletePhotoBlob, loadPhotoBlob, savePhotoBlob } from "../src/lib/photos";
-import { APP_DATA_STORAGE_KEY, loadAppData, saveAppData } from "../src/lib/repository";
+import { defaultAppData } from "../src/lib/defaults.ts";
+import {
+  clearPhotoBlobs,
+  deletePhotoBlob,
+  loadPhotoBlob,
+  savePhotoBlob,
+} from "../src/lib/photos.ts";
+import { APP_DATA_STORAGE_KEY, loadAppData, saveAppData } from "../src/lib/repository.ts";
 
 describe("app data repository", () => {
   beforeEach(async () => {

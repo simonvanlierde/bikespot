@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { setTheme } from "../src/lib/theme";
+import { setTheme } from "../src/lib/theme.ts";
 
 afterEach(() => {
   setTheme("system");

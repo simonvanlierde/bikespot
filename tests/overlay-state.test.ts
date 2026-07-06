@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { defaultAppData } from "../src/lib/defaults";
-import { createLocationDraft, createStationSettingsDraft } from "../src/lib/drafts";
+import { defaultAppData } from "../src/lib/defaults.ts";
+import { createLocationDraft, createStationSettingsDraft } from "../src/lib/drafts.ts";
 import {
   closeOverlay,
   locationDraft,
@@ -9,7 +9,7 @@ import {
   overlay,
   showEditorDetails,
   stationDraft,
-} from "../src/lib/store";
+} from "../src/lib/store.ts";
 
 describe("overlay store", () => {
   it("creates the right draft for each overlay and clears unrelated drafts", () => {

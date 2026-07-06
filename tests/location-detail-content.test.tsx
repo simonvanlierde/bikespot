@@ -1,8 +1,8 @@
 import { render, screen } from "@testing-library/preact";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { LocationDetailContent } from "../src/features/location/LocationDetailContent";
-import { clearPhotoBlobs, savePhotoBlob } from "../src/lib/photos";
+import { LocationDetailContent } from "../src/features/location/LocationDetailContent.tsx";
+import { clearPhotoBlobs, savePhotoBlob } from "../src/lib/photos.ts";
 
 describe("location detail content", () => {
   const createObjectUrl = vi.fn(() => "blob:bike-photo");

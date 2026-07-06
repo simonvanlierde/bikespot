@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { captureCoords } from "../src/lib/geolocation";
+import { captureCoords } from "../src/lib/geolocation.ts";
 
 describe("captureCoords", () => {
   afterEach(() => {
