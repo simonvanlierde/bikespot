@@ -36,9 +36,18 @@
       "includes": ["tests/**"],
       "linter": {
         "rules": {
-          "performance": { "useTopLevelRegex": "off" },
-          "security": { "noSecrets": "off" },
-          "complexity": { "noExcessiveLinesPerFunction": "off" }
+          "correctness": {
+            "noNodejsModules": "off"
+          },
+          "performance": {
+            "useTopLevelRegex": "off"
+          },
+          "security": {
+            "noSecrets": "off"
+          },
+          "complexity": {
+            "noExcessiveLinesPerFunction": "off"
+          }
         }
       }
     }
