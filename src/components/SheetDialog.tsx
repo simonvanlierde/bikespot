@@ -1,6 +1,7 @@
 import { X } from "lucide-preact";
 import type { ReactNode } from "preact/compat";
 import { useEffect, useRef } from "preact/hooks";
+import { t } from "@/lib/i18n";
 
 // biome-ignore lint/complexity/noExcessiveLinesPerFunction: JSX render fn; markup dominates the line count
 export function SheetDialog({
@@ -9,7 +10,7 @@ export function SheetDialog({
   title,
   titleIcon,
   onClose,
-  closeLabel = "Close",
+  closeLabel = t.value.close,
 }: {
   children: ReactNode;
   label: string;

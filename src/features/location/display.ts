@@ -1,4 +1,5 @@
 import type { Coords, EnabledFields, LocationRecord } from "@/lib/app-data";
+import { t } from "@/lib/i18n";
 
 export function titleCase(value?: string) {
   if (!value) {
@@ -38,13 +39,13 @@ const timestampFormat = new Intl.DateTimeFormat(undefined, {
 
 export function formatTimestamp(value?: string) {
   if (!value) {
-    return "not saved yet";
+    return t.value.notSaved;
   }
 
   const date = new Date(value);
 
   if (Number.isNaN(date.getTime())) {
-    return "not saved yet";
+    return t.value.notSaved;
   }
 
   return timestampFormat.format(date);
@@ -60,9 +61,11 @@ export function getSummary(entry: LocationRecord | null): string {
   }
 
   const parts = [
-    shouldShowEntryField(entry, "side") && entry.side ? titleCase(entry.side) : "",
-    shouldShowEntryField(entry, "rackLevel") && entry.rackLevel ? titleCase(entry.rackLevel) : "",
-    shouldShowEntryField(entry, "distance") && entry.distance ? titleCase(entry.distance) : "",
+    shouldShowEntryField(entry, "side") && entry.side ? t.value.opts[entry.side] : "",
+    shouldShowEntryField(entry, "rackLevel") && entry.rackLevel
+      ? t.value.opts[entry.rackLevel]
+      : "",
+    shouldShowEntryField(entry, "distance") && entry.distance ? t.value.opts[entry.distance] : "",
   ].filter(Boolean);
 
   return parts.join(" · ");
@@ -101,20 +104,20 @@ export function getPrimaryLabel(entry: LocationRecord | null): string {
   }
 
   if (entry.mode === "outside") {
-    return "Outside the station";
+    return t.value.outsideStation;
   }
 
   const key = getPrimaryFieldKey(entry);
 
   if (key === "rackNumber") {
-    return `Rack ${entry.rackNumber}`;
+    return t.value.rackN(entry.rackNumber);
   }
 
   if (key === "lane") {
-    return `Lane ${entry.lane}`;
+    return t.value.laneN(entry.lane);
   }
 
-  return "Bike spot";
+  return t.value.bikeSpot;
 }
 
 // Supporting details as labeled facts in broad → specific order, each carrying
@@ -129,27 +132,27 @@ export function getDetailFacts(entry: LocationRecord): string[] {
   const facts: string[] = [];
 
   if (shouldShowEntryField(entry, "floor")) {
-    facts.push(`Station floor ${entry.floor}`);
+    facts.push(t.value.stationFloorN(entry.floor));
   }
 
   if (primary !== "lane" && shouldShowEntryField(entry, "lane")) {
-    facts.push(`Lane ${entry.lane}`);
+    facts.push(t.value.laneN(entry.lane));
   }
 
   if (shouldShowEntryField(entry, "distance") && entry.distance) {
-    facts.push(`${titleCase(entry.distance)} distance`);
+    facts.push(t.value.factDistance(t.value.opts[entry.distance]));
   }
 
   if (shouldShowEntryField(entry, "side") && entry.side) {
-    facts.push(`${titleCase(entry.side)} side`);
+    facts.push(t.value.factSide(t.value.opts[entry.side]));
   }
 
   if (shouldShowEntryField(entry, "rackLevel") && entry.rackLevel) {
-    facts.push(`${titleCase(entry.rackLevel)} rack`);
+    facts.push(t.value.factRack(t.value.opts[entry.rackLevel]));
   }
 
   if (primary !== "rackNumber" && shouldShowEntryField(entry, "rackNumber")) {
-    facts.push(`Rack ${entry.rackNumber}`);
+    facts.push(t.value.rackN(entry.rackNumber));
   }
 
   return facts;

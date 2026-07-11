@@ -6,21 +6,15 @@ import { SegmentedControl } from "@/components/SegmentedControl";
 import { SheetDialog } from "@/components/SheetDialog";
 import { ToggleField } from "@/components/ToggleField";
 import type { StationSettingsDraft } from "@/lib/drafts";
+import { LANGS, lang, setLang, t } from "@/lib/i18n";
 import { setTheme, THEMES, theme } from "@/lib/theme";
-import { titleCase } from "./display";
 import { FieldInputSettings } from "./FieldInputSettings";
 
 // Field toggles in broad → specific order (floor → rack number), matching the
-// editor and details views.
-const FIELD_TOGGLE_OPTIONS = [
-  { key: "floor", label: "Floor" },
-  { key: "lane", label: "Lane" },
-  { key: "distance", label: "Distance" },
-  { key: "side", label: "Side" },
-  { key: "rackLevel", label: "Rack level" },
-  { key: "rackNumber", label: "Rack number" },
-] as const;
+// editor and details views. Labels resolve per-render from the string table.
+const FIELD_TOGGLE_KEYS = ["floor", "lane", "distance", "side", "rackLevel", "rackNumber"] as const;
 
+// biome-ignore lint/complexity/noExcessiveLinesPerFunction: JSX render fn; markup dominates the line count
 export function StationSettingsSheet({
   stationForm,
   setStationForm,
@@ -42,7 +36,7 @@ export function StationSettingsSheet({
     }));
   }
 
-  function updateFieldToggle(key: (typeof FIELD_TOGGLE_OPTIONS)[number]["key"], checked: boolean) {
+  function updateFieldToggle(key: (typeof FIELD_TOGGLE_KEYS)[number], checked: boolean) {
     setStationForm((previous) => ({
       ...previous,
       enabledFields: { ...previous.enabledFields, [key]: checked },
@@ -50,34 +44,39 @@ export function StationSettingsSheet({
   }
 
   return (
-    <SheetDialog closeLabel="Cancel" label="Settings" title="Settings" onClose={onClose}>
+    <SheetDialog
+      closeLabel={t.value.cancel}
+      label={t.value.settings}
+      title={t.value.settings}
+      onClose={onClose}
+    >
       <div className="settings-stack">
         <section className="settings-section">
-          <p className="section-kicker">Station</p>
+          <p className="section-kicker">{t.value.station}</p>
           <form className="editor-form" onSubmit={onSubmit}>
             <fieldset className="settings-fieldset">
-              <legend>Enabled fields</legend>
-              {FIELD_TOGGLE_OPTIONS.map((option) => (
-                <Fragment key={option.key}>
+              <legend>{t.value.enabledFields}</legend>
+              {FIELD_TOGGLE_KEYS.map((key) => (
+                <Fragment key={key}>
                   <ToggleField
-                    checked={stationForm.enabledFields[option.key]}
-                    label={option.label}
-                    onChange={(checked) => updateFieldToggle(option.key, checked)}
+                    checked={stationForm.enabledFields[key]}
+                    label={t.value[key]}
+                    onChange={(checked) => updateFieldToggle(key, checked)}
                   />
-                  {option.key === "floor" && stationForm.enabledFields.floor ? (
+                  {key === "floor" && stationForm.enabledFields.floor ? (
                     <FieldInputSettings
-                      noun="floor"
-                      legend="Floor input"
+                      noun={t.value.floor}
+                      legend={t.value.floorInput}
                       mode={stationForm.floorInputMode}
                       labels={stationForm.floorLabels}
                       onModeChange={(mode) => updateStationField("floorInputMode", mode)}
                       onLabelsChange={(labels) => updateStationField("floorLabels", labels)}
                     />
                   ) : null}
-                  {option.key === "lane" && stationForm.enabledFields.lane ? (
+                  {key === "lane" && stationForm.enabledFields.lane ? (
                     <FieldInputSettings
-                      noun="lane"
-                      legend="Lane input"
+                      noun={t.value.lane}
+                      legend={t.value.laneInput}
                       mode={stationForm.laneInputMode}
                       labels={stationForm.laneLabels}
                       onModeChange={(mode) => updateStationField("laneInputMode", mode)}
@@ -89,7 +88,7 @@ export function StationSettingsSheet({
             </fieldset>
 
             <button className="primary-button primary-button--wide" type="submit">
-              Save station settings
+              {t.value.saveStationSettings}
             </button>
           </form>
         </section>
@@ -97,13 +96,20 @@ export function StationSettingsSheet({
         <hr className="settings-divider" />
 
         <section className="settings-section">
-          <p className="section-kicker">General</p>
+          <p className="section-kicker">{t.value.general}</p>
           <SegmentedControl
-            label="Theme"
+            label={t.value.language}
+            options={LANGS}
+            value={lang.value}
+            onChange={setLang}
+            titleCase={(option) => t.value.langOpts[option]}
+          />
+          <SegmentedControl
+            label={t.value.theme}
             options={THEMES}
             value={theme.value}
             onChange={setTheme}
-            titleCase={titleCase}
+            titleCase={(option) => t.value.themeOpts[option]}
           />
         </section>
       </div>

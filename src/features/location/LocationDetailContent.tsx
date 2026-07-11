@@ -2,7 +2,8 @@ import { MapPin } from "lucide-preact";
 import { DetailRow } from "@/components/DetailRow";
 import { usePhotoUrl } from "@/components/usePhotoUrl";
 import type { LocationRecord } from "@/lib/app-data";
-import { formatAccuracy, mapsLink, shouldShowEntryField, showFloor, titleCase } from "./display";
+import { t } from "@/lib/i18n";
+import { formatAccuracy, mapsLink, shouldShowEntryField, showFloor } from "./display";
 
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: conditional field rows are inherent to the detail view
 export function LocationDetailContent({
@@ -18,29 +19,31 @@ export function LocationDetailContent({
   const stationDetails =
     entry.mode === "station"
       ? [
-          { label: "Station floor", value: showFloor(entry) ? entry.floor : undefined },
-          { label: "Lane", value: entry.lane },
+          { label: t.value.stationFloor, value: showFloor(entry) ? entry.floor : undefined },
+          { label: t.value.lane, value: entry.lane },
           {
-            label: "Distance",
+            label: t.value.distance,
             value:
               shouldShowEntryField(entry, "distance") && entry.distance
-                ? titleCase(entry.distance)
+                ? t.value.opts[entry.distance]
                 : undefined,
           },
           {
-            label: "Side",
+            label: t.value.side,
             value:
-              shouldShowEntryField(entry, "side") && entry.side ? titleCase(entry.side) : undefined,
+              shouldShowEntryField(entry, "side") && entry.side
+                ? t.value.opts[entry.side]
+                : undefined,
           },
           {
-            label: "Rack level",
+            label: t.value.rackLevel,
             value:
               shouldShowEntryField(entry, "rackLevel") && entry.rackLevel
-                ? titleCase(entry.rackLevel)
+                ? t.value.opts[entry.rackLevel]
                 : undefined,
           },
           {
-            label: "Rack number",
+            label: t.value.rackNumber,
             value: shouldShowEntryField(entry, "rackNumber") ? entry.rackNumber : undefined,
           },
         ]
@@ -72,7 +75,7 @@ export function LocationDetailContent({
           target="_blank"
         >
           <MapPin aria-hidden="true" className="button-icon" />
-          <span>Open in Maps</span>
+          <span>{t.value.openInMaps}</span>
           {formatAccuracy(entry.coords) ? (
             <span className="maps-link__accuracy">{formatAccuracy(entry.coords)}</span>
           ) : null}

@@ -3,6 +3,7 @@ import { useRef } from "preact/hooks";
 
 import { titleCase } from "@/features/location/display";
 import type { FieldInputMode } from "@/lib/app-data";
+import { t } from "@/lib/i18n";
 
 // Settings-side config for one location field (lane or floor): a Quick/Number
 // mode switch plus, in quick mode, an add/remove editor for the preset labels.
@@ -60,7 +61,7 @@ export function FieldInputSettings({
             type="button"
             onClick={() => onModeChange("number")}
           >
-            Number input
+            {t.value.numberInput}
           </button>
           <button
             aria-pressed={mode === "quick"}
@@ -68,7 +69,7 @@ export function FieldInputSettings({
             type="button"
             onClick={() => onModeChange("quick")}
           >
-            Quick {noun}s
+            {t.value.quickMode(noun)}
           </button>
         </div>
       </fieldset>
@@ -78,18 +79,16 @@ export function FieldInputSettings({
           {labels.map((label, index) => (
             <div className="labels-editor__row" key={`${noun}-label-${rowIds.current[index]}`}>
               <label className="field labels-editor__field">
-                <span>
-                  {Noun} {index + 1}
-                </span>
+                <span>{t.value.presetLabel(Noun, index + 1)}</span>
                 <input
-                  aria-label={`${Noun} ${index + 1}`}
+                  aria-label={t.value.presetLabel(Noun, index + 1)}
                   value={label}
                   onChange={(event) => updateLabel(index, event.currentTarget.value)}
                 />
               </label>
               {labels.length > 1 ? (
                 <button
-                  aria-label={`Remove ${noun} ${index + 1}`}
+                  aria-label={t.value.removePreset(noun, index + 1)}
                   className="labels-editor__remove"
                   type="button"
                   onClick={() => removeLabel(index)}
@@ -105,7 +104,7 @@ export function FieldInputSettings({
             onClick={addLabel}
           >
             <Plus aria-hidden="true" size={16} />
-            Add {noun}
+            {t.value.addPreset(noun)}
           </button>
         </div>
       ) : null}

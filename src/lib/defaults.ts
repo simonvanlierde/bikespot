@@ -1,8 +1,9 @@
 import type { AppData, LocationRecord, StationConfig } from "./app-data";
 import { createLocationRecord } from "./domain";
+import { t } from "./i18n";
 
 export const defaultStationConfig: StationConfig = {
-  name: "My station",
+  name: t.value.seedStationName,
   laneInputMode: "number",
   laneLabels: ["4", "5", "6"],
   floorInputMode: "number",
@@ -26,7 +27,7 @@ const starterCurrent: LocationRecord = createLocationRecord(
     rackLevel: "bottom",
     distance: "middle",
     floor: "1",
-    notes: "Starter spot - update this to your real location.",
+    notes: t.value.seedStarterNote,
     visibleFields: {
       side: true,
       rackLevel: true,

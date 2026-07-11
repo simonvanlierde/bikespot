@@ -1,3 +1,5 @@
+import { t } from "@/lib/i18n";
+
 export function NotesField({
   value,
   onChange,
@@ -7,9 +9,9 @@ export function NotesField({
 }) {
   return (
     <label className="field">
-      <span>Notes</span>
+      <span>{t.value.notes}</span>
       <textarea
-        aria-label="Notes"
+        aria-label={t.value.notes}
         rows={3}
         value={value}
         onChange={(event) => onChange(event.currentTarget.value)}

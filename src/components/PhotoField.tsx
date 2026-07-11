@@ -2,6 +2,7 @@ import { ImagePlus, Trash2 } from "lucide-preact";
 
 import type { TargetedEvent } from "preact";
 
+import { t } from "@/lib/i18n";
 import { usePhotoUrl } from "./usePhotoUrl";
 
 export function PhotoField({
@@ -17,19 +18,19 @@ export function PhotoField({
 
   return (
     <div className="field">
-      <span>Photo</span>
+      <span>{t.value.photo}</span>
       {photoUrl ? (
         <figure className="photo-preview photo-preview--editor">
-          <img src={photoUrl} alt="Bike reference preview" />
+          <img src={photoUrl} alt={t.value.photoPreviewAlt} />
         </figure>
       ) : null}
       <div className="photo-field__actions">
         <label className="file-trigger">
           <ImagePlus aria-hidden="true" className="button-icon" />
-          <span>{photoUrl ? "Replace photo" : "Add a photo"}</span>
+          <span>{photoUrl ? t.value.replacePhoto : t.value.addPhoto}</span>
           <input
             accept="image/*"
-            aria-label="Photo"
+            aria-label={t.value.photo}
             className="sr-only"
             onChange={onPhotoChange}
             type="file"
@@ -38,7 +39,7 @@ export function PhotoField({
         {photoUrl ? (
           <button className="ghost-button" type="button" onClick={onPhotoRemove}>
             <Trash2 aria-hidden="true" className="button-icon" />
-            <span>Remove photo</span>
+            <span>{t.value.removePhoto}</span>
           </button>
         ) : null}
       </div>

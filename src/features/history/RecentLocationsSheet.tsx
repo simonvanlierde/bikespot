@@ -3,6 +3,7 @@ import { History, MapPin } from "lucide-preact";
 import { SheetDialog } from "@/components/SheetDialog";
 import { formatTimestamp, getDetailFacts, getPrimaryLabel } from "@/features/location/display";
 import type { LocationRecord } from "@/lib/app-data";
+import { t } from "@/lib/i18n";
 
 export function RecentLocationsSheet({
   recent,
@@ -15,8 +16,8 @@ export function RecentLocationsSheet({
 }) {
   return (
     <SheetDialog
-      label="Recent locations"
-      title="Recent locations"
+      label={t.value.recentLocations}
+      title={t.value.recentLocations}
       titleIcon={<History aria-hidden="true" className="button-icon" />}
       onClose={onClose}
     >
@@ -27,7 +28,7 @@ export function RecentLocationsSheet({
 
           return (
             <button
-              aria-label={`Restore ${title} from recent locations`}
+              aria-label={t.value.restore(title)}
               key={entry.id}
               className="recent-item"
               type="button"
@@ -37,7 +38,7 @@ export function RecentLocationsSheet({
                 <p className="recent-title">
                   {title}
                   {entry.coords ? (
-                    <MapPin aria-label="Has GPS location" className="recent-title__pin" />
+                    <MapPin aria-label={t.value.hasGps} className="recent-title__pin" />
                   ) : null}
                 </p>
                 {meta ? <p className="recent-meta">{meta}</p> : null}

@@ -6,8 +6,10 @@ import { PhotoField } from "@/components/PhotoField";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import type { StationConfig } from "@/lib/app-data";
 import type { StationLocationDraft } from "@/lib/drafts";
-import { titleCase } from "./display";
+import { type OptKey, t } from "@/lib/i18n";
 import { FieldValueInput } from "./FieldValueInput";
+
+const optLabel = (option: OptKey) => t.value.opts[option];
 
 export type UpdateStationField = <K extends keyof StationLocationDraft>(
   field: K,
@@ -52,7 +54,7 @@ export function StationLocationFields({
           the settings and details views. */}
       {station.enabledFields.floor ? (
         <FieldValueInput
-          noun="Floor"
+          noun={t.value.floor}
           mode={station.floorInputMode}
           labels={station.floorLabels}
           value={formState.floor}
@@ -62,7 +64,7 @@ export function StationLocationFields({
 
       {station.enabledFields.lane ? (
         <FieldValueInput
-          noun="Lane"
+          noun={t.value.lane}
           mode={station.laneInputMode}
           labels={station.laneLabels}
           value={formState.lane}
@@ -72,47 +74,45 @@ export function StationLocationFields({
 
       {station.enabledFields.distance ? (
         <SegmentedControl
-          label="Distance"
+          label={t.value.distance}
           labelSuffix={
-            <button aria-label="Distance help" className="info-trigger" type="button">
+            <button aria-label={t.value.distanceHelp} className="info-trigger" type="button">
               <CircleHelp aria-hidden="true" className="button-icon" />
-              <span className="info-tooltip">
-                Close = near the entrance. Middle = around the middle. Far = deeper inside.
-              </span>
+              <span className="info-tooltip">{t.value.distanceHelpText}</span>
             </button>
           }
           options={["close", "middle", "far"]}
           value={formState.distance}
           onChange={(distance) => updateStationField("distance", distance)}
-          titleCase={titleCase}
+          titleCase={optLabel}
         />
       ) : null}
 
       {station.enabledFields.side ? (
         <SegmentedControl
-          label="Side"
+          label={t.value.side}
           options={["left", "right"]}
           value={formState.side}
           onChange={(side) => updateStationField("side", side)}
-          titleCase={titleCase}
+          titleCase={optLabel}
         />
       ) : null}
 
       {station.enabledFields.rackLevel ? (
         <SegmentedControl
-          label="Rack level"
+          label={t.value.rackLevel}
           options={["top", "bottom"]}
           value={formState.rackLevel}
           onChange={(rackLevel) => updateStationField("rackLevel", rackLevel)}
-          titleCase={titleCase}
+          titleCase={optLabel}
         />
       ) : null}
 
       {station.enabledFields.rackNumber ? (
         <label className="field">
-          <span>Rack number</span>
+          <span>{t.value.rackNumber}</span>
           <input
-            aria-label="Rack number"
+            aria-label={t.value.rackNumber}
             value={formState.rackNumber}
             onChange={(event) => updateStationField("rackNumber", event.currentTarget.value)}
           />
@@ -125,7 +125,7 @@ export function StationLocationFields({
         type="button"
         onClick={onToggleDetails}
       >
-        <span>More details</span>
+        <span>{t.value.moreDetails}</span>
         <Chevron expanded={showDetails} />
       </button>
 

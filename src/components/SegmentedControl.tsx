@@ -12,7 +12,9 @@ export function SegmentedControl<T extends string>({
   onChange: (value: T) => void;
   options: T[];
   value: T;
-  titleCase: (value?: string) => string;
+  // Renders one option value for display (segment text + aria-label); pass a
+  // translator or titleCase.
+  titleCase: (value: T) => string;
   labelSuffix?: ReactNode;
 }) {
   return (

@@ -1,6 +1,7 @@
 import { LocateFixed } from "lucide-preact";
 import { formatAccuracy } from "@/features/location/display";
 import type { Coords } from "@/lib/app-data";
+import { t } from "@/lib/i18n";
 
 export function CoordsField({
   coords,
@@ -15,7 +16,7 @@ export function CoordsField({
 
   return (
     <div className="field coords-field">
-      <span>GPS location</span>
+      <span>{t.value.gpsLocation}</span>
       <button
         className="ghost-button ghost-button--wide"
         disabled={capturing}
@@ -23,19 +24,20 @@ export function CoordsField({
         onClick={onCapture}
       >
         <LocateFixed aria-hidden="true" className="button-icon" />
-        <span>{capturing ? "Locating…" : coords ? "Update location" : "Use my location"}</span>
+        <span>
+          {capturing ? t.value.locating : coords ? t.value.updateLocation : t.value.useMyLocation}
+        </span>
       </button>
 
       {coords ? (
         <p className="coords-field__status">
-          Captured{formatAccuracy(coords) ? ` · ${formatAccuracy(coords)} accuracy` : ""}
+          {t.value.captured}
+          {formatAccuracy(coords) ? ` · ${t.value.accuracy(formatAccuracy(coords))}` : ""}
         </p>
       ) : null}
 
       {status === "error" ? (
-        <p className="coords-field__status coords-field__status--error">
-          Couldn’t get your location. Check permissions and try again.
-        </p>
+        <p className="coords-field__status coords-field__status--error">{t.value.geoError}</p>
       ) : null}
     </div>
   );

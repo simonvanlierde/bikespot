@@ -13,6 +13,7 @@ import {
   type StationSettingsDraft,
 } from "./drafts";
 import { captureCoords } from "./geolocation";
+import { t } from "./i18n";
 import { deletePhotoBlob, listPhotoIds, savePhotoBlob } from "./photos";
 import { loadAppData, saveAppData } from "./repository";
 
@@ -38,7 +39,7 @@ effect(() => {
   }
 
   saveAppData(snapshot).catch(() => {
-    notice.value = { text: "Could not save — storage is full or blocked" };
+    notice.value = { text: t.value.noticeSaveFailed };
   });
 });
 
@@ -192,7 +193,7 @@ export async function handleLocationSubmit(event: TargetedEvent<HTMLFormElement>
   const nextLocation = photoId ? { ...input, photoId } : input;
 
   await commitData(saveLocation(data.value, nextLocation));
-  notice.value = { text: "Location updated" };
+  notice.value = { text: t.value.noticeLocationUpdated };
   closeOverlay();
 }
 
@@ -208,7 +209,7 @@ export function handleStationSubmit(event: TargetedEvent<HTMLFormElement>): void
   // The draft already has StationConfig's shape; normalizeStationConfig inside
   // updateStationConfig owns all sanitization.
   data.value = updateStationConfig(data.value, draft);
-  notice.value = { text: "Station settings updated" };
+  notice.value = { text: t.value.noticeStationUpdated };
   closeOverlay();
 }
 
@@ -219,7 +220,7 @@ export async function handleUseRecent(id: string): Promise<void> {
   // `recent`, which would leave the still-open preview sheet rendering nothing
   // while the async blob cleanup runs.
   closeOverlay();
-  notice.value = { text: "Location updated from recent" };
+  notice.value = { text: t.value.noticeLocationFromRecent };
   await commitData(next);
 }
 

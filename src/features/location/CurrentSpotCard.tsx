@@ -2,6 +2,7 @@ import { ChevronRight, MapPin, Pencil } from "lucide-preact";
 
 import { usePhotoUrl } from "@/components/usePhotoUrl";
 import type { LocationRecord } from "@/lib/app-data";
+import { t } from "@/lib/i18n";
 import { formatTimestamp, getDetailFacts, getPrimaryLabel } from "./display";
 
 export function CurrentSpotCard({
@@ -19,13 +20,13 @@ export function CurrentSpotCard({
   const photoUrl = usePhotoUrl(current?.photoId);
 
   return (
-    <section className="current-card current-card--tappable" aria-label="Current spot">
+    <section className="current-card current-card--tappable" aria-label={t.value.currentSpot}>
       <div className="current-card__content">
         <div className="current-card__topline">
-          <p className="section-kicker">Current spot</p>
+          <p className="section-kicker">{t.value.currentSpot}</p>
           <span className="current-card__topline-end">
             {current?.coords ? (
-              <MapPin aria-label="Has GPS location" className="button-icon current-card__pin" />
+              <MapPin aria-label={t.value.hasGps} className="button-icon current-card__pin" />
             ) : null}
             <ChevronRight aria-hidden="true" className="button-icon current-card__chevron" />
           </span>
@@ -35,7 +36,7 @@ export function CurrentSpotCard({
           <div className="current-card__lead">
             {photoUrl ? (
               <figure className="current-card__thumb">
-                <img src={photoUrl} alt="Current bike reference" />
+                <img src={photoUrl} alt={t.value.currentBikeRef} />
               </figure>
             ) : null}
             <h1 className={current?.mode === "outside" ? "headline headline--outside" : "headline"}>
@@ -59,7 +60,7 @@ export function CurrentSpotCard({
           </div>
           <div className="current-card__footer">
             {current ? (
-              <p className="timestamp">Updated {formatTimestamp(current.updatedAt)}</p>
+              <p className="timestamp">{t.value.updated(formatTimestamp(current.updatedAt))}</p>
             ) : null}
             <button
               className="primary-button primary-button--hero current-card__action"
@@ -67,7 +68,7 @@ export function CurrentSpotCard({
               onClick={onEdit}
             >
               <Pencil aria-hidden="true" className="button-icon" />
-              Change location
+              {t.value.changeLocation}
             </button>
           </div>
         </div>
@@ -75,7 +76,7 @@ export function CurrentSpotCard({
       {/* Full-card hit target for opening details; sits behind the content so the
           action button above stays clickable. */}
       <button
-        aria-label="View details"
+        aria-label={t.value.viewDetails}
         className="current-card__hit"
         type="button"
         onClick={onOpenDetails}

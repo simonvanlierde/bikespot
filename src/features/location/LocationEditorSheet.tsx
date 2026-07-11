@@ -7,6 +7,7 @@ import { PhotoField } from "@/components/PhotoField";
 import { SheetDialog } from "@/components/SheetDialog";
 import type { StationConfig } from "@/lib/app-data";
 import { createLocationDraft, createOutsideLocationDraft, type LocationDraft } from "@/lib/drafts";
+import { t } from "@/lib/i18n";
 import { StationLocationFields, type UpdateStationField } from "./StationLocationFields";
 
 // biome-ignore lint/complexity/noExcessiveLinesPerFunction: JSX render fn; markup dominates the line count
@@ -55,9 +56,9 @@ export function LocationEditorSheet({
 
   return (
     <SheetDialog
-      closeLabel="Cancel"
-      label="Change location"
-      title="Change location"
+      closeLabel={t.value.cancel}
+      label={t.value.changeLocation}
+      title={t.value.changeLocation}
       onClose={onClose}
     >
       <div className="sheet-header__main">
@@ -69,7 +70,7 @@ export function LocationEditorSheet({
               onClick={() => setFormState(createOutsideLocationDraft())}
             >
               <ArrowRightLeft aria-hidden="true" className="button-icon" />
-              <span>Parked outside</span>
+              <span>{t.value.parkedOutside}</span>
             </button>
           ) : (
             <button
@@ -78,7 +79,7 @@ export function LocationEditorSheet({
               onClick={() => setFormState(createLocationDraft(null, station))}
             >
               <Undo2 aria-hidden="true" className="button-icon" />
-              <span>Back to station</span>
+              <span>{t.value.backToStation}</span>
             </button>
           )}
         </div>
@@ -115,7 +116,7 @@ export function LocationEditorSheet({
         )}
 
         <button className="primary-button primary-button--wide" type="submit">
-          Save location
+          {t.value.saveLocation}
         </button>
       </form>
     </SheetDialog>
