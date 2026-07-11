@@ -124,8 +124,10 @@ type Dict = {
   laneN: (n?: string) => string;
   stationFloorN: (n?: string) => string;
   factDistance: (value: string) => string;
-  factSide: (value: string) => string;
-  factRack: (value: string) => string;
+  // Take the raw key, not the display word: Dutch needs per-value adjectival
+  // forms (linkerkant, onderste rek) that a shared prefix can't produce.
+  factSide: (side: "left" | "right") => string;
+  factRack: (level: "top" | "bottom") => string;
   notSaved: string;
 
   noticeSaveFailed: string;
@@ -224,8 +226,8 @@ const en: Dict = {
   laneN: (n) => `Lane ${n}`,
   stationFloorN: (n) => `Station floor ${n}`,
   factDistance: (value) => `${value} distance`,
-  factSide: (value) => `${value} side`,
-  factRack: (value) => `${value} rack`,
+  factSide: (side) => (side === "left" ? "Left side" : "Right side"),
+  factRack: (level) => (level === "top" ? "Top rack" : "Bottom rack"),
   notSaved: "not saved yet",
 
   noticeSaveFailed: "Could not save — storage is full or blocked",
@@ -323,8 +325,8 @@ const nl: Dict = {
   laneN: (n) => `Rij ${n}`,
   stationFloorN: (n) => `Verdieping ${n}`,
   factDistance: (value) => `Afstand ${value.toLowerCase()}`,
-  factSide: (value) => `Kant ${value.toLowerCase()}`,
-  factRack: (value) => `Rek ${value.toLowerCase()}`,
+  factSide: (side) => (side === "left" ? "Linkerkant" : "Rechterkant"),
+  factRack: (level) => (level === "top" ? "Bovenste rek" : "Onderste rek"),
   notSaved: "nog niet opgeslagen",
 
   noticeSaveFailed: "Kon niet opslaan — opslag vol of geblokkeerd",

@@ -144,11 +144,11 @@ export function getDetailFacts(entry: LocationRecord): string[] {
   }
 
   if (shouldShowEntryField(entry, "side") && entry.side) {
-    facts.push(t.value.factSide(t.value.opts[entry.side]));
+    facts.push(t.value.factSide(entry.side));
   }
 
   if (shouldShowEntryField(entry, "rackLevel") && entry.rackLevel) {
-    facts.push(t.value.factRack(t.value.opts[entry.rackLevel]));
+    facts.push(t.value.factRack(entry.rackLevel));
   }
 
   if (primary !== "rackNumber" && shouldShowEntryField(entry, "rackNumber")) {
