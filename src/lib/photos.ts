@@ -54,6 +54,8 @@ async function withStore<T>(
   });
 }
 
+const FILE_EXTENSION = /\.[^.]+$/;
+
 // Re-encodes through a canvas so EXIF (GPS, device, timestamp) never reaches
 // storage. Falls back to the original file where the APIs are missing.
 export async function stripPhotoMetadata(file: File): Promise<File> {
@@ -67,7 +69,7 @@ export async function stripPhotoMetadata(file: File): Promise<File> {
     canvas.getContext("2d")?.drawImage(bitmap, 0, 0);
     bitmap.close();
     const blob = await canvas.convertToBlob({ type: "image/jpeg", quality: 0.9 });
-    return new File([blob], file.name.replace(/\.[^.]+$/, "") + ".jpg", { type: blob.type });
+    return new File([blob], `${file.name.replace(FILE_EXTENSION, "")}.jpg`, { type: blob.type });
   } catch {
     return file;
   }

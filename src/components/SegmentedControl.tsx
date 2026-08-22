@@ -23,6 +23,7 @@ export function SegmentedControl<T extends string>({
   options,
   value,
   titleCase,
+  hint,
   labelSuffix,
 }: {
   label: string;
@@ -32,6 +33,9 @@ export function SegmentedControl<T extends string>({
   // Renders one option value for display (segment text + aria-label); pass a
   // translator or titleCase.
   titleCase: (value: T) => string;
+  // One line of always-visible help under the options: no hover tooltips on a
+  // touch-first app.
+  hint?: string;
   labelSuffix?: ReactNode;
 }) {
   return (
@@ -55,6 +59,7 @@ export function SegmentedControl<T extends string>({
           </button>
         ))}
       </div>
+      {hint ? <p className="segmented-field__hint">{hint}</p> : null}
     </fieldset>
   );
 }

@@ -108,7 +108,7 @@ export function SheetDialog({
           </h2>
           <button
             aria-label={closeLabel}
-            className="ghost-button ghost-button--icon sheet-close sheet-close--compact"
+            className="ghost-button ghost-button--icon sheet-close"
             type="button"
             onClick={onClose}
           >

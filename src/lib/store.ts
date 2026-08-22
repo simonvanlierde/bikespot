@@ -4,7 +4,13 @@ import type { Dispatch, SetStateAction } from "preact/compat";
 
 import type { AppData, LocationRecord, OverlayState } from "./app-data";
 import { defaultAppData } from "./defaults";
-import { promoteRecentLocation, saveLocation, updateStationConfig } from "./domain";
+import {
+  clearCurrentLocation,
+  promoteRecentLocation,
+  removeRecentLocation,
+  saveLocation,
+  updateStationConfig,
+} from "./domain";
 import {
   buildLocationRecordInput,
   createLocationDraft,
@@ -29,8 +35,10 @@ export const locationDraft = signal<LocationDraft | null>(null);
 export const stationDraft = signal<StationSettingsDraft | null>(null);
 export const showEditorDetails = signal(false);
 // A fresh object per notice so posting the same text twice still re-arms the
-// auto-dismiss timer keyed on it.
-export const notice = signal<{ text: string } | null>(null);
+// auto-dismiss timer keyed on it. Errors stay until dismissed or replaced.
+export const notice = signal<{ text: string; tone?: "error" } | null>(null);
+// Validation message for the open editor; cleared on every open/close.
+export const editorError = signal<string | null>(null);
 export const hydrated = signal(false);
 export const geoStatus = signal<"idle" | "capturing" | "error">("idle");
 
@@ -45,7 +53,7 @@ effect(() => {
   }
 
   saveAppData(snapshot).catch(() => {
-    notice.value = { text: t.value.noticeSaveFailed };
+    notice.value = { text: t.value.noticeSaveFailed, tone: "error" };
   });
 });
 
@@ -61,6 +69,7 @@ export function initStore(): () => void {
   stationDraft.value = null;
   showEditorDetails.value = false;
   notice.value = null;
+  editorError.value = null;
   geoStatus.value = "idle";
 
   let active = true;
@@ -68,7 +77,7 @@ export function initStore(): () => void {
   // biome-ignore lint/complexity/noVoid: deliberate fire-and-forget hydration
   void loadAppData()
     .catch(() => {
-      notice.value = { text: t.value.noticeLoadFailed };
+      notice.value = { text: t.value.noticeLoadFailed, tone: "error" };
       return defaultAppData;
     })
     .then((loaded) => {
@@ -165,6 +174,7 @@ export function openOverlay(next: OverlayState): void {
   editorSession++;
   overlay.value = next;
   showEditorDetails.value = false;
+  editorError.value = null;
   geoStatus.value = "idle";
 
   if (next.kind === "edit-location") {
@@ -189,6 +199,7 @@ export function closeOverlay(): void {
   locationDraft.value = null;
   stationDraft.value = null;
   showEditorDetails.value = false;
+  editorError.value = null;
   geoStatus.value = "idle";
 }
 
@@ -204,8 +215,13 @@ export async function handleLocationSubmit(event: TargetedEvent<HTMLFormElement>
   const input = buildLocationRecordInput(draft, data.value.station);
 
   if (!input) {
+    const laneMissing =
+      draft.kind === "station" && data.value.station.enabledFields.lane && !draft.lane.trim();
+    editorError.value = laneMissing ? t.value.errorLaneRequired : t.value.errorNothingToFindBy;
     return;
   }
+
+  editorError.value = null;
 
   // Persist a newly attached photo only once we know the record is valid,
   // otherwise a failed save would leave an orphaned blob behind.
@@ -215,34 +231,49 @@ export async function handleLocationSubmit(event: TargetedEvent<HTMLFormElement>
     photoId = draft.photoFile ? await savePhotoBlob(draft.photoFile) : undefined;
   } catch {
     // Keep the sheet open so the user can retry or drop the photo.
-    notice.value = { text: t.value.noticeSaveFailed };
+    notice.value = { text: t.value.noticeSaveFailed, tone: "error" };
     return;
   }
 
   const nextLocation = photoId ? { ...input, photoId } : input;
+  const previous = data.value.current;
   const next = saveLocation(data.value, nextLocation);
+  const replaced = previous !== null && next.recent[0] === previous;
 
   // Close before committing, as in handleUseRecent: the record is persisted
   // synchronously inside commitData; only best-effort blob cleanup is awaited.
   closeOverlay();
-  notice.value = { text: t.value.noticeLocationUpdated };
+  notice.value = {
+    text: replaced ? t.value.noticeLocationReplaced : t.value.noticeLocationUpdated,
+  };
   await commitData(next);
 }
 
-export function handleStationSubmit(event: TargetedEvent<HTMLFormElement>): void {
-  event.preventDefault();
+// Settings apply as you change them — there is no Save step. The draft stays
+// the UI's source of truth (a half-typed preset label is blank there but
+// dropped by normalization), the config gets the sanitized view.
+export function handleStationChange(updater: SetStateAction<StationSettingsDraft>): void {
+  setStationDraft(updater);
 
   const draft = stationDraft.value;
 
-  if (!draft) {
-    return;
+  if (draft) {
+    data.value = updateStationConfig(data.value, draft);
   }
+}
 
-  // The draft already has StationConfig's shape; normalizeStationConfig inside
-  // updateStationConfig owns all sanitization.
-  data.value = updateStationConfig(data.value, draft);
-  notice.value = { text: t.value.noticeStationUpdated };
+export async function handleClearCurrent(): Promise<void> {
+  const next = clearCurrentLocation(data.value);
   closeOverlay();
+  notice.value = { text: t.value.noticeCollected };
+  await commitData(next);
+}
+
+export async function handleRemoveRecent(id: string): Promise<void> {
+  const next = removeRecentLocation(data.value, id);
+  openOverlay({ kind: "recent-list" });
+  notice.value = { text: t.value.noticeRecentRemoved };
+  await commitData(next);
 }
 
 export async function handleUseRecent(id: string): Promise<void> {
@@ -318,12 +349,13 @@ export async function handleCaptureLocation(): Promise<void> {
 }
 
 export async function handleClearAllData(): Promise<void> {
+  // biome-ignore lint/suspicious/noAlert: a native confirm is the honest guard for a one-off destructive action
   if (!window.confirm(t.value.clearAllDataConfirm)) {
     return;
   }
 
   closeOverlay();
-  data.value = { ...defaultAppData, current: null, recent: [] };
+  data.value = defaultAppData;
   notice.value = { text: t.value.noticeDataCleared };
   await clearPhotoBlobs().catch(() => undefined);
 }

@@ -3,34 +3,92 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "../src/App.tsx";
+import { seedStorage } from "./fixtures.ts";
+
+// Hydration from storage is async; wait for the seeded sign before interacting.
+async function renderApp() {
+  render(<App />);
+  await screen.findByRole("heading", { name: /lane 4/i });
+}
 
 describe("bike storage tracker app", () => {
   beforeEach(() => {
     window.localStorage.clear();
+    seedStorage();
   });
 
-  it("renders the current spot card and quick actions", () => {
-    render(<App />);
+  it("renders the current spot card and navigation", async () => {
+    await renderApp();
 
     const currentSpotCard = screen.getByRole("region", {
       name: /current spot/i,
     });
-    const quickActions = screen.getByRole("region", { name: /quick actions/i });
+    const navigation = screen.getByRole("navigation", { name: /more/i });
 
     expect(currentSpotCard).toBeInTheDocument();
-    expect(quickActions).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /change location/i })).toBeInTheDocument();
     expect(
       within(currentSpotCard).getByRole("button", { name: /view details/i }),
     ).toBeInTheDocument();
     expect(
-      within(quickActions).getByRole("button", { name: /recent locations/i }),
+      within(navigation).getByRole("button", { name: /recent locations/i }),
     ).toBeInTheDocument();
-    expect(within(quickActions).getByRole("button", { name: /^settings$/i })).toBeInTheDocument();
+    expect(within(navigation).getByRole("button", { name: /^settings$/i })).toBeInTheDocument();
   });
 
-  it("shows the enabled fields as labeled facts on the current spot card", () => {
+  it("starts honest on first run: no spot, no fake history, one clear action", async () => {
+    window.localStorage.clear();
+    const user = userEvent.setup();
+
     render(<App />);
+
+    const currentSpotCard = screen.getByRole("region", { name: /current spot/i });
+    expect(
+      await within(currentSpotCard).findByRole("heading", { name: /no bike parked/i }),
+    ).toBeVisible();
+    expect(within(currentSpotCard).queryByRole("button", { name: /view details/i })).toBeNull();
+    expect(screen.getByText("0")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /save my spot/i }));
+    await user.type(screen.getByLabelText(/^lane$/i), "12");
+    await user.click(screen.getByRole("button", { name: /save location/i }));
+
+    expect(screen.getByRole("heading", { name: /lane 12/i })).toBeInTheDocument();
+    expect(screen.getByText(/^spot saved$/i)).toBeInTheDocument();
+  });
+
+  it("explains what is missing instead of silently ignoring Save", async () => {
+    const user = userEvent.setup();
+
+    await renderApp();
+
+    await user.click(screen.getByRole("button", { name: /change location/i }));
+    await user.click(screen.getByRole("button", { name: /save location/i }));
+
+    expect(screen.getByRole("alert")).toHaveTextContent(/enter the lane/i);
+    expect(screen.getByLabelText(/^lane$/i)).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getByRole("dialog", { name: /change location/i })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /parked outside/i }));
+    await user.click(screen.getByRole("button", { name: /save location/i }));
+
+    expect(screen.getByRole("alert")).toHaveTextContent(/add a note, photo or gps/i);
+  });
+
+  it("marks the bike as collected from the details sheet and keeps the spot in recent", async () => {
+    const user = userEvent.setup();
+
+    await renderApp();
+
+    await user.click(screen.getByRole("button", { name: /view details/i }));
+    await user.click(screen.getByRole("button", { name: /bike collected/i }));
+
+    expect(screen.getByRole("heading", { name: /no bike parked/i })).toBeInTheDocument();
+    expect(screen.getByText("2")).toBeInTheDocument();
+  });
+
+  it("shows the enabled fields as labeled facts on the current spot card", async () => {
+    await renderApp();
 
     const currentSpotCard = screen.getByRole("region", { name: /current spot/i });
     expect(within(currentSpotCard).getByText(/middle distance/i)).toBeInTheDocument();
@@ -43,18 +101,19 @@ describe("bike storage tracker app", () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
 
     try {
-      render(<App />);
+      await renderApp();
 
       await user.click(screen.getByRole("button", { name: /change location/i }));
+      await user.type(screen.getByLabelText(/^lane$/i), "7");
       await user.click(screen.getByRole("button", { name: /save location/i }));
 
-      expect(screen.getByText(/location updated/i)).toBeInTheDocument();
+      expect(screen.getByText(/spot saved/i)).toBeInTheDocument();
 
       await act(async () => {
         await vi.advanceTimersByTimeAsync(4100);
       });
 
-      expect(screen.queryByText(/location updated/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/spot saved/i)).not.toBeInTheDocument();
     } finally {
       vi.useRealTimers();
     }
@@ -63,11 +122,11 @@ describe("bike storage tracker app", () => {
   it("uses station settings to drive the location editor fields", async () => {
     const user = userEvent.setup();
 
-    render(<App />);
+    await renderApp();
 
     await user.click(screen.getByRole("button", { name: /^settings$/i }));
 
-    await user.click(screen.getByRole("button", { name: /quick lanes/i }));
+    await user.click(screen.getByRole("button", { name: /preset lanes/i }));
     await user.clear(screen.getByLabelText(/^lane 1$/i));
     await user.type(screen.getByLabelText(/^lane 1$/i), "4");
     await user.clear(screen.getByLabelText(/^lane 2$/i));
@@ -75,7 +134,7 @@ describe("bike storage tracker app", () => {
     await user.clear(screen.getByLabelText(/^lane 3$/i));
     await user.type(screen.getByLabelText(/^lane 3$/i), "6");
     await user.click(screen.getByRole("checkbox", { name: /side/i }));
-    await user.click(screen.getByRole("button", { name: /save station settings/i }));
+    await user.keyboard("{Escape}");
 
     await user.click(screen.getByRole("button", { name: /change location/i }));
 
@@ -89,7 +148,7 @@ describe("bike storage tracker app", () => {
   it("keeps GPS under More details for station mode but shows it by default outside", async () => {
     const user = userEvent.setup();
 
-    render(<App />);
+    await renderApp();
 
     await user.click(screen.getByRole("button", { name: /change location/i }));
 
@@ -106,7 +165,7 @@ describe("bike storage tracker app", () => {
   it("saves an outside location and shows its notes and photo in details", async () => {
     const user = userEvent.setup();
 
-    render(<App />);
+    await renderApp();
 
     await user.click(screen.getByRole("button", { name: /change location/i }));
     await user.click(screen.getByRole("button", { name: /parked outside/i }));
@@ -134,7 +193,7 @@ describe("bike storage tracker app", () => {
   it("previews an added photo in the editor and removes it again", async () => {
     const user = userEvent.setup();
 
-    render(<App />);
+    await renderApp();
 
     await user.click(screen.getByRole("button", { name: /change location/i }));
     await user.click(screen.getByRole("button", { name: /parked outside/i }));
@@ -161,7 +220,7 @@ describe("bike storage tracker app", () => {
   it("opens recent locations in a preview flow and only promotes after confirmation", async () => {
     const user = userEvent.setup();
 
-    render(<App />);
+    await renderApp();
 
     await user.click(screen.getByRole("button", { name: /change location/i }));
     await user.clear(screen.getByLabelText(/^lane$/i));
@@ -179,17 +238,17 @@ describe("bike storage tracker app", () => {
 
     await user.click(screen.getByRole("button", { name: /use this location/i }));
 
-    expect(screen.getByText(/lane 4/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /lane 4/i })).toBeInTheDocument();
   });
 
   it("keeps the saved visible fields on recent entries after station settings change", async () => {
     const user = userEvent.setup();
 
-    render(<App />);
+    await renderApp();
 
     await user.click(screen.getByRole("button", { name: /^settings$/i }));
     await user.click(screen.getByRole("checkbox", { name: /side/i }));
-    await user.click(screen.getByRole("button", { name: /save station settings/i }));
+    await user.keyboard("{Escape}");
 
     await user.click(screen.getByRole("button", { name: /change location/i }));
     await user.clear(screen.getByLabelText(/^lane$/i));
@@ -200,7 +259,7 @@ describe("bike storage tracker app", () => {
     await user.click(screen.getByRole("button", { name: /^settings$/i }));
     await user.click(screen.getByRole("checkbox", { name: /side/i }));
     await user.click(screen.getByRole("checkbox", { name: /floor/i }));
-    await user.click(screen.getByRole("button", { name: /save station settings/i }));
+    await user.keyboard("{Escape}");
 
     await user.click(screen.getByRole("button", { name: /recent locations/i }));
     await user.click(
@@ -217,7 +276,7 @@ describe("bike storage tracker app", () => {
   it("closes sheets when the user clicks the dialog backdrop", async () => {
     const user = userEvent.setup();
 
-    render(<App />);
+    await renderApp();
     const currentSpotCard = screen.getByRole("region", { name: /current spot/i });
 
     // Clicking the backdrop hit target (behind the sheet) returns to main.

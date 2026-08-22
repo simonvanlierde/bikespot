@@ -3,11 +3,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   closeOverlay,
+  data,
   geoStatus,
   handleCaptureLocation,
   handlePhotoChange,
   handlePhotoRemove,
-  handleStationSubmit,
+  handleStationChange,
   locationDraft,
   notice,
   openOverlay,
@@ -90,23 +91,24 @@ describe("store handlers", () => {
     });
   });
 
-  describe("handleStationSubmit", () => {
-    it("applies the station draft and posts a notice", () => {
+  describe("handleStationChange", () => {
+    it("applies every station change immediately, keeping the draft as typed", () => {
       openOverlay({ kind: "station-settings" });
-      const draft = stationDraft.value;
-      if (!draft) throw new Error("expected a station draft");
-      stationDraft.value = { ...draft, name: "Amsterdam Zuid" };
 
-      handleStationSubmit({ preventDefault() {} } as TargetedEvent<HTMLFormElement>);
+      handleStationChange((previous) => ({ ...previous, name: "Amsterdam Zuid" }));
+      expect(data.value.station.name).toBe("Amsterdam Zuid");
 
-      expect(notice.value?.text).toBe("Station settings updated");
-      expect(stationDraft.value).toBeNull();
+      // A half-typed blank preset stays in the draft but is dropped from config.
+      handleStationChange((previous) => ({ ...previous, laneLabels: ["4", ""] }));
+      expect(stationDraft.value?.laneLabels).toEqual(["4", ""]);
+      expect(data.value.station.laneLabels).toEqual(["4"]);
     });
 
     it("does nothing without a station draft", () => {
       closeOverlay(); // stationDraft is null
-      handleStationSubmit({ preventDefault() {} } as TargetedEvent<HTMLFormElement>);
-      expect(notice.value).toBeNull();
+      const before = data.value;
+      handleStationChange((previous) => ({ ...previous, name: "x" }));
+      expect(data.value).toBe(before);
     });
   });
 

@@ -72,7 +72,8 @@ function normalizeLocationRecord(value: unknown): LocationRecord | null {
       : null;
   const stationName = typeof entry.stationName === "string" ? entry.stationName.trim() : "";
 
-  if (!(id && updatedAt && stationName)) {
+  // Station name is optional: the user may never name their station.
+  if (!(id && updatedAt)) {
     return null;
   }
 

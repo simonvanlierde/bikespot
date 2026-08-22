@@ -6,18 +6,20 @@ import { StationSettingsSheet } from "@/features/location/StationSettingsSheet";
 import {
   closeOverlay,
   data,
+  editorError,
   geoStatus,
   handleCaptureLocation,
+  handleClearCurrent,
   handleLocationSubmit,
   handlePhotoChange,
   handlePhotoRemove,
-  handleStationSubmit,
+  handleRemoveRecent,
+  handleStationChange,
   handleUseRecent,
   locationDraft,
   openOverlay,
   overlay,
   setLocationDraft,
-  setStationDraft,
   showEditorDetails,
   stationDraft,
   toggleEditorDetails,
@@ -39,6 +41,7 @@ export function AppOverlays() {
           station={appData.station}
           showDetails={showEditorDetails.value}
           geoStatus={geoStatus.value}
+          error={editorError.value}
           setFormState={setLocationDraft}
           onClose={closeOverlay}
           onSubmit={handleLocationSubmit}
@@ -52,14 +55,17 @@ export function AppOverlays() {
       {current.kind === "station-settings" && stationDraft.value ? (
         <StationSettingsSheet
           stationForm={stationDraft.value}
-          setStationForm={setStationDraft}
+          setStationForm={handleStationChange}
           onClose={closeOverlay}
-          onSubmit={handleStationSubmit}
         />
       ) : null}
 
       {current.kind === "location-details" ? (
-        <LocationDetailsSheet current={appData.current} onClose={closeOverlay} />
+        <LocationDetailsSheet
+          current={appData.current}
+          onClose={closeOverlay}
+          onCollected={handleClearCurrent}
+        />
       ) : null}
 
       {current.kind === "recent-list" ? (
@@ -75,6 +81,7 @@ export function AppOverlays() {
           selectedRecent={selectedRecent}
           onClose={() => openOverlay({ kind: "recent-list" })}
           onUse={handleUseRecent}
+          onRemove={handleRemoveRecent}
         />
       ) : null}
     </>

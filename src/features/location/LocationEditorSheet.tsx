@@ -1,14 +1,16 @@
-import { ArrowRightLeft, Undo2 } from "lucide-preact";
 import type { TargetedEvent } from "preact";
 import type { Dispatch, SetStateAction } from "preact/compat";
 import { CoordsField } from "@/components/CoordsField";
 import { NotesField } from "@/components/NotesField";
 import { PhotoField } from "@/components/PhotoField";
+import { SegmentedControl } from "@/components/SegmentedControl";
 import { SheetDialog } from "@/components/SheetDialog";
 import type { StationConfig } from "@/lib/app-data";
 import { createLocationDraft, createOutsideLocationDraft, type LocationDraft } from "@/lib/drafts";
 import { t } from "@/lib/i18n";
 import { StationLocationFields, type UpdateStationField } from "./StationLocationFields";
+
+const WHERE_OPTIONS: LocationDraft["kind"][] = ["station", "outside"];
 
 // biome-ignore lint/complexity/noExcessiveLinesPerFunction: JSX render fn; markup dominates the line count
 export function LocationEditorSheet({
@@ -16,6 +18,7 @@ export function LocationEditorSheet({
   station,
   showDetails,
   geoStatus,
+  error,
   setFormState,
   onClose,
   onSubmit,
@@ -28,6 +31,7 @@ export function LocationEditorSheet({
   station: StationConfig;
   showDetails: boolean;
   geoStatus: "idle" | "capturing" | "error";
+  error: string | null;
   setFormState: Dispatch<SetStateAction<LocationDraft>>;
   onClose: () => void;
   onSubmit: (event: TargetedEvent<HTMLFormElement>) => void;
@@ -54,8 +58,13 @@ export function LocationEditorSheet({
     );
   };
 
-  // Switching mode keeps what the user already gathered for this parking event.
-  const carry = ({ notes, photoFile, coords }: LocationDraft) => ({ notes, photoFile, coords });
+  function switchMode(kind: LocationDraft["kind"]) {
+    if (kind !== formState.kind) {
+      setFormState(
+        kind === "outside" ? createOutsideLocationDraft() : createLocationDraft(null, station),
+      );
+    }
+  }
 
   return (
     <SheetDialog
@@ -64,49 +73,23 @@ export function LocationEditorSheet({
       title={t.value.changeLocation}
       onClose={onClose}
     >
-      <div className="sheet-header__main">
-        <div className="mode-switch">
-          {formState.kind === "station" ? (
-            <button
-              className="text-button text-button--switch"
-              type="button"
-              onClick={() =>
-                setFormState((previous) => ({
-                  ...createOutsideLocationDraft(),
-                  ...carry(previous),
-                }))
-              }
-            >
-              <ArrowRightLeft aria-hidden="true" className="button-icon" />
-              <span>{t.value.parkedOutside}</span>
-            </button>
-          ) : (
-            <button
-              className="text-button text-button--switch"
-              type="button"
-              onClick={() =>
-                setFormState((previous) => ({
-                  ...createLocationDraft(null, station),
-                  ...carry(previous),
-                }))
-              }
-            >
-              <Undo2 aria-hidden="true" className="button-icon" />
-              <span>{t.value.backToStation}</span>
-            </button>
-          )}
-        </div>
-      </div>
+      <form className="editor-form" noValidate onSubmit={onSubmit}>
+        <SegmentedControl
+          label={t.value.whereParked}
+          options={WHERE_OPTIONS}
+          value={formState.kind}
+          onChange={switchMode}
+          titleCase={(option) => t.value.whereOpts[option]}
+        />
 
-      <form className="editor-form" onSubmit={onSubmit}>
         {formState.kind === "outside" ? (
           <>
+            <NotesField value={formState.notes} onChange={updateNotes} />
             <CoordsField
               coords={formState.coords}
               status={geoStatus}
               onCapture={onCaptureLocation}
             />
-            <NotesField value={formState.notes} onChange={updateNotes} />
             <PhotoField
               photoFile={formState.photoFile}
               onPhotoChange={onPhotoChange}
@@ -119,6 +102,7 @@ export function LocationEditorSheet({
             station={station}
             showDetails={showDetails}
             geoStatus={geoStatus}
+            laneInvalid={Boolean(error) && !formState.lane.trim()}
             updateStationField={updateStationField}
             onNotesChange={updateNotes}
             onToggleDetails={onToggleDetails}
@@ -128,9 +112,14 @@ export function LocationEditorSheet({
           />
         )}
 
-        <button className="primary-button primary-button--wide" type="submit">
-          {t.value.saveLocation}
-        </button>
+        <div className="editor-form__submit">
+          <p className="form-error" role="alert">
+            {error}
+          </p>
+          <button className="primary-button primary-button--wide" type="submit">
+            {t.value.saveLocation}
+          </button>
+        </div>
       </form>
     </SheetDialog>
   );

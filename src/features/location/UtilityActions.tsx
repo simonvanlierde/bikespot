@@ -12,7 +12,7 @@ export function UtilityActions({
   onOpenStationSettings: () => void;
 }) {
   return (
-    <section className="utility-actions" aria-label={t.value.quickActions}>
+    <nav className="utility-actions" aria-label={t.value.navigation}>
       <button className="utility-button" type="button" onClick={onOpenRecent}>
         <span className="utility-button__row">
           <span className="utility-button__title">
@@ -28,6 +28,6 @@ export function UtilityActions({
           <span>{t.value.settings}</span>
         </span>
       </button>
-    </section>
+    </nav>
   );
 }

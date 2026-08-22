@@ -13,10 +13,11 @@ export default function App() {
 
   const currentNotice = notice.value;
 
-  // Auto-dismiss the status notice a few seconds after it appears. Keyed on
-  // the notice object, so repeating the same text still re-arms the timer.
+  // Auto-dismiss a success notice a few seconds after it appears; an error
+  // stays until the next action replaces it. Keyed on the notice object, so
+  // repeating the same text still re-arms the timer.
   useEffect(() => {
-    if (!currentNotice) {
+    if (!currentNotice || currentNotice.tone === "error") {
       return;
     }
 
@@ -33,7 +34,7 @@ export default function App() {
     <main className="app-shell">
       <CurrentSpotCard
         current={current}
-        notice={currentNotice?.text ?? ""}
+        notice={currentNotice}
         onEdit={() => openOverlay({ kind: "edit-location" })}
         onOpenDetails={() => openOverlay({ kind: "location-details" })}
       />

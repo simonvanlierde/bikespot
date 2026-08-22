@@ -1,4 +1,4 @@
-import { RotateCcw } from "lucide-preact";
+import { RotateCcw, Trash2 } from "lucide-preact";
 
 import { SheetDialog } from "@/components/SheetDialog";
 import { formatTimestamp, getPrimaryLabel } from "@/features/location/display";
@@ -10,14 +10,16 @@ export function RecentLocationPreviewSheet({
   selectedRecent,
   onClose,
   onUse,
+  onRemove,
 }: {
   selectedRecent: LocationRecord;
   onClose: () => void;
   onUse: (id: string) => void;
+  onRemove: (id: string) => void;
 }) {
   return (
     <SheetDialog
-      closeLabel={t.value.backToRecent}
+      closeLabel={t.value.back}
       label={t.value.recentPreview}
       title={getPrimaryLabel(selectedRecent)}
       onClose={onClose}
@@ -32,6 +34,14 @@ export function RecentLocationPreviewSheet({
         >
           <RotateCcw aria-hidden="true" className="button-icon" />
           {t.value.useThisLocation}
+        </button>
+        <button
+          className="ghost-button ghost-button--wide"
+          type="button"
+          onClick={() => onRemove(selectedRecent.id)}
+        >
+          <Trash2 aria-hidden="true" className="button-icon" />
+          <span>{t.value.removeFromRecent}</span>
         </button>
       </div>
     </SheetDialog>

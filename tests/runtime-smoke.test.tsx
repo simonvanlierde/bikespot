@@ -8,6 +8,6 @@ describe("runtime smoke", () => {
     render(<App />);
 
     expect(screen.getByRole("region", { name: /current spot/i })).toBeInTheDocument();
-    expect(screen.getByRole("region", { name: /quick actions/i })).toBeInTheDocument();
+    expect(screen.getByRole("navigation", { name: /more/i })).toBeInTheDocument();
   });
 });

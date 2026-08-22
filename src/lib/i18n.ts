@@ -55,14 +55,24 @@ type Dict = {
   updated: (time: string) => string;
   saved: (time: string) => string;
   currentBikeRef: string;
-  quickActions: string;
+  navigation: string;
+  noSpotYet: string;
+  emptyIntro: string;
+  saveSpot: string;
+  justNow: string;
+  bikeCollected: string;
+  removeFromRecent: string;
+  noRecentYet: string;
   recentLocations: string;
   settings: string;
 
   cancel: string;
-  parkedOutside: string;
-  backToStation: string;
+  back: string;
+  whereParked: string;
+  whereOpts: Record<"station" | "outside", string>;
   saveLocation: string;
+  errorLaneRequired: string;
+  errorNothingToFindBy: string;
   moreDetails: string;
   gpsLocation: string;
   notes: string;
@@ -70,7 +80,6 @@ type Dict = {
   floor: string;
   lane: string;
   distance: string;
-  distanceHelp: string;
   distanceHelpText: string;
   side: string;
   rackLevel: string;
@@ -90,8 +99,6 @@ type Dict = {
   removePhoto: string;
 
   close: string;
-  closeDetails: string;
-  backToRecent: string;
 
   locationDetails: string;
   savedBikeRef: string;
@@ -103,9 +110,10 @@ type Dict = {
   restore: (title: string) => string;
 
   station: string;
+  stationName: string;
+  stationNamePlaceholder: string;
   general: string;
   enabledFields: string;
-  saveStationSettings: string;
   floorInput: string;
   laneInput: string;
   theme: string;
@@ -132,7 +140,9 @@ type Dict = {
 
   noticeSaveFailed: string;
   noticeLocationUpdated: string;
-  noticeStationUpdated: string;
+  noticeLocationReplaced: string;
+  noticeCollected: string;
+  noticeRecentRemoved: string;
   noticeLocationFromRecent: string;
   noticeLoadFailed: string;
   noticeDataCleared: string;
@@ -142,10 +152,6 @@ type Dict = {
 
   language: string;
   langOpts: Record<Lang, string>;
-
-  // First-run seed data (see defaults.ts); user overwrites it immediately.
-  seedStationName: string;
-  seedStarterNote: string;
 };
 
 const en: Dict = {
@@ -156,14 +162,25 @@ const en: Dict = {
   updated: (time) => `Updated ${time}`,
   saved: (time) => `Saved ${time}`,
   currentBikeRef: "Current bike reference",
-  quickActions: "Quick actions",
+  navigation: "More",
+  noSpotYet: "No bike parked",
+  emptyIntro:
+    "Save where you leave your bike, and find it again later. Everything stays on this phone.",
+  saveSpot: "Save my spot",
+  justNow: "just now",
+  bikeCollected: "Bike collected",
+  removeFromRecent: "Remove from recent",
+  noRecentYet: "Earlier spots show up here once you save a new one.",
   recentLocations: "Recent locations",
   settings: "Settings",
 
   cancel: "Cancel",
-  parkedOutside: "Parked outside",
-  backToStation: "Back to station",
+  back: "Back",
+  whereParked: "Parked",
+  whereOpts: { station: "In the station", outside: "Outside" },
   saveLocation: "Save location",
+  errorLaneRequired: "Enter the lane so you can find the bike again.",
+  errorNothingToFindBy: "Add a note, photo or GPS fix so you can find the bike again.",
   moreDetails: "More details",
   gpsLocation: "GPS location",
   notes: "Notes",
@@ -171,7 +188,6 @@ const en: Dict = {
   floor: "Floor",
   lane: "Lane",
   distance: "Distance",
-  distanceHelp: "Distance help",
   distanceHelpText: "Close = near the entrance. Middle = around the middle. Far = deeper inside.",
   side: "Side",
   rackLevel: "Rack level",
@@ -199,8 +215,6 @@ const en: Dict = {
   removePhoto: "Remove photo",
 
   close: "Close",
-  closeDetails: "Close details",
-  backToRecent: "Back to recent locations",
 
   locationDetails: "Location details",
   savedBikeRef: "Saved bike reference",
@@ -212,15 +226,16 @@ const en: Dict = {
   restore: (title) => `Restore ${title} from recent locations`,
 
   station: "Station",
+  stationName: "Station name",
+  stationNamePlaceholder: "e.g. Utrecht Centraal",
   general: "General",
-  enabledFields: "Enabled fields",
-  saveStationSettings: "Save station settings",
+  enabledFields: "Which details does your station have?",
   floorInput: "Floor input",
   laneInput: "Lane input",
   theme: "Theme",
   themeOpts: { system: "System", light: "Light", dark: "Dark" },
   numberInput: "Number input",
-  quickMode: { lane: "Quick lanes", floor: "Quick floors" },
+  quickMode: { lane: "Preset lanes", floor: "Preset floors" },
   presetLabel: (noun, n) => `${noun} ${n}`,
   removePreset: (noun, n) => `Remove ${noun} ${n}`,
   addPreset: (noun) => `Add ${noun}`,
@@ -236,9 +251,11 @@ const en: Dict = {
   notSaved: "not saved yet",
 
   noticeSaveFailed: "Could not save — storage is full or blocked",
-  noticeLocationUpdated: "Location updated",
-  noticeStationUpdated: "Station settings updated",
-  noticeLocationFromRecent: "Location updated from recent",
+  noticeLocationUpdated: "Spot saved",
+  noticeLocationReplaced: "Spot saved — the previous one is in Recent",
+  noticeCollected: "Spot cleared — kept in Recent",
+  noticeRecentRemoved: "Removed from Recent",
+  noticeLocationFromRecent: "Earlier spot restored",
   noticeLoadFailed: "Could not read saved data — starting fresh",
   noticeDataCleared: "All data cleared",
   clearAllData: "Clear all data",
@@ -247,9 +264,6 @@ const en: Dict = {
 
   language: "Language",
   langOpts: { en: "English", nl: "Nederlands" },
-
-  seedStationName: "My station",
-  seedStarterNote: "Starter spot - update this to your real location.",
 };
 
 const nl: Dict = {
@@ -260,14 +274,25 @@ const nl: Dict = {
   updated: (time) => `Bijgewerkt ${time}`,
   saved: (time) => `Opgeslagen ${time}`,
   currentBikeRef: "Huidige fietsreferentie",
-  quickActions: "Snelle acties",
+  navigation: "Meer",
+  noSpotYet: "Geen fiets gestald",
+  emptyIntro:
+    "Sla op waar je je fiets achterlaat en vind hem later terug. Alles blijft op deze telefoon.",
+  saveSpot: "Plek opslaan",
+  justNow: "zojuist",
+  bikeCollected: "Fiets opgehaald",
+  removeFromRecent: "Uit recent verwijderen",
+  noRecentYet: "Eerdere plekken verschijnen hier zodra je een nieuwe opslaat.",
   recentLocations: "Recente locaties",
   settings: "Instellingen",
 
   cancel: "Annuleren",
-  parkedOutside: "Buiten geparkeerd",
-  backToStation: "Terug naar stalling",
+  back: "Terug",
+  whereParked: "Gestald",
+  whereOpts: { station: "In de stalling", outside: "Buiten" },
   saveLocation: "Locatie opslaan",
+  errorLaneRequired: "Vul de rij in, zodat je de fiets terugvindt.",
+  errorNothingToFindBy: "Voeg een notitie, foto of GPS-locatie toe, zodat je de fiets terugvindt.",
   moreDetails: "Meer details",
   gpsLocation: "GPS-locatie",
   notes: "Notities",
@@ -275,7 +300,6 @@ const nl: Dict = {
   floor: "Verdieping",
   lane: "Rij",
   distance: "Afstand",
-  distanceHelp: "Uitleg afstand",
   distanceHelpText: "Dichtbij = bij de ingang. Midden = rond het midden. Ver = dieper naar binnen.",
   side: "Kant",
   rackLevel: "Rekniveau",
@@ -303,8 +327,6 @@ const nl: Dict = {
   removePhoto: "Foto verwijderen",
 
   close: "Sluiten",
-  closeDetails: "Details sluiten",
-  backToRecent: "Terug naar recente locaties",
 
   locationDetails: "Locatiedetails",
   savedBikeRef: "Opgeslagen fietsreferentie",
@@ -316,15 +338,16 @@ const nl: Dict = {
   restore: (title) => `${title} herstellen uit recente locaties`,
 
   station: "Stalling",
+  stationName: "Naam van de stalling",
+  stationNamePlaceholder: "bv. Utrecht Centraal",
   general: "Algemeen",
-  enabledFields: "Ingeschakelde velden",
-  saveStationSettings: "Stallinginstellingen opslaan",
+  enabledFields: "Welke details heeft jouw stalling?",
   floorInput: "Invoer verdieping",
   laneInput: "Invoer rij",
   theme: "Thema",
   themeOpts: { system: "Systeem", light: "Licht", dark: "Donker" },
   numberInput: "Cijferinvoer",
-  quickMode: { lane: "Snelkeuze rijen", floor: "Snelkeuze verdiepingen" },
+  quickMode: { lane: "Vaste rijen", floor: "Vaste verdiepingen" },
   presetLabel: (noun, n) => `${noun} ${n}`,
   removePreset: (noun, n) => `${noun} ${n} verwijderen`,
   addPreset: (noun) => `${noun} toevoegen`,
@@ -340,9 +363,11 @@ const nl: Dict = {
   notSaved: "nog niet opgeslagen",
 
   noticeSaveFailed: "Kon niet opslaan — opslag vol of geblokkeerd",
-  noticeLocationUpdated: "Locatie bijgewerkt",
-  noticeStationUpdated: "Stallinginstellingen bijgewerkt",
-  noticeLocationFromRecent: "Locatie bijgewerkt vanuit recent",
+  noticeLocationUpdated: "Plek opgeslagen",
+  noticeLocationReplaced: "Plek opgeslagen — de vorige staat bij Recent",
+  noticeCollected: "Plek gewist — bewaard bij Recent",
+  noticeRecentRemoved: "Uit Recent verwijderd",
+  noticeLocationFromRecent: "Eerdere plek hersteld",
   noticeLoadFailed: "Kon opgeslagen gegevens niet lezen — opnieuw begonnen",
   noticeDataCleared: "Alle gegevens gewist",
   clearAllData: "Alle gegevens wissen",
@@ -352,9 +377,6 @@ const nl: Dict = {
 
   language: "Taal",
   langOpts: { en: "English", nl: "Nederlands" },
-
-  seedStationName: "Mijn stalling",
-  seedStarterNote: "Voorbeeldplek – wijzig dit naar je echte locatie.",
 };
 
 const dict: Record<Lang, Dict> = { en, nl };

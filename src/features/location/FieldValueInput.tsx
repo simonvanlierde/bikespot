@@ -2,23 +2,25 @@ import { segmentKeyHandler } from "@/components/SegmentedControl";
 import type { FieldInputMode } from "@/lib/app-data";
 
 // Editor-side value input for one location field (lane or floor): quick preset
-// buttons when configured, otherwise a free-text input.
+// buttons when configured, otherwise a number-keypad text input.
 export function FieldValueInput({
   noun,
   mode,
   labels,
   value,
+  invalid = false,
   onChange,
 }: {
   noun: string;
   mode: FieldInputMode;
   labels: string[];
   value: string;
+  invalid?: boolean;
   onChange: (value: string) => void;
 }) {
   if (mode === "quick") {
     return (
-      <fieldset className="segmented-field">
+      <fieldset className="segmented-field" aria-invalid={invalid || undefined}>
         <legend>{noun}</legend>
         <div className="segmented-field__options segmented-field__options--fit">
           {labels.map((label) => (
@@ -45,7 +47,10 @@ export function FieldValueInput({
     <label className="field">
       <span>{noun}</span>
       <input
+        aria-invalid={invalid || undefined}
         aria-label={noun}
+        autoComplete="off"
+        inputMode="numeric"
         type="text"
         value={value}
         onChange={(event) => onChange(event.currentTarget.value)}

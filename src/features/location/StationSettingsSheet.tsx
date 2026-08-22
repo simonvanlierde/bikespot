@@ -1,4 +1,3 @@
-import type { TargetedEvent } from "preact";
 import { Fragment } from "preact";
 import type { Dispatch, SetStateAction } from "preact/compat";
 
@@ -15,17 +14,17 @@ import { FieldInputSettings } from "./FieldInputSettings";
 // editor and details views. Labels resolve per-render from the string table.
 const FIELD_TOGGLE_KEYS = ["floor", "lane", "distance", "side", "rackLevel", "rackNumber"] as const;
 
+// Every control here applies immediately, like the theme and language
+// switches: there is nothing to save and nothing to cancel.
 // biome-ignore lint/complexity/noExcessiveLinesPerFunction: JSX render fn; markup dominates the line count
 export function StationSettingsSheet({
   stationForm,
   setStationForm,
   onClose,
-  onSubmit,
 }: {
   stationForm: StationSettingsDraft;
   setStationForm: Dispatch<SetStateAction<StationSettingsDraft>>;
   onClose: () => void;
-  onSubmit: (event: TargetedEvent<HTMLFormElement>) => void;
 }) {
   function updateStationField<K extends keyof StationSettingsDraft>(
     field: K,
@@ -45,61 +44,59 @@ export function StationSettingsSheet({
   }
 
   return (
-    <SheetDialog
-      closeLabel={t.value.cancel}
-      label={t.value.settings}
-      title={t.value.settings}
-      onClose={onClose}
-    >
+    <SheetDialog label={t.value.settings} title={t.value.settings} onClose={onClose}>
       <div className="settings-stack">
-        <section className="settings-section">
-          <p className="section-kicker">{t.value.station}</p>
-          <form className="editor-form" onSubmit={onSubmit}>
-            <fieldset className="settings-fieldset">
-              <legend>{t.value.enabledFields}</legend>
-              {FIELD_TOGGLE_KEYS.map((key) => (
-                <Fragment key={key}>
-                  <ToggleField
-                    checked={stationForm.enabledFields[key]}
-                    label={t.value[key]}
-                    onChange={(checked) => updateFieldToggle(key, checked)}
-                  />
-                  {key === "floor" && stationForm.enabledFields.floor ? (
-                    <FieldInputSettings
-                      field="floor"
-                      noun={t.value.floor}
-                      legend={t.value.floorInput}
-                      mode={stationForm.floorInputMode}
-                      labels={stationForm.floorLabels}
-                      onModeChange={(mode) => updateStationField("floorInputMode", mode)}
-                      onLabelsChange={(labels) => updateStationField("floorLabels", labels)}
-                    />
-                  ) : null}
-                  {key === "lane" && stationForm.enabledFields.lane ? (
-                    <FieldInputSettings
-                      field="lane"
-                      noun={t.value.lane}
-                      legend={t.value.laneInput}
-                      mode={stationForm.laneInputMode}
-                      labels={stationForm.laneLabels}
-                      onModeChange={(mode) => updateStationField("laneInputMode", mode)}
-                      onLabelsChange={(labels) => updateStationField("laneLabels", labels)}
-                    />
-                  ) : null}
-                </Fragment>
-              ))}
-            </fieldset>
+        <section className="settings-section" aria-label={t.value.station}>
+          <label className="field">
+            <span>{t.value.stationName}</span>
+            <input
+              aria-label={t.value.stationName}
+              autoComplete="off"
+              placeholder={t.value.stationNamePlaceholder}
+              value={stationForm.name}
+              onChange={(event) => updateStationField("name", event.currentTarget.value)}
+            />
+          </label>
 
-            <button className="primary-button primary-button--wide" type="submit">
-              {t.value.saveStationSettings}
-            </button>
-          </form>
+          <fieldset className="settings-fieldset">
+            <legend>{t.value.enabledFields}</legend>
+            {FIELD_TOGGLE_KEYS.map((key) => (
+              <Fragment key={key}>
+                <ToggleField
+                  checked={stationForm.enabledFields[key]}
+                  label={t.value[key]}
+                  onChange={(checked) => updateFieldToggle(key, checked)}
+                />
+                {key === "floor" && stationForm.enabledFields.floor ? (
+                  <FieldInputSettings
+                    field="floor"
+                    noun={t.value.floor}
+                    legend={t.value.floorInput}
+                    mode={stationForm.floorInputMode}
+                    labels={stationForm.floorLabels}
+                    onModeChange={(mode) => updateStationField("floorInputMode", mode)}
+                    onLabelsChange={(labels) => updateStationField("floorLabels", labels)}
+                  />
+                ) : null}
+                {key === "lane" && stationForm.enabledFields.lane ? (
+                  <FieldInputSettings
+                    field="lane"
+                    noun={t.value.lane}
+                    legend={t.value.laneInput}
+                    mode={stationForm.laneInputMode}
+                    labels={stationForm.laneLabels}
+                    onModeChange={(mode) => updateStationField("laneInputMode", mode)}
+                    onLabelsChange={(labels) => updateStationField("laneLabels", labels)}
+                  />
+                ) : null}
+              </Fragment>
+            ))}
+          </fieldset>
         </section>
 
         <hr className="settings-divider" />
 
-        <section className="settings-section">
-          <p className="section-kicker">{t.value.general}</p>
+        <section className="settings-section" aria-label={t.value.general}>
           <SegmentedControl
             label={t.value.language}
             options={LANGS}

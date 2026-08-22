@@ -47,18 +47,11 @@
   gap: 0.5rem;
   padding: 0.8rem 1rem;
   border-radius: var(--radius-control);
-  border: 1px solid var(--sign);
+  border: 1px solid var(--link);
   background: transparent;
-  color: var(--sign);
+  color: var(--link);
   font-weight: 700;
   text-decoration: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  .maps-link {
-    border-color: var(--line-strong);
-    color: var(--ink);
-  }
 }
 
 .maps-link__accuracy {
@@ -173,15 +166,8 @@
 }
 
 .app-footer__version:hover {
-  border-color: var(--sign);
-  color: var(--sign);
-}
-
-@media (prefers-color-scheme: dark) {
-  .app-footer__version:hover {
-    border-color: var(--line-strong);
-    color: var(--ink);
-  }
+  border-color: var(--link);
+  color: var(--link);
 }
 
 @media (min-width: 640px) {

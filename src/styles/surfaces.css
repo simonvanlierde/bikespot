@@ -1,7 +1,10 @@
 .secondary-card,
 .editor-sheet {
-  border: 1px solid var(--line);
   background: var(--surface);
+}
+
+.secondary-card {
+  border: 1px solid var(--line);
 }
 
 .secondary-card {
@@ -14,7 +17,7 @@
 .current-card {
   position: relative;
   padding: 1.45rem;
-  border: 1px solid var(--sign-edge);
+  border: 0;
   border-radius: var(--radius-card);
   background: var(--sign);
   color: var(--sign-ink);
@@ -30,9 +33,9 @@
   pointer-events: none;
 }
 
-/* Tappable card: a full-bleed hit button sits behind the content and opens the
-   details sheet. Content ignores pointer events so taps fall through to the hit
-   target, except the action button, which re-enables them and stays clickable. */
+/* Tappable card: the section itself handles pointer taps (so the sign's text
+   stays selectable) and a full-bleed button behind the content is the keyboard
+   and assistive-tech path. Both open the details sheet. */
 .current-card--tappable {
   cursor: pointer;
 }
@@ -40,14 +43,13 @@
 .current-card__content {
   position: relative;
   z-index: 1;
-  pointer-events: none;
 }
 
-.current-card__content button {
-  pointer-events: auto;
-}
-
+/* GPS pin + chevron sit in the sign's top-right corner, inside the keyline. */
 .current-card__topline-end {
+  position: absolute;
+  top: 0;
+  right: 0;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -89,17 +91,16 @@
   font-weight: 600;
 }
 
-.current-card .section-kicker {
-  color: var(--sign-ink-soft);
-}
-
+/* Sheet titles speak in the sign's voice: heavy, tight, no eyebrow above. */
 .section-title,
 .sheet-header h2 {
   margin: 0;
   color: var(--ink);
-  font-size: 1.3rem;
-  line-height: 1.15;
-  font-weight: 700;
+  font-size: 1.55rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+  overflow-wrap: anywhere;
 }
 
 .sheet-title {
@@ -108,7 +109,6 @@
   gap: 0.55rem;
 }
 
-.current-card__topline,
 .sheet-header,
 .utility-button__row,
 .toggle-row,
@@ -147,15 +147,32 @@
   white-space: nowrap;
 }
 
-/* Save confirmation as a signal-yellow tag — the one place yellow appears. */
+/* Save confirmation as a signal-yellow tag — the one place yellow appears.
+   Errors get a red plate instead, and don't auto-dismiss. */
 .notice {
   width: fit-content;
-  margin-top: 0.9rem;
+  margin: 0 0 1.1rem;
   padding: 0.5rem 0.8rem;
   border-radius: 0.5rem;
   background: var(--signal);
   color: var(--signal-ink);
   font-weight: 600;
+}
+
+.notice--error {
+  background: var(--danger-plate);
+  color: var(--danger-plate-ink);
+}
+
+.form-error {
+  margin: 0;
+  color: var(--danger);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.form-error:empty {
+  display: none;
 }
 
 /* Live region stays mounted so AT announces it; hide it while empty. */
@@ -167,7 +184,7 @@
 .current-card__header {
   display: grid;
   gap: 1.4rem;
-  margin-top: 1.35rem;
+  margin-top: 0.5rem;
 }
 
 /* Details stack on an even vertical rhythm below the plate + headline row. */
@@ -181,10 +198,12 @@
 .headline {
   margin: 0;
   color: var(--sign-ink);
-  font-size: clamp(2.85rem, 15vw, 4.7rem);
+  font-size: clamp(2.85rem, 14vw, 4.4rem);
   line-height: 0.95;
   letter-spacing: -0.03em;
   font-weight: 800;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
 }
 
 /* "Outside the station" carries no lane number, so it reads as a phrase, not a
@@ -226,7 +245,7 @@
 }
 
 .spot-fact {
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .spot-fact:not(:first-child)::before {
@@ -257,6 +276,33 @@
   flex-direction: column;
   gap: 0.75rem;
   margin-top: 0.3rem;
+}
+
+.current-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.current-card__action {
+  flex: 1 1 12rem;
+}
+
+/* Second action on the sign: outlined in the keyline white, never a second
+   filled plate competing with the primary. */
+.current-card__maps {
+  flex: 1 1 10rem;
+  border-color: var(--sign-keyline);
+  color: var(--sign-ink);
+}
+
+.current-card__maps:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--sign-ink);
+}
+
+.current-card .ghost-button:focus-visible {
+  outline-color: var(--sign-ink);
 }
 
 /* Headline pairs with its reference photo, centered against the plate; the
@@ -307,8 +353,7 @@
   .utility-button,
   .text-button,
   .file-trigger,
-  .labels-editor__remove,
-  .info-trigger {
+  .labels-editor__remove {
     transition:
       background-color 150ms ease,
       color 150ms ease,
@@ -474,9 +519,23 @@
   width: min(34rem, 100%);
   max-height: min(92dvh, 54rem);
   overflow: auto;
+  border: 0;
   border-radius: var(--radius-sheet);
   padding: 1rem;
   box-shadow: var(--shadow-sheet);
+}
+
+/* The submit row sticks to the sheet's bottom edge so "Save" never scrolls
+   away behind the keyboard. Negative margins run it out to the sheet padding. */
+.editor-form__submit {
+  position: sticky;
+  bottom: -1rem;
+  z-index: 1;
+  display: grid;
+  gap: 0.6rem;
+  margin: 0 -1rem -1rem;
+  padding: 0.75rem 1rem 1rem;
+  background: var(--surface);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -506,27 +565,8 @@
   margin-bottom: 1rem;
 }
 
-/* When a mode-switch chip follows the title, keep it snug under the header and
-   give it clear separation from the form below. */
-.sheet-header:has(+ .sheet-header__main) {
-  margin-bottom: 0.5rem;
-}
-
-.sheet-header__main {
-  display: grid;
-  gap: 0.45rem;
-  min-width: 0;
-  margin-bottom: 1.1rem;
-}
-
 .sheet-close {
   flex-shrink: 0;
-}
-
-.sheet-close--compact {
-  width: 2.2rem;
-  min-width: 2.2rem;
-  min-height: 2.2rem;
 }
 
 .editor-form,
@@ -605,68 +645,16 @@
   justify-self: start;
 }
 
-.mode-switch {
-  display: flex;
-  justify-content: flex-start;
-}
-
 .segmented-field__legend {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
 }
-
-.info-trigger {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.8rem;
-  height: 1.8rem;
-  padding: 0;
-  border: 0;
-  border-radius: 999px;
-  background: var(--surface-sunken);
+.segmented-field__hint {
+  margin: 0.6rem 0 0;
   color: var(--muted);
-}
-
-.info-trigger:hover,
-.info-trigger:focus-visible {
-  background: var(--line);
-  color: var(--ink);
-}
-
-.info-tooltip {
-  position: absolute;
-  left: 0;
-  top: calc(100% + 0.45rem);
-  z-index: 10;
-  width: min(16rem, 70vw);
-  padding: 0.65rem 0.75rem;
-  border-radius: var(--radius-control);
-  background: var(--ink);
-  color: var(--bg);
-  font-size: 0.84rem;
-  font-weight: 500;
+  font-size: 0.88rem;
   line-height: 1.4;
-  text-align: left;
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(-0.1rem);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .info-tooltip {
-    transition:
-      opacity 160ms ease,
-      transform 160ms ease;
-  }
-}
-
-.info-trigger:hover .info-tooltip,
-.info-trigger:focus-visible .info-tooltip {
-  opacity: 1;
-  transform: translateY(0);
 }
 
 .text-button {
@@ -725,6 +713,17 @@
   padding: 0;
   color: var(--ink);
   font-weight: 700;
+}
+
+.field input[aria-invalid="true"],
+.segmented-field[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: var(--muted);
+  opacity: 1;
 }
 
 .field input,
@@ -803,11 +802,6 @@
   border-color: var(--sign-edge);
   color: var(--sign-ink);
   font-weight: 700;
-}
-
-.distance-help {
-  padding: 0 0.25rem;
-  font-size: 0.92rem;
 }
 
 .details-panel {

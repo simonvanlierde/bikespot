@@ -49,6 +49,20 @@ export function saveLocation(
 ): AppData {
   const nextCurrent = buildRecord(data.station, input, timestamp);
 
+  // Re-parking in the very same spot is a refresh, not a new event: bump the
+  // timestamp (and keep new evidence) instead of pushing a duplicate into recent.
+  if (data.current && isSameSpot(data.current, nextCurrent)) {
+    return {
+      ...data,
+      current: {
+        ...nextCurrent,
+        id: data.current.id,
+        photoId: nextCurrent.photoId ?? data.current.photoId,
+        coords: nextCurrent.coords ?? data.current.coords,
+      },
+    };
+  }
+
   if (!data.current) {
     return {
       ...data,
@@ -61,6 +75,49 @@ export function saveLocation(
     ...data,
     current: nextCurrent,
     recent: capRecent([data.current, ...data.recent]),
+  };
+}
+
+// Two records describe the same spot when every locator field matches. Notes,
+// photo, GPS and timestamps are evidence about the spot, not its identity.
+function isSameSpot(a: LocationRecord, b: LocationRecord): boolean {
+  if (a.mode === "outside" || b.mode === "outside") {
+    return (
+      a.mode === "outside" &&
+      b.mode === "outside" &&
+      (a.outsideDescription ?? "") === (b.outsideDescription ?? "")
+    );
+  }
+
+  return (
+    (a.lane ?? "") === (b.lane ?? "") &&
+    a.side === b.side &&
+    a.rackLevel === b.rackLevel &&
+    a.distance === b.distance &&
+    (a.floor ?? "") === (b.floor ?? "") &&
+    (a.rackNumber ?? "") === (b.rackNumber ?? "") &&
+    (a.notes ?? "") === (b.notes ?? "")
+  );
+}
+
+// "Bike collected": the spot is over, but it stays in history so it can be
+// restored next time the same lane is used.
+export function clearCurrentLocation(data: AppData): AppData {
+  if (!data.current) {
+    return data;
+  }
+
+  return {
+    ...data,
+    current: null,
+    recent: capRecent([data.current, ...data.recent]),
+  };
+}
+
+export function removeRecentLocation(data: AppData, locationId: string): AppData {
+  return {
+    ...data,
+    recent: data.recent.filter((entry) => entry.id !== locationId),
   };
 }
 

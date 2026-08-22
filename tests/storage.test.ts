@@ -10,9 +10,10 @@ import {
 import { buildLocationRecordInput } from "../src/lib/drafts.ts";
 import { clearPhotoBlobs } from "../src/lib/photos.ts";
 import { APP_DATA_STORAGE_KEY, loadAppData } from "../src/lib/repository.ts";
+import { sampleAppData } from "./fixtures.ts";
 
 describe("location storage", () => {
-  const defaultState: AppData = defaultAppData;
+  const defaultState: AppData = sampleAppData;
 
   beforeEach(async () => {
     window.localStorage.clear();
@@ -404,7 +405,7 @@ describe("location storage", () => {
       }),
     );
 
-    await expect(loadAppData()).resolves.toEqual(defaultState);
+    await expect(loadAppData()).resolves.toEqual(defaultAppData);
   });
 
   it("rejects the old storage shape and starts fresh", async () => {
@@ -420,6 +421,6 @@ describe("location storage", () => {
       }),
     );
 
-    await expect(loadAppData()).resolves.toEqual(defaultState);
+    await expect(loadAppData()).resolves.toEqual(defaultAppData);
   });
 });

@@ -1,10 +1,12 @@
-import { ChevronRight, MapPin, Pencil } from "lucide-preact";
+import { ChevronRight, MapPin, Pencil, Plus } from "lucide-preact";
 
 import { usePhotoUrl } from "@/components/usePhotoUrl";
 import type { LocationRecord } from "@/lib/app-data";
 import { t } from "@/lib/i18n";
-import { formatTimestamp, getDetailFacts, getPrimaryLabel } from "./display";
+import { formatRelativeTimestamp, getDetailFacts, getPrimaryLabel, mapsLink } from "./display";
 
+// biome-ignore lint/complexity/noExcessiveLinesPerFunction: JSX render fn; markup dominates the line count
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: the branches are the card's empty/station/outside states
 export function CurrentSpotCard({
   current,
   notice,
@@ -12,27 +14,40 @@ export function CurrentSpotCard({
   onOpenDetails,
 }: {
   current: LocationRecord | null;
-  notice: string;
+  notice: { text: string; tone?: "error" } | null;
   onEdit: () => void;
   onOpenDetails: () => void;
 }) {
   const facts = current ? getDetailFacts(current) : [];
   const photoUrl = usePhotoUrl(current?.photoId);
 
+  // The whole sign is a tap target for the details sheet, but its text stays
+  // selectable: a click that ends a text selection is not a tap.
+  function handleCardClick() {
+    if (current && !window.getSelection()?.toString()) {
+      onOpenDetails();
+    }
+  }
+
   return (
-    <section className="current-card current-card--tappable" aria-label={t.value.currentSpot}>
+    // biome-ignore lint/a11y/noNoninteractiveElementInteractions: the hit button below is the accessible control; the section click is the pointer convenience
+    // biome-ignore lint/a11y/useKeyWithClickEvents: keyboard users reach the hit button directly
+    <section
+      className={current ? "current-card current-card--tappable" : "current-card"}
+      aria-label={t.value.currentSpot}
+      onClick={handleCardClick}
+    >
       <div className="current-card__content">
-        <div className="current-card__topline">
-          <p className="section-kicker">{t.value.currentSpot}</p>
+        {current ? (
           <span className="current-card__topline-end">
-            {current?.coords ? (
+            {current.coords ? (
               <MapPin aria-label={t.value.hasGps} className="button-icon current-card__pin" />
             ) : null}
             <ChevronRight aria-hidden="true" className="button-icon current-card__chevron" />
           </span>
-        </div>
-        <p className="notice" role="status">
-          {notice}
+        ) : null}
+        <p className={notice?.tone === "error" ? "notice notice--error" : "notice"} role="status">
+          {notice?.text}
         </p>
         <div className="current-card__header">
           <div className="current-card__lead">
@@ -41,11 +56,16 @@ export function CurrentSpotCard({
                 <img src={photoUrl} alt={t.value.currentBikeRef} />
               </figure>
             ) : null}
-            <h1 className={current?.mode === "outside" ? "headline headline--outside" : "headline"}>
-              {getPrimaryLabel(current)}
+            <h1
+              className={
+                !current || current.mode === "outside" ? "headline headline--outside" : "headline"
+              }
+            >
+              {current ? getPrimaryLabel(current) : t.value.noSpotYet}
             </h1>
           </div>
           <div className="current-card__body">
+            {!current ? <p className="spot-summary">{t.value.emptyIntro}</p> : null}
             {current?.mode === "outside" && current.outsideDescription ? (
               <p className="spot-summary">{current.outsideDescription}</p>
             ) : null}
@@ -62,27 +82,46 @@ export function CurrentSpotCard({
           </div>
           <div className="current-card__footer">
             {current ? (
-              <p className="timestamp">{t.value.updated(formatTimestamp(current.updatedAt))}</p>
+              <p className="timestamp">
+                {t.value.updated(formatRelativeTimestamp(current.updatedAt))}
+              </p>
             ) : null}
-            <button
-              className="primary-button primary-button--hero current-card__action"
-              type="button"
-              onClick={onEdit}
-            >
-              <Pencil aria-hidden="true" className="button-icon" />
-              {t.value.changeLocation}
-            </button>
+            <div className="current-card__actions">
+              {current?.coords ? (
+                <a
+                  className="ghost-button current-card__maps"
+                  href={mapsLink(current.coords)}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  onClick={(event) => event.stopPropagation()}
+                >
+                  <MapPin aria-hidden="true" className="button-icon" />
+                  <span>{t.value.openInMaps}</span>
+                </a>
+              ) : null}
+              <button
+                className="primary-button primary-button--hero current-card__action"
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onEdit();
+                }}
+              >
+                {current ? (
+                  <Pencil aria-hidden="true" className="button-icon" />
+                ) : (
+                  <Plus aria-hidden="true" className="button-icon" />
+                )}
+                {current ? t.value.changeLocation : t.value.saveSpot}
+              </button>
+            </div>
           </div>
         </div>
       </div>
-      {/* Full-card hit target for opening details; sits behind the content so the
-          action button above stays clickable. */}
-      <button
-        aria-label={t.value.viewDetails}
-        className="current-card__hit"
-        type="button"
-        onClick={onOpenDetails}
-      />
+      {/* Keyboard / AT path to the details sheet; its click bubbles to the section. */}
+      {current ? (
+        <button aria-label={t.value.viewDetails} className="current-card__hit" type="button" />
+      ) : null}
     </section>
   );
 }
