@@ -15,14 +15,10 @@ export const APP_DATA_STORAGE_KEY = "bikespot-app";
 
 // biome-ignore lint/suspicious/useAwait: async is the storage-boundary contract (localStorage now, IndexedDB later)
 export async function loadAppData(): Promise<AppData> {
-  const raw = window.localStorage.getItem(APP_DATA_STORAGE_KEY);
-
-  if (!raw) {
-    return defaultAppData;
-  }
-
+  // getItem itself can throw when storage is blocked (private mode, extensions).
   try {
-    return normalizeAppData(JSON.parse(raw));
+    const raw = window.localStorage.getItem(APP_DATA_STORAGE_KEY);
+    return raw ? normalizeAppData(JSON.parse(raw)) : defaultAppData;
   } catch {
     return defaultAppData;
   }

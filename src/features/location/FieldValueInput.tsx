@@ -1,3 +1,4 @@
+import { segmentKeyHandler } from "@/components/SegmentedControl";
 import type { FieldInputMode } from "@/lib/app-data";
 
 // Editor-side value input for one location field (lane or floor): quick preset
@@ -30,6 +31,7 @@ export function FieldValueInput({
               }
               type="button"
               onClick={() => onChange(label)}
+              onKeyDown={segmentKeyHandler(labels, value, onChange)}
             >
               {label}
             </button>

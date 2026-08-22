@@ -1,5 +1,6 @@
+import { computed } from "@preact/signals";
 import type { Coords, EnabledFields, LocationRecord } from "@/lib/app-data";
-import { t } from "@/lib/i18n";
+import { lang, t } from "@/lib/i18n";
 
 export function titleCase(value?: string) {
   if (!value) {
@@ -30,12 +31,11 @@ export function showFloor(entry: LocationRecord) {
   return shouldShowEntryField(entry, "floor");
 }
 
-// Hoisted: Intl.DateTimeFormat construction is far pricier than .format() and
-// this runs per entry on every recent-list render.
-const timestampFormat = new Intl.DateTimeFormat(undefined, {
-  dateStyle: "medium",
-  timeStyle: "short",
-});
+// Memoized per language: Intl.DateTimeFormat construction is far pricier than
+// .format() and this runs per entry on every recent-list render.
+const timestampFormat = computed(
+  () => new Intl.DateTimeFormat(lang.value, { dateStyle: "medium", timeStyle: "short" }),
+);
 
 export function formatTimestamp(value?: string) {
   if (!value) {
@@ -48,7 +48,7 @@ export function formatTimestamp(value?: string) {
     return t.value.notSaved;
   }
 
-  return timestampFormat.format(date);
+  return timestampFormat.value.format(date);
 }
 
 export function getSummary(entry: LocationRecord | null): string {

@@ -54,6 +54,9 @@ export function LocationEditorSheet({
     );
   };
 
+  // Switching mode keeps what the user already gathered for this parking event.
+  const carry = ({ notes, photoFile, coords }: LocationDraft) => ({ notes, photoFile, coords });
+
   return (
     <SheetDialog
       closeLabel={t.value.cancel}
@@ -67,7 +70,12 @@ export function LocationEditorSheet({
             <button
               className="text-button text-button--switch"
               type="button"
-              onClick={() => setFormState(createOutsideLocationDraft())}
+              onClick={() =>
+                setFormState((previous) => ({
+                  ...createOutsideLocationDraft(),
+                  ...carry(previous),
+                }))
+              }
             >
               <ArrowRightLeft aria-hidden="true" className="button-icon" />
               <span>{t.value.parkedOutside}</span>
@@ -76,7 +84,12 @@ export function LocationEditorSheet({
             <button
               className="text-button text-button--switch"
               type="button"
-              onClick={() => setFormState(createLocationDraft(null, station))}
+              onClick={() =>
+                setFormState((previous) => ({
+                  ...createLocationDraft(null, station),
+                  ...carry(previous),
+                }))
+              }
             >
               <Undo2 aria-hidden="true" className="button-icon" />
               <span>{t.value.backToStation}</span>

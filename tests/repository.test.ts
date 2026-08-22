@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { defaultAppData } from "../src/lib/defaults.ts";
 import {
@@ -127,5 +127,13 @@ describe("app data repository", () => {
     );
 
     await expect(loadAppData()).resolves.toEqual(defaultAppData);
+  });
+
+  it("falls back to defaults when storage access throws", async () => {
+    const spy = vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+      throw new Error("blocked");
+    });
+    await expect(loadAppData()).resolves.toEqual(defaultAppData);
+    spy.mockRestore();
   });
 });

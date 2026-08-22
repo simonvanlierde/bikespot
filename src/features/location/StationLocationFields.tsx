@@ -76,9 +76,16 @@ export function StationLocationFields({
         <SegmentedControl
           label={t.value.distance}
           labelSuffix={
-            <button aria-label={t.value.distanceHelp} className="info-trigger" type="button">
+            <button
+              aria-describedby="distance-help-text"
+              aria-label={t.value.distanceHelp}
+              className="info-trigger"
+              type="button"
+            >
               <CircleHelp aria-hidden="true" className="button-icon" />
-              <span className="info-tooltip">{t.value.distanceHelpText}</span>
+              <span className="info-tooltip" id="distance-help-text">
+                {t.value.distanceHelpText}
+              </span>
             </button>
           }
           options={["close", "middle", "far"]}

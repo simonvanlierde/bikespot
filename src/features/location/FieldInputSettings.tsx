@@ -1,5 +1,5 @@
 import { Plus, X } from "lucide-preact";
-import { useRef } from "preact/hooks";
+import { useLayoutEffect, useRef } from "preact/hooks";
 
 import { titleCase } from "@/features/location/display";
 import type { FieldInputMode } from "@/lib/app-data";
@@ -9,6 +9,7 @@ import { t } from "@/lib/i18n";
 // mode switch plus, in quick mode, an add/remove editor for the preset labels.
 // biome-ignore lint/complexity/noExcessiveLinesPerFunction: JSX render fn; markup dominates the line count
 export function FieldInputSettings({
+  field,
   noun,
   legend,
   mode,
@@ -16,6 +17,7 @@ export function FieldInputSettings({
   onModeChange,
   onLabelsChange,
 }: {
+  field: "lane" | "floor";
   noun: string;
   legend: string;
   mode: FieldInputMode;
@@ -45,8 +47,26 @@ export function FieldInputSettings({
     onLabelsChange([...labels, ""]);
   }
 
+  // Removing a row unmounts the focused button; land focus on the next remove
+  // button (or the add button) so keyboard users keep their place.
+  const editorRef = useRef<HTMLDivElement>(null);
+  const pendingFocus = useRef<number | null>(null);
+
+  useLayoutEffect(() => {
+    const index = pendingFocus.current;
+    if (index === null) {
+      return;
+    }
+    pendingFocus.current = null;
+    const removes =
+      editorRef.current?.querySelectorAll<HTMLButtonElement>(".labels-editor__remove");
+    const target = removes?.[Math.min(index, removes.length - 1)];
+    (target ?? editorRef.current?.querySelector<HTMLButtonElement>(".labels-editor__add"))?.focus();
+  });
+
   function removeLabel(index: number) {
     rowIds.current = rowIds.current.filter((_, idIndex) => idIndex !== index);
+    pendingFocus.current = index;
     onLabelsChange(labels.filter((_, labelIndex) => labelIndex !== index));
   }
 
@@ -69,13 +89,13 @@ export function FieldInputSettings({
             type="button"
             onClick={() => onModeChange("quick")}
           >
-            {t.value.quickMode(noun)}
+            {t.value.quickMode[field]}
           </button>
         </div>
       </fieldset>
 
       {mode === "quick" ? (
-        <div className="labels-editor">
+        <div className="labels-editor" ref={editorRef}>
           {labels.map((label, index) => (
             <div className="labels-editor__row" key={`${noun}-label-${rowIds.current[index]}`}>
               <label className="field labels-editor__field">

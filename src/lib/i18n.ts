@@ -111,7 +111,7 @@ type Dict = {
   theme: string;
   themeOpts: Record<ThemeKey, string>;
   numberInput: string;
-  quickMode: (noun: string) => string;
+  quickMode: Record<"lane" | "floor", string>;
   presetLabel: (noun: string, n: number) => string;
   removePreset: (noun: string, n: number) => string;
   addPreset: (noun: string) => string;
@@ -134,6 +134,11 @@ type Dict = {
   noticeLocationUpdated: string;
   noticeStationUpdated: string;
   noticeLocationFromRecent: string;
+  noticeLoadFailed: string;
+  noticeDataCleared: string;
+  clearAllData: string;
+  clearAllDataConfirm: string;
+  viewSourceVersion: (version: string) => string;
 
   language: string;
   langOpts: Record<Lang, string>;
@@ -215,7 +220,7 @@ const en: Dict = {
   theme: "Theme",
   themeOpts: { system: "System", light: "Light", dark: "Dark" },
   numberInput: "Number input",
-  quickMode: (noun) => `Quick ${noun}s`,
+  quickMode: { lane: "Quick lanes", floor: "Quick floors" },
   presetLabel: (noun, n) => `${noun} ${n}`,
   removePreset: (noun, n) => `Remove ${noun} ${n}`,
   addPreset: (noun) => `Add ${noun}`,
@@ -234,6 +239,11 @@ const en: Dict = {
   noticeLocationUpdated: "Location updated",
   noticeStationUpdated: "Station settings updated",
   noticeLocationFromRecent: "Location updated from recent",
+  noticeLoadFailed: "Could not read saved data — starting fresh",
+  noticeDataCleared: "All data cleared",
+  clearAllData: "Clear all data",
+  clearAllDataConfirm: "Delete all saved locations, photos and settings from this device?",
+  viewSourceVersion: (version) => `View source code, version ${version}`,
 
   language: "Language",
   langOpts: { en: "English", nl: "Nederlands" },
@@ -314,7 +324,7 @@ const nl: Dict = {
   theme: "Thema",
   themeOpts: { system: "Systeem", light: "Licht", dark: "Donker" },
   numberInput: "Cijferinvoer",
-  quickMode: (noun) => `Snelkeuze ${noun.toLowerCase()}`,
+  quickMode: { lane: "Snelkeuze rijen", floor: "Snelkeuze verdiepingen" },
   presetLabel: (noun, n) => `${noun} ${n}`,
   removePreset: (noun, n) => `${noun} ${n} verwijderen`,
   addPreset: (noun) => `${noun} toevoegen`,
@@ -333,6 +343,12 @@ const nl: Dict = {
   noticeLocationUpdated: "Locatie bijgewerkt",
   noticeStationUpdated: "Stallinginstellingen bijgewerkt",
   noticeLocationFromRecent: "Locatie bijgewerkt vanuit recent",
+  noticeLoadFailed: "Kon opgeslagen gegevens niet lezen — opnieuw begonnen",
+  noticeDataCleared: "Alle gegevens gewist",
+  clearAllData: "Alle gegevens wissen",
+  clearAllDataConfirm:
+    "Alle opgeslagen locaties, foto's en instellingen van dit apparaat verwijderen?",
+  viewSourceVersion: (version) => `Broncode bekijken, versie ${version}`,
 
   language: "Taal",
   langOpts: { en: "English", nl: "Nederlands" },

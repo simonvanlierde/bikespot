@@ -1,6 +1,7 @@
 import type {
   AppData,
   EnabledFields,
+  FieldInputMode,
   LocationRecord,
   LocationRecordInput,
   StationConfig,
@@ -120,17 +121,22 @@ export function normalizeStationConfig(
   const enabledFields = {} as EnabledFields;
 
   for (const key of ENABLED_FIELD_KEYS) {
-    enabledFields[key] = value?.enabledFields?.[key] ?? fallback.enabledFields[key];
+    const enabled = value?.enabledFields?.[key];
+    enabledFields[key] = typeof enabled === "boolean" ? enabled : fallback.enabledFields[key];
   }
 
   return {
     name: value?.name?.trim() || fallback.name,
-    laneInputMode: value?.laneInputMode === "quick" ? "quick" : "number",
+    laneInputMode: normalizeMode(value?.laneInputMode, fallback.laneInputMode),
     laneLabels: normalizeLabels(value?.laneLabels, fallback.laneLabels),
-    floorInputMode: value?.floorInputMode === "quick" ? "quick" : "number",
+    floorInputMode: normalizeMode(value?.floorInputMode, fallback.floorInputMode),
     floorLabels: normalizeLabels(value?.floorLabels, fallback.floorLabels),
     enabledFields,
   };
+}
+
+function normalizeMode(value: unknown, fallback: FieldInputMode): FieldInputMode {
+  return value === "quick" || value === "number" ? value : fallback;
 }
 
 function buildRecord(

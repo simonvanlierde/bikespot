@@ -124,6 +124,20 @@ describe("buildLocationRecordInput (station)", () => {
     expect(buildLocationRecordInput({ ...draft, lane: "   " }, station)).toBeNull();
   });
 
+  it("rejects a station spot with every field disabled and nothing else to find it by", () => {
+    const off = {
+      lane: false,
+      side: false,
+      rackLevel: false,
+      distance: false,
+      floor: false,
+      rackNumber: false,
+    };
+    const station = { ...defaultStationConfig, enabledFields: off };
+    expect(buildLocationRecordInput({ ...draft, notes: "" }, station)).toBeNull();
+    expect(buildLocationRecordInput({ ...draft, notes: "by the pillar" }, station)).not.toBeNull();
+  });
+
   it("keeps only the enabled fields on the built input", () => {
     const station = {
       ...defaultStationConfig,

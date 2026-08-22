@@ -7,6 +7,7 @@ import { SheetDialog } from "@/components/SheetDialog";
 import { ToggleField } from "@/components/ToggleField";
 import type { StationSettingsDraft } from "@/lib/drafts";
 import { LANGS, lang, setLang, t } from "@/lib/i18n";
+import { handleClearAllData } from "@/lib/store";
 import { setTheme, THEMES, theme } from "@/lib/theme";
 import { FieldInputSettings } from "./FieldInputSettings";
 
@@ -65,6 +66,7 @@ export function StationSettingsSheet({
                   />
                   {key === "floor" && stationForm.enabledFields.floor ? (
                     <FieldInputSettings
+                      field="floor"
                       noun={t.value.floor}
                       legend={t.value.floorInput}
                       mode={stationForm.floorInputMode}
@@ -75,6 +77,7 @@ export function StationSettingsSheet({
                   ) : null}
                   {key === "lane" && stationForm.enabledFields.lane ? (
                     <FieldInputSettings
+                      field="lane"
                       noun={t.value.lane}
                       legend={t.value.laneInput}
                       mode={stationForm.laneInputMode}
@@ -111,6 +114,13 @@ export function StationSettingsSheet({
             onChange={setTheme}
             titleCase={(option) => t.value.themeOpts[option]}
           />
+          <button
+            className="ghost-button ghost-button--wide ghost-button--danger"
+            type="button"
+            onClick={handleClearAllData}
+          >
+            {t.value.clearAllData}
+          </button>
         </section>
       </div>
     </SheetDialog>

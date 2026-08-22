@@ -14,3 +14,4 @@ coverage/
 !.dev.vars.example
 .env*
 !.env.example
+.playwright-mcp/

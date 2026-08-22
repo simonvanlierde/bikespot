@@ -128,7 +128,7 @@ export function buildLocationRecordInput(
     return null;
   }
 
-  return {
+  const input: LocationRecordInput = {
     mode: "station",
     lane,
     side: station.enabledFields.side ? draft.side : undefined,
@@ -139,6 +139,15 @@ export function buildLocationRecordInput(
     notes: emptyToUndefined(draft.notes),
     coords: draft.coords ?? undefined,
   };
+
+  // With every field disabled the record would be blank and displace the real
+  // current spot; require something to find the bike by, like the outside branch.
+  const { mode: _mode, ...values } = input;
+  if (!(draft.photoFile || Object.values(values).some((value) => value !== undefined))) {
+    return null;
+  }
+
+  return input;
 }
 
 function emptyToUndefined(value: string): string | undefined {

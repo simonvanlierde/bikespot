@@ -31,7 +31,9 @@ export function CurrentSpotCard({
             <ChevronRight aria-hidden="true" className="button-icon current-card__chevron" />
           </span>
         </div>
-        {notice ? <p className="notice">{notice}</p> : null}
+        <p className="notice" role="status">
+          {notice}
+        </p>
         <div className="current-card__header">
           <div className="current-card__lead">
             {photoUrl ? (

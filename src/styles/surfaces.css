@@ -158,6 +158,12 @@
   font-weight: 600;
 }
 
+/* Live region stays mounted so AT announces it; hide it while empty. */
+.notice:empty,
+.coords-field__status:empty {
+  display: none;
+}
+
 .current-card__header {
   display: grid;
   gap: 1.4rem;
@@ -362,6 +368,11 @@
 
 .primary-button--hero {
   min-width: min(100%, 12rem);
+}
+
+.ghost-button--danger {
+  border-color: var(--danger);
+  color: var(--danger);
 }
 
 .ghost-button {
