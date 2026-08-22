@@ -19,6 +19,7 @@ export function LocationEditorSheet({
   showDetails,
   geoStatus,
   error,
+  title,
   setFormState,
   onClose,
   onSubmit,
@@ -32,6 +33,7 @@ export function LocationEditorSheet({
   showDetails: boolean;
   geoStatus: "idle" | "capturing" | "error";
   error: string | null;
+  title: string;
   setFormState: Dispatch<SetStateAction<LocationDraft>>;
   onClose: () => void;
   onSubmit: (event: TargetedEvent<HTMLFormElement>) => void;
@@ -67,12 +69,7 @@ export function LocationEditorSheet({
   }
 
   return (
-    <SheetDialog
-      closeLabel={t.value.cancel}
-      label={t.value.changeLocation}
-      title={t.value.changeLocation}
-      onClose={onClose}
-    >
+    <SheetDialog closeLabel={t.value.cancel} label={title} title={title} onClose={onClose}>
       <form className="editor-form" noValidate onSubmit={onSubmit}>
         <SegmentedControl
           label={t.value.whereParked}

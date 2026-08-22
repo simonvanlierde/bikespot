@@ -3,12 +3,20 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "../src/App.tsx";
+import { hydrated } from "../src/lib/store.ts";
 import { seedStorage } from "./fixtures.ts";
 
 // Hydration from storage is async; wait for the seeded sign before interacting.
 async function renderApp() {
   render(<App />);
   await screen.findByRole("heading", { name: /lane 4/i });
+}
+
+// The sheet takes focus in a mount effect; typing before that lands on the
+// dialog instead of the input.
+async function openSheet(user: ReturnType<typeof userEvent.setup>, name: RegExp) {
+  await user.click(screen.getByRole("button", { name }));
+  await waitFor(() => expect(screen.getByRole("dialog")).toHaveFocus());
 }
 
 describe("bike storage tracker app", () => {
@@ -41,6 +49,7 @@ describe("bike storage tracker app", () => {
     const user = userEvent.setup();
 
     render(<App />);
+    await waitFor(() => expect(hydrated.value).toBe(true));
 
     const currentSpotCard = screen.getByRole("region", { name: /current spot/i });
     expect(
@@ -49,11 +58,11 @@ describe("bike storage tracker app", () => {
     expect(within(currentSpotCard).queryByRole("button", { name: /view details/i })).toBeNull();
     expect(screen.getByText("0")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /save my spot/i }));
-    await user.type(screen.getByLabelText(/^lane$/i), "12");
+    await openSheet(user, /save my spot/i);
+    await user.type(screen.getByLabelText(/^lane$/i), "7");
     await user.click(screen.getByRole("button", { name: /save location/i }));
 
-    expect(screen.getByRole("heading", { name: /lane 12/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /lane 7/i })).toBeInTheDocument();
     expect(screen.getByText(/^spot saved$/i)).toBeInTheDocument();
   });
 
@@ -62,7 +71,7 @@ describe("bike storage tracker app", () => {
 
     await renderApp();
 
-    await user.click(screen.getByRole("button", { name: /change location/i }));
+    await openSheet(user, /change location/i);
     await user.click(screen.getByRole("button", { name: /save location/i }));
 
     expect(screen.getByRole("alert")).toHaveTextContent(/enter the lane/i);
@@ -103,7 +112,11 @@ describe("bike storage tracker app", () => {
     try {
       await renderApp();
 
+      // Fake timers stall waitFor, so flush the sheet's focus effect by hand.
       await user.click(screen.getByRole("button", { name: /change location/i }));
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(0);
+      });
       await user.type(screen.getByLabelText(/^lane$/i), "7");
       await user.click(screen.getByRole("button", { name: /save location/i }));
 
@@ -124,7 +137,7 @@ describe("bike storage tracker app", () => {
 
     await renderApp();
 
-    await user.click(screen.getByRole("button", { name: /^settings$/i }));
+    await openSheet(user, /^settings$/i);
 
     await user.click(screen.getByRole("button", { name: /preset lanes/i }));
     await user.clear(screen.getByLabelText(/^lane 1$/i));
@@ -136,7 +149,7 @@ describe("bike storage tracker app", () => {
     await user.click(screen.getByRole("checkbox", { name: /side/i }));
     await user.keyboard("{Escape}");
 
-    await user.click(screen.getByRole("button", { name: /change location/i }));
+    await openSheet(user, /change location/i);
 
     expect(screen.getByRole("button", { name: /^lane 4$/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /^lane 5$/i })).toBeInTheDocument();
@@ -150,7 +163,7 @@ describe("bike storage tracker app", () => {
 
     await renderApp();
 
-    await user.click(screen.getByRole("button", { name: /change location/i }));
+    await openSheet(user, /change location/i);
 
     // Station mode: GPS capture lives in the collapsed More details panel.
     expect(screen.queryByRole("button", { name: /use my location/i })).not.toBeInTheDocument();
@@ -167,7 +180,7 @@ describe("bike storage tracker app", () => {
 
     await renderApp();
 
-    await user.click(screen.getByRole("button", { name: /change location/i }));
+    await openSheet(user, /change location/i);
     await user.click(screen.getByRole("button", { name: /parked outside/i }));
     await user.upload(
       screen.getByLabelText(/photo/i),
@@ -195,7 +208,7 @@ describe("bike storage tracker app", () => {
 
     await renderApp();
 
-    await user.click(screen.getByRole("button", { name: /change location/i }));
+    await openSheet(user, /change location/i);
     await user.click(screen.getByRole("button", { name: /parked outside/i }));
 
     const editorSheet = screen.getByRole("dialog", { name: /change location/i });
@@ -222,12 +235,12 @@ describe("bike storage tracker app", () => {
 
     await renderApp();
 
-    await user.click(screen.getByRole("button", { name: /change location/i }));
+    await openSheet(user, /change location/i);
     await user.clear(screen.getByLabelText(/^lane$/i));
     await user.type(screen.getByLabelText(/^lane$/i), "5");
     await user.click(screen.getByRole("button", { name: /save location/i }));
 
-    await user.click(screen.getByRole("button", { name: /recent locations/i }));
+    await openSheet(user, /recent locations/i);
     await user.click(
       screen.getByRole("button", {
         name: /restore lane 4 from recent locations/i,
@@ -246,22 +259,22 @@ describe("bike storage tracker app", () => {
 
     await renderApp();
 
-    await user.click(screen.getByRole("button", { name: /^settings$/i }));
+    await openSheet(user, /^settings$/i);
     await user.click(screen.getByRole("checkbox", { name: /side/i }));
     await user.keyboard("{Escape}");
 
-    await user.click(screen.getByRole("button", { name: /change location/i }));
+    await openSheet(user, /change location/i);
     await user.clear(screen.getByLabelText(/^lane$/i));
     await user.type(screen.getByLabelText(/^lane$/i), "5");
     await user.click(screen.getByRole("button", { name: /side left/i }));
     await user.click(screen.getByRole("button", { name: /save location/i }));
 
-    await user.click(screen.getByRole("button", { name: /^settings$/i }));
+    await openSheet(user, /^settings$/i);
     await user.click(screen.getByRole("checkbox", { name: /side/i }));
     await user.click(screen.getByRole("checkbox", { name: /floor/i }));
     await user.keyboard("{Escape}");
 
-    await user.click(screen.getByRole("button", { name: /recent locations/i }));
+    await openSheet(user, /recent locations/i);
     await user.click(
       screen.getByRole("button", {
         name: /restore lane 4 from recent locations/i,
@@ -288,11 +301,11 @@ describe("bike storage tracker app", () => {
       }
     };
 
-    await user.click(screen.getByRole("button", { name: /change location/i }));
+    await openSheet(user, /change location/i);
     clickBackdrop(/change location/i);
     expect(screen.queryByRole("heading", { name: /change location/i })).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /recent locations/i }));
+    await openSheet(user, /recent locations/i);
     clickBackdrop(/recent locations/i);
     expect(screen.queryByRole("heading", { name: /recent locations/i })).not.toBeInTheDocument();
 

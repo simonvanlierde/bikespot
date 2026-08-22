@@ -54,7 +54,7 @@ export function StationSettingsSheet({
               autoComplete="off"
               placeholder={t.value.stationNamePlaceholder}
               value={stationForm.name}
-              onChange={(event) => updateStationField("name", event.currentTarget.value)}
+              onInput={(event) => updateStationField("name", event.currentTarget.value)}
             />
           </label>
 

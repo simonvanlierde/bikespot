@@ -195,6 +195,10 @@
   gap: 0.55rem;
 }
 
+.current-card__body:empty {
+  display: none;
+}
+
 .headline {
   margin: 0;
   color: var(--sign-ink);
@@ -513,6 +517,12 @@
   cursor: default;
 }
 
+/* Focus lands on the sheet on open so AT announces it; the ring belongs on
+   the controls inside, not around the whole panel. */
+.editor-sheet:focus {
+  outline: none;
+}
+
 .editor-sheet {
   position: relative;
   z-index: 1;
@@ -715,6 +725,14 @@
   font-weight: 700;
 }
 
+/* Legends read as headings inside the box, not as tabs straddling its border. */
+.segmented-field legend,
+.settings-fieldset legend {
+  float: left;
+  width: 100%;
+  margin-bottom: 0.1rem;
+}
+
 .field input[aria-invalid="true"],
 .segmented-field[aria-invalid="true"] {
   border-color: var(--danger);
@@ -756,6 +774,7 @@
   display: grid;
   gap: 0.55rem;
   margin-top: 0.55rem;
+  clear: both;
 }
 
 .segmented-field__options--two,
@@ -836,6 +855,7 @@
 }
 
 .toggle-row {
+  clear: both;
   min-height: 3rem;
   padding: 0.8rem 0;
   border-top: 1px solid var(--line);

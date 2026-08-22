@@ -53,7 +53,7 @@ export function FieldValueInput({
         inputMode="numeric"
         type="text"
         value={value}
-        onChange={(event) => onChange(event.currentTarget.value)}
+        onInput={(event) => onChange(event.currentTarget.value)}
       />
     </label>
   );

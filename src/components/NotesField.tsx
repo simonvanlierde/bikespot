@@ -14,7 +14,7 @@ export function NotesField({
         aria-label={t.value.notes}
         rows={3}
         value={value}
-        onChange={(event) => onChange(event.currentTarget.value)}
+        onInput={(event) => onChange(event.currentTarget.value)}
       />
     </label>
   );

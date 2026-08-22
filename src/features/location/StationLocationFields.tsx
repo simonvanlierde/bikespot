@@ -113,7 +113,7 @@ export function StationLocationFields({
             aria-label={t.value.rackNumber}
             autoComplete="off"
             value={formState.rackNumber}
-            onChange={(event) => updateStationField("rackNumber", event.currentTarget.value)}
+            onInput={(event) => updateStationField("rackNumber", event.currentTarget.value)}
           />
         </label>
       ) : null}

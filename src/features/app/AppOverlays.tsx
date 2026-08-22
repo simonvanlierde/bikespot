@@ -3,6 +3,7 @@ import { RecentLocationsSheet } from "@/features/history/RecentLocationsSheet";
 import { LocationDetailsSheet } from "@/features/location/LocationDetailsSheet";
 import { LocationEditorSheet } from "@/features/location/LocationEditorSheet";
 import { StationSettingsSheet } from "@/features/location/StationSettingsSheet";
+import { t } from "@/lib/i18n";
 import {
   closeOverlay,
   data,
@@ -42,6 +43,7 @@ export function AppOverlays() {
           showDetails={showEditorDetails.value}
           geoStatus={geoStatus.value}
           error={editorError.value}
+          title={appData.current ? t.value.changeLocation : t.value.saveSpot}
           setFormState={setLocationDraft}
           onClose={closeOverlay}
           onSubmit={handleLocationSubmit}

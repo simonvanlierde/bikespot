@@ -103,7 +103,7 @@ export function FieldInputSettings({
                 <input
                   aria-label={t.value.presetLabel(Noun, index + 1)}
                   value={label}
-                  onChange={(event) => updateLabel(index, event.currentTarget.value)}
+                  onInput={(event) => updateLabel(index, event.currentTarget.value)}
                 />
               </label>
               {labels.length > 1 ? (

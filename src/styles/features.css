@@ -187,8 +187,13 @@
     align-items: center;
   }
 
-  .current-card__action {
+  .current-card__actions {
     margin-left: auto;
+  }
+
+  .current-card__action,
+  .current-card__maps {
+    flex: 0 0 auto;
   }
 
   .utility-actions {
