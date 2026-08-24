@@ -133,7 +133,7 @@
 /* Quiet sign-off. Hairline keyline, muted type; the version sits in mono like
    the object code stamped in the corner of a station sign. */
 .app-footer {
-  margin-top: auto;
+  margin-top: 0.4rem;
   padding-top: 0.9rem;
   border-top: 1px solid var(--line);
   display: flex;

@@ -27,7 +27,14 @@ import {
   savePhotoBlob,
   stripPhotoMetadata,
 } from "./photos";
-import { loadAppData, saveAppData } from "./repository";
+import {
+  clearDraft,
+  loadAppData,
+  loadDraft,
+  type StoredDraft,
+  saveAppData,
+  saveDraft,
+} from "./repository";
 
 export const data = signal<AppData>(defaultAppData);
 export const overlay = signal<OverlayState>({ kind: "closed" });
@@ -57,6 +64,24 @@ effect(() => {
   });
 });
 
+// A draft left behind by a refresh mid-edit, handed to the next editor open.
+let restoredDraft: StoredDraft | null = null;
+
+// Keep the open editor's draft on disk so a reload — or the OS reclaiming a
+// backgrounded tab — doesn't throw away what was typed. This only ever writes
+// while the editor is open; clearing is explicit on save and cancel, so the
+// reset inside initStore can't wipe a draft before it has been read back.
+effect(() => {
+  const draft = locationDraft.value;
+  const showDetails = showEditorDetails.value;
+
+  if (overlay.value.kind !== "edit-location" || !draft) {
+    return;
+  }
+
+  saveDraft(draft, showDetails).catch(() => undefined);
+});
+
 // Resets transient UI state and (re)loads persisted data. Called on App mount,
 // which keeps the single production instance and remounting tests consistent.
 export function initStore(): () => void {
@@ -71,26 +96,29 @@ export function initStore(): () => void {
   notice.value = null;
   editorError.value = null;
   geoStatus.value = "idle";
+  restoredDraft = null;
 
   let active = true;
 
   // biome-ignore lint/complexity/noVoid: deliberate fire-and-forget hydration
-  void loadAppData()
-    .catch(() => {
+  void Promise.all([
+    loadAppData().catch(() => {
       notice.value = { text: t.value.noticeLoadFailed, tone: "error" };
       return defaultAppData;
-    })
-    .then((loaded) => {
-      if (!active) {
-        return;
-      }
+    }),
+    loadDraft().catch(() => null),
+  ]).then(([loaded, storedDraft]) => {
+    if (!active) {
+      return;
+    }
 
-      data.value = loaded;
-      // Always flip, even after a failed load, so later edits still persist.
-      hydrated.value = true;
-      // biome-ignore lint/complexity/noVoid: deliberate fire-and-forget cleanup
-      void reconcilePhotoBlobs(() => active);
-    });
+    data.value = loaded;
+    restoredDraft = storedDraft;
+    // Always flip, even after a failed load, so later edits still persist.
+    hydrated.value = true;
+    // biome-ignore lint/complexity/noVoid: deliberate fire-and-forget cleanup
+    void reconcilePhotoBlobs(() => active);
+  });
 
   return () => {
     active = false;
@@ -178,7 +206,12 @@ export function openOverlay(next: OverlayState): void {
   geoStatus.value = "idle";
 
   if (next.kind === "edit-location") {
-    locationDraft.value = createLocationDraft(data.value.current, data.value.station);
+    // Work saved from an interrupted edit wins over a fresh draft, but only
+    // once: after this the user either saves or cancels, and both clear it.
+    locationDraft.value =
+      restoredDraft?.draft ?? createLocationDraft(data.value.current, data.value.station);
+    showEditorDetails.value = restoredDraft?.showDetails ?? false;
+    restoredDraft = null;
     stationDraft.value = null;
     return;
   }
@@ -201,6 +234,10 @@ export function closeOverlay(): void {
   showEditorDetails.value = false;
   editorError.value = null;
   geoStatus.value = "idle";
+  // Saving and cancelling both land here, and both mean the draft is spent.
+  restoredDraft = null;
+  // biome-ignore lint/complexity/noVoid: deliberate fire-and-forget cleanup
+  void clearDraft().catch(() => undefined);
 }
 
 export async function handleLocationSubmit(event: TargetedEvent<HTMLFormElement>): Promise<void> {

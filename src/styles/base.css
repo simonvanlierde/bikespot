@@ -151,9 +151,10 @@ textarea {
   resize: vertical;
 }
 
+/* Height follows content: the shell used to stretch to the viewport, which
+   pushed the footer to the bottom edge and opened a dead gap above it. */
 .app-shell {
   width: min(40rem, 100%);
-  min-height: 100dvh;
   margin: 0 auto;
   padding: max(1.15rem, env(safe-area-inset-top)) max(0.95rem, env(safe-area-inset-right))
     max(3rem, env(safe-area-inset-bottom)) max(0.95rem, env(safe-area-inset-left));
