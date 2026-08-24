@@ -46,11 +46,11 @@
 }
 
 /* GPS pin + chevron sit in the sign's top-right corner, inside the keyline. */
+/* GPS pin + chevron ride in the sign's top-right corner. In flow, not absolute:
+   a long headline must never run underneath them. */
 .current-card__topline-end {
-  position: absolute;
-  top: 0;
-  right: 0;
-  display: inline-flex;
+  display: flex;
+  justify-content: flex-end;
   align-items: center;
   gap: 0.5rem;
 }
@@ -292,21 +292,8 @@
   flex: 1 1 12rem;
 }
 
-/* Second action on the sign: outlined in the keyline white, never a second
-   filled plate competing with the primary. */
-/* Filled like its sibling, but tonal: the solid white plate stays the primary
-   action. Specific enough to beat the generic .ghost-button hover below. */
-.current-card a.current-card__maps {
+.current-card__maps {
   flex: 1 1 10rem;
-  border-color: transparent;
-  background: rgba(255, 255, 255, 0.16);
-  color: var(--sign-ink);
-  text-decoration: none;
-}
-
-.current-card a.current-card__maps:hover {
-  border-color: transparent;
-  background: rgba(255, 255, 255, 0.26);
 }
 
 .current-card .ghost-button:focus-visible {
@@ -457,6 +444,22 @@
 .utility-button:hover {
   background: var(--surface-sunken);
   border-color: var(--line-strong);
+}
+
+/* The sign's secondary action. Filled like its sibling but tonal, so the solid
+   white plate stays primary; it's an anchor, so the underline has to go. Placed
+   after the ghost-button skin above so plain class specificity is enough to win
+   here and the wide-screen layout override still applies. */
+.current-card__maps {
+  border-color: transparent;
+  background: rgba(255, 255, 255, 0.16);
+  color: var(--sign-ink);
+  text-decoration: none;
+}
+
+.current-card__maps:hover {
+  border-color: transparent;
+  background: rgba(255, 255, 255, 0.26);
 }
 
 .utility-actions {
