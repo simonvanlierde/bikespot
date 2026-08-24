@@ -133,7 +133,10 @@
 /* Quiet sign-off. Hairline keyline, muted type; the version sits in mono like
    the object code stamped in the corner of a station sign. */
 .app-footer {
-  margin-top: 0.4rem;
+  /* Sticky-footer pattern: the shell is at least a viewport tall, so this
+     anchors the sign-off to the bottom edge on a short page and simply follows
+     the content once the page grows past the fold. */
+  margin-top: auto;
   padding-top: 0.9rem;
   border-top: 1px solid var(--line);
   display: flex;
