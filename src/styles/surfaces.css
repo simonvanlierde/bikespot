@@ -294,15 +294,19 @@
 
 /* Second action on the sign: outlined in the keyline white, never a second
    filled plate competing with the primary. */
-.current-card__maps {
+/* Filled like its sibling, but tonal: the solid white plate stays the primary
+   action. Specific enough to beat the generic .ghost-button hover below. */
+.current-card a.current-card__maps {
   flex: 1 1 10rem;
-  border-color: var(--sign-keyline);
+  border-color: transparent;
+  background: rgba(255, 255, 255, 0.16);
   color: var(--sign-ink);
+  text-decoration: none;
 }
 
-.current-card__maps:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: var(--sign-ink);
+.current-card a.current-card__maps:hover {
+  border-color: transparent;
+  background: rgba(255, 255, 255, 0.26);
 }
 
 .current-card .ghost-button:focus-visible {
