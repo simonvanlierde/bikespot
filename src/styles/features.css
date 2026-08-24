@@ -47,18 +47,11 @@
   gap: 0.5rem;
   padding: 0.8rem 1rem;
   border-radius: var(--radius-control);
-  border: 1px solid var(--sign);
+  border: 1px solid var(--link);
   background: transparent;
-  color: var(--sign);
+  color: var(--link);
   font-weight: 700;
   text-decoration: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  .maps-link {
-    border-color: var(--line-strong);
-    color: var(--ink);
-  }
 }
 
 .maps-link__accuracy {
@@ -140,6 +133,9 @@
 /* Quiet sign-off. Hairline keyline, muted type; the version sits in mono like
    the object code stamped in the corner of a station sign. */
 .app-footer {
+  /* Sticky-footer pattern: the shell is at least a viewport tall, so this
+     anchors the sign-off to the bottom edge on a short page and simply follows
+     the content once the page grows past the fold. */
   margin-top: auto;
   padding-top: 0.9rem;
   border-top: 1px solid var(--line);
@@ -173,15 +169,8 @@
 }
 
 .app-footer__version:hover {
-  border-color: var(--sign);
-  color: var(--sign);
-}
-
-@media (prefers-color-scheme: dark) {
-  .app-footer__version:hover {
-    border-color: var(--line-strong);
-    color: var(--ink);
-  }
+  border-color: var(--link);
+  color: var(--link);
 }
 
 @media (min-width: 640px) {
@@ -194,15 +183,22 @@
     padding: 1.9rem;
   }
 
-  /* Wide enough for the timestamp and the button to share the footer row, with
-     the button pushed to the trailing edge. */
+  /* Wide enough for the timestamp and the actions to share the footer row, with
+     the actions pushed to the trailing edge and sized to their own text. */
   .current-card__footer {
     flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
   }
 
-  .current-card__action {
+  .current-card__actions {
+    flex-wrap: nowrap;
     margin-left: auto;
+  }
+
+  .current-card__action,
+  .current-card__maps {
+    flex: 0 0 auto;
   }
 
   .utility-actions {

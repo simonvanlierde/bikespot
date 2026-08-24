@@ -1,5 +1,6 @@
+import { computed } from "@preact/signals";
 import type { Coords, EnabledFields, LocationRecord } from "@/lib/app-data";
-import { t } from "@/lib/i18n";
+import { lang, t } from "@/lib/i18n";
 
 export function titleCase(value?: string) {
   if (!value) {
@@ -30,12 +31,46 @@ export function showFloor(entry: LocationRecord) {
   return shouldShowEntryField(entry, "floor");
 }
 
-// Hoisted: Intl.DateTimeFormat construction is far pricier than .format() and
-// this runs per entry on every recent-list render.
-const timestampFormat = new Intl.DateTimeFormat(undefined, {
-  dateStyle: "medium",
-  timeStyle: "short",
-});
+// Memoized per language: Intl.DateTimeFormat construction is far pricier than
+// .format() and this runs per entry on every recent-list render.
+const timestampFormat = computed(
+  () => new Intl.DateTimeFormat(lang.value, { dateStyle: "medium", timeStyle: "short" }),
+);
+
+// "3 hours ago" beats "Aug 22, 2026, 10:48 PM" when you're standing in the
+// garage; past a week the absolute date is more useful again.
+const RELATIVE_LIMIT_MS = 7 * 24 * 60 * 60 * 1000;
+const RELATIVE_UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
+  ["day", 24 * 60 * 60 * 1000],
+  ["hour", 60 * 60 * 1000],
+  ["minute", 60 * 1000],
+];
+
+export function formatRelativeTimestamp(value?: string, now: number = Date.now()) {
+  if (!value) {
+    return t.value.notSaved;
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return t.value.notSaved;
+  }
+
+  const elapsed = now - date.getTime();
+
+  if (elapsed < 0 || elapsed >= RELATIVE_LIMIT_MS) {
+    return timestampFormat.value.format(date);
+  }
+
+  if (elapsed < 60 * 1000) {
+    return t.value.justNow;
+  }
+
+  const formatter = new Intl.RelativeTimeFormat(lang.value, { numeric: "auto" });
+  const [unit, size] = RELATIVE_UNITS.find(([, ms]) => elapsed >= ms) ?? RELATIVE_UNITS[2];
+  return formatter.format(-Math.floor(elapsed / size), unit);
+}
 
 export function formatTimestamp(value?: string) {
   if (!value) {
@@ -48,7 +83,7 @@ export function formatTimestamp(value?: string) {
     return t.value.notSaved;
   }
 
-  return timestampFormat.format(date);
+  return timestampFormat.value.format(date);
 }
 
 export function getSummary(entry: LocationRecord | null): string {

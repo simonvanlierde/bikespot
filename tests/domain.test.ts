@@ -2,9 +2,11 @@ import { describe, expect, it } from "vitest";
 
 import { defaultAppData } from "../src/lib/defaults.ts";
 import {
+  clearCurrentLocation,
   createId,
   createLocationRecord,
   promoteRecentLocation,
+  removeRecentLocation,
   saveLocation,
 } from "../src/lib/domain.ts";
 
@@ -55,5 +57,51 @@ describe("promoteRecentLocation with no current spot", () => {
 
     expect(next.current).toMatchObject({ lane: "5" });
     expect(next.recent).toEqual([recent[1]]);
+  });
+});
+
+describe("saveLocation in the same spot", () => {
+  const station = {
+    ...defaultAppData.station,
+    enabledFields: { ...defaultAppData.station.enabledFields, side: true },
+  };
+  const start = saveLocation(
+    { ...defaultAppData, station },
+    { mode: "station", lane: "4", side: "left", notes: "pillar" },
+    "2026-04-19T07:05:00.000Z",
+  );
+
+  it("refreshes the timestamp instead of duplicating the spot into recent", () => {
+    const next = saveLocation(
+      start,
+      { mode: "station", lane: "4", side: "left", notes: "pillar" },
+      "2026-04-20T07:05:00.000Z",
+    );
+
+    expect(next.recent).toEqual([]);
+    expect(next.current).toMatchObject({
+      id: start.current?.id,
+      updatedAt: "2026-04-20T07:05:00.000Z",
+    });
+  });
+
+  it("still records a new event when any locator differs", () => {
+    const next = saveLocation(start, { mode: "station", lane: "4", side: "right" });
+
+    expect(next.recent).toEqual([start.current]);
+  });
+});
+
+describe("clearCurrentLocation and removeRecentLocation", () => {
+  it("moves the collected spot into recent and can drop it from there", () => {
+    const parked = saveLocation({ ...defaultAppData }, { mode: "station", lane: "4" });
+    const collected = clearCurrentLocation(parked);
+
+    expect(collected.current).toBeNull();
+    expect(collected.recent).toEqual([parked.current]);
+    expect(clearCurrentLocation(collected)).toBe(collected);
+
+    const removed = removeRecentLocation(collected, collected.recent[0].id);
+    expect(removed.recent).toEqual([]);
   });
 });

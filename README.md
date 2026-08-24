@@ -19,8 +19,10 @@ An offline-first PWA for remembering where you parked your bike. Everything stay
 
 - **Save your spot** as a structured *station* location (lane, side, rack level, distance, floor, rack number) or a free-text *outside* description.
 - **Optional GPS coordinates, photos and notes** attached to any spot.
-- **Recent history** of your last five spots, each restorable as the current one.
-- **Configurable station** — name, lane-input style, lane labels, visible fields, and default floor.
+- **Interrupted edits survive a reload** for up to an hour, so a backgrounded tab doesn't cost you what you typed.
+- **Bike collected** clears the current spot once you have your bike back; it stays in history.
+- **Recent history** of your last five spots, each restorable as the current one or removable.
+- **Configurable station** — name, which details your garage has (floor, lane, distance, side, rack level, rack number), and number-or-preset input per field. Settings apply as you change them.
 - **Installable and offline** via a generated service worker and web manifest.
 
 By design, the app is single-device: no cross-device sync. State lives in `localStorage`; photos live in IndexedDB.

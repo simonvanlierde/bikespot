@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-
 import { defaultAppData } from "../src/lib/defaults.ts";
 import { createLocationDraft, createStationSettingsDraft } from "../src/lib/drafts.ts";
 import {

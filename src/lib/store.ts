@@ -4,7 +4,13 @@ import type { Dispatch, SetStateAction } from "preact/compat";
 
 import type { AppData, LocationRecord, OverlayState } from "./app-data";
 import { defaultAppData } from "./defaults";
-import { promoteRecentLocation, saveLocation, updateStationConfig } from "./domain";
+import {
+  clearCurrentLocation,
+  promoteRecentLocation,
+  removeRecentLocation,
+  saveLocation,
+  updateStationConfig,
+} from "./domain";
 import {
   buildLocationRecordInput,
   createLocationDraft,
@@ -14,8 +20,21 @@ import {
 } from "./drafts";
 import { captureCoords } from "./geolocation";
 import { t } from "./i18n";
-import { deletePhotoBlob, listPhotoIds, savePhotoBlob } from "./photos";
-import { loadAppData, saveAppData } from "./repository";
+import {
+  clearPhotoBlobs,
+  deletePhotoBlob,
+  listPhotoIds,
+  savePhotoBlob,
+  stripPhotoMetadata,
+} from "./photos";
+import {
+  clearDraft,
+  loadAppData,
+  loadDraft,
+  type StoredDraft,
+  saveAppData,
+  saveDraft,
+} from "./repository";
 
 export const data = signal<AppData>(defaultAppData);
 export const overlay = signal<OverlayState>({ kind: "closed" });
@@ -23,8 +42,10 @@ export const locationDraft = signal<LocationDraft | null>(null);
 export const stationDraft = signal<StationSettingsDraft | null>(null);
 export const showEditorDetails = signal(false);
 // A fresh object per notice so posting the same text twice still re-arms the
-// auto-dismiss timer keyed on it.
-export const notice = signal<{ text: string } | null>(null);
+// auto-dismiss timer keyed on it. Errors stay until dismissed or replaced.
+export const notice = signal<{ text: string; tone?: "error" } | null>(null);
+// Validation message for the open editor; cleared on every open/close.
+export const editorError = signal<string | null>(null);
 export const hydrated = signal(false);
 export const geoStatus = signal<"idle" | "capturing" | "error">("idle");
 
@@ -39,31 +60,61 @@ effect(() => {
   }
 
   saveAppData(snapshot).catch(() => {
-    notice.value = { text: t.value.noticeSaveFailed };
+    notice.value = { text: t.value.noticeSaveFailed, tone: "error" };
   });
+});
+
+// A draft left behind by a refresh mid-edit, handed to the next editor open.
+let restoredDraft: StoredDraft | null = null;
+
+// Keep the open editor's draft on disk so a reload — or the OS reclaiming a
+// backgrounded tab — doesn't throw away what was typed. This only ever writes
+// while the editor is open; clearing is explicit on save and cancel, so the
+// reset inside initStore can't wipe a draft before it has been read back.
+effect(() => {
+  const draft = locationDraft.value;
+  const showDetails = showEditorDetails.value;
+
+  if (overlay.value.kind !== "edit-location" || !draft) {
+    return;
+  }
+
+  saveDraft(draft, showDetails).catch(() => undefined);
 });
 
 // Resets transient UI state and (re)loads persisted data. Called on App mount,
 // which keeps the single production instance and remounting tests consistent.
 export function initStore(): () => void {
+  // First: a stale `hydrated` from a previous mount would let the persistence
+  // effect write the seed over real data when data.value resets below.
+  hydrated.value = false;
   data.value = defaultAppData;
   overlay.value = { kind: "closed" };
   locationDraft.value = null;
   stationDraft.value = null;
   showEditorDetails.value = false;
   notice.value = null;
-  hydrated.value = false;
+  editorError.value = null;
   geoStatus.value = "idle";
+  restoredDraft = null;
 
   let active = true;
 
   // biome-ignore lint/complexity/noVoid: deliberate fire-and-forget hydration
-  void loadAppData().then((loaded) => {
+  void Promise.all([
+    loadAppData().catch(() => {
+      notice.value = { text: t.value.noticeLoadFailed, tone: "error" };
+      return defaultAppData;
+    }),
+    loadDraft().catch(() => null),
+  ]).then(([loaded, storedDraft]) => {
     if (!active) {
       return;
     }
 
     data.value = loaded;
+    restoredDraft = storedDraft;
+    // Always flip, even after a failed load, so later edits still persist.
     hydrated.value = true;
     // biome-ignore lint/complexity/noVoid: deliberate fire-and-forget cleanup
     void reconcilePhotoBlobs(() => active);
@@ -143,13 +194,24 @@ async function commitData(next: AppData): Promise<void> {
   );
 }
 
+// Bumped on every open/close so an in-flight geolocation fix from a previous
+// editor session can't land on the next one's draft.
+let editorSession = 0;
+
 export function openOverlay(next: OverlayState): void {
+  editorSession++;
   overlay.value = next;
   showEditorDetails.value = false;
+  editorError.value = null;
   geoStatus.value = "idle";
 
   if (next.kind === "edit-location") {
-    locationDraft.value = createLocationDraft(data.value.current, data.value.station);
+    // Work saved from an interrupted edit wins over a fresh draft, but only
+    // once: after this the user either saves or cancels, and both clear it.
+    locationDraft.value =
+      restoredDraft?.draft ?? createLocationDraft(data.value.current, data.value.station);
+    showEditorDetails.value = restoredDraft?.showDetails ?? false;
+    restoredDraft = null;
     stationDraft.value = null;
     return;
   }
@@ -165,11 +227,17 @@ export function openOverlay(next: OverlayState): void {
 }
 
 export function closeOverlay(): void {
+  editorSession++;
   overlay.value = { kind: "closed" };
   locationDraft.value = null;
   stationDraft.value = null;
   showEditorDetails.value = false;
+  editorError.value = null;
   geoStatus.value = "idle";
+  // Saving and cancelling both land here, and both mean the draft is spent.
+  restoredDraft = null;
+  // biome-ignore lint/complexity/noVoid: deliberate fire-and-forget cleanup
+  void clearDraft().catch(() => undefined);
 }
 
 export async function handleLocationSubmit(event: TargetedEvent<HTMLFormElement>): Promise<void> {
@@ -184,33 +252,65 @@ export async function handleLocationSubmit(event: TargetedEvent<HTMLFormElement>
   const input = buildLocationRecordInput(draft, data.value.station);
 
   if (!input) {
+    const laneMissing =
+      draft.kind === "station" && data.value.station.enabledFields.lane && !draft.lane.trim();
+    editorError.value = laneMissing ? t.value.errorLaneRequired : t.value.errorNothingToFindBy;
     return;
   }
+
+  editorError.value = null;
 
   // Persist a newly attached photo only once we know the record is valid,
   // otherwise a failed save would leave an orphaned blob behind.
-  const photoId = draft.photoFile ? await savePhotoBlob(draft.photoFile) : undefined;
-  const nextLocation = photoId ? { ...input, photoId } : input;
+  let photoId: string | undefined;
 
-  await commitData(saveLocation(data.value, nextLocation));
-  notice.value = { text: t.value.noticeLocationUpdated };
-  closeOverlay();
-}
-
-export function handleStationSubmit(event: TargetedEvent<HTMLFormElement>): void {
-  event.preventDefault();
-
-  const draft = stationDraft.value;
-
-  if (!draft) {
+  try {
+    photoId = draft.photoFile ? await savePhotoBlob(draft.photoFile) : undefined;
+  } catch {
+    // Keep the sheet open so the user can retry or drop the photo.
+    notice.value = { text: t.value.noticeSaveFailed, tone: "error" };
     return;
   }
 
-  // The draft already has StationConfig's shape; normalizeStationConfig inside
-  // updateStationConfig owns all sanitization.
-  data.value = updateStationConfig(data.value, draft);
-  notice.value = { text: t.value.noticeStationUpdated };
+  const nextLocation = photoId ? { ...input, photoId } : input;
+  const previous = data.value.current;
+  const next = saveLocation(data.value, nextLocation);
+  const replaced = previous !== null && next.recent[0] === previous;
+
+  // Close before committing, as in handleUseRecent: the record is persisted
+  // synchronously inside commitData; only best-effort blob cleanup is awaited.
   closeOverlay();
+  notice.value = {
+    text: replaced ? t.value.noticeLocationReplaced : t.value.noticeLocationUpdated,
+  };
+  await commitData(next);
+}
+
+// Settings apply as you change them — there is no Save step. The draft stays
+// the UI's source of truth (a half-typed preset label is blank there but
+// dropped by normalization), the config gets the sanitized view.
+export function handleStationChange(updater: SetStateAction<StationSettingsDraft>): void {
+  setStationDraft(updater);
+
+  const draft = stationDraft.value;
+
+  if (draft) {
+    data.value = updateStationConfig(data.value, draft);
+  }
+}
+
+export async function handleClearCurrent(): Promise<void> {
+  const next = clearCurrentLocation(data.value);
+  closeOverlay();
+  notice.value = { text: t.value.noticeCollected };
+  await commitData(next);
+}
+
+export async function handleRemoveRecent(id: string): Promise<void> {
+  const next = removeRecentLocation(data.value, id);
+  openOverlay({ kind: "recent-list" });
+  notice.value = { text: t.value.noticeRecentRemoved };
+  await commitData(next);
 }
 
 export async function handleUseRecent(id: string): Promise<void> {
@@ -224,13 +324,20 @@ export async function handleUseRecent(id: string): Promise<void> {
   await commitData(next);
 }
 
-export function handlePhotoChange(event: TargetedEvent<HTMLInputElement>): void {
-  const file = event.currentTarget.files?.[0] ?? null;
+export async function handlePhotoChange(event: TargetedEvent<HTMLInputElement>): Promise<void> {
+  const picked = event.currentTarget.files?.[0] ?? null;
   // Reset the input so picking the same file after a remove still fires change.
   event.currentTarget.value = "";
+
+  if (!locationDraft.value) {
+    return;
+  }
+
+  const session = editorSession;
+  const file = picked ? await stripPhotoMetadata(picked) : null;
   const draft = locationDraft.value;
 
-  if (!draft) {
+  if (!draft || session !== editorSession) {
     return;
   }
 
@@ -255,9 +362,14 @@ export async function handleCaptureLocation(): Promise<void> {
   }
 
   geoStatus.value = "capturing";
+  const session = editorSession;
 
   try {
     const coords = await captureCoords();
+
+    if (session !== editorSession) {
+      return;
+    }
 
     if (!coords || locationDraft.value === null) {
       geoStatus.value = coords ? "idle" : "error";
@@ -267,8 +379,22 @@ export async function handleCaptureLocation(): Promise<void> {
     locationDraft.value = { ...locationDraft.value, coords };
     geoStatus.value = "idle";
   } catch {
-    geoStatus.value = "error";
+    if (session === editorSession) {
+      geoStatus.value = "error";
+    }
   }
+}
+
+export async function handleClearAllData(): Promise<void> {
+  // biome-ignore lint/suspicious/noAlert: a native confirm is the honest guard for a one-off destructive action
+  if (!window.confirm(t.value.clearAllDataConfirm)) {
+    return;
+  }
+
+  closeOverlay();
+  data.value = defaultAppData;
+  notice.value = { text: t.value.noticeDataCleared };
+  await clearPhotoBlobs().catch(() => undefined);
 }
 
 export function toggleEditorDetails(): void {

@@ -29,16 +29,18 @@ export function CoordsField({
         </span>
       </button>
 
-      {coords ? (
-        <p className="coords-field__status">
-          {t.value.captured}
-          {formatAccuracy(coords) ? ` · ${t.value.accuracy(formatAccuracy(coords))}` : ""}
-        </p>
-      ) : null}
-
-      {status === "error" ? (
-        <p className="coords-field__status coords-field__status--error">{t.value.geoError}</p>
-      ) : null}
+      {/* Persistent live region: AT only announces changes inside an element
+          that already existed, so the <p> stays mounted while empty. */}
+      <p
+        className={`coords-field__status${status === "error" ? " coords-field__status--error" : ""}`}
+        role="status"
+      >
+        {status === "error"
+          ? t.value.geoError
+          : coords
+            ? `${t.value.captured}${formatAccuracy(coords) ? ` · ${t.value.accuracy(formatAccuracy(coords))}` : ""}`
+            : null}
+      </p>
     </div>
   );
 }

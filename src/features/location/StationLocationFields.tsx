@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronRight, CircleHelp } from "lucide-preact";
+import { ChevronDown, ChevronRight } from "lucide-preact";
 import type { TargetedEvent } from "preact";
 import { CoordsField } from "@/components/CoordsField";
 import { NotesField } from "@/components/NotesField";
@@ -30,6 +30,7 @@ export function StationLocationFields({
   station,
   showDetails,
   geoStatus,
+  laneInvalid = false,
   updateStationField,
   onNotesChange,
   onToggleDetails,
@@ -41,6 +42,7 @@ export function StationLocationFields({
   station: StationConfig;
   showDetails: boolean;
   geoStatus: "idle" | "capturing" | "error";
+  laneInvalid?: boolean;
   updateStationField: UpdateStationField;
   onNotesChange: (notes: string) => void;
   onToggleDetails: () => void;
@@ -68,6 +70,7 @@ export function StationLocationFields({
           mode={station.laneInputMode}
           labels={station.laneLabels}
           value={formState.lane}
+          invalid={laneInvalid}
           onChange={(value) => updateStationField("lane", value)}
         />
       ) : null}
@@ -75,12 +78,7 @@ export function StationLocationFields({
       {station.enabledFields.distance ? (
         <SegmentedControl
           label={t.value.distance}
-          labelSuffix={
-            <button aria-label={t.value.distanceHelp} className="info-trigger" type="button">
-              <CircleHelp aria-hidden="true" className="button-icon" />
-              <span className="info-tooltip">{t.value.distanceHelpText}</span>
-            </button>
-          }
+          hint={t.value.distanceHelpText}
           options={["close", "middle", "far"]}
           value={formState.distance}
           onChange={(distance) => updateStationField("distance", distance)}
@@ -113,8 +111,9 @@ export function StationLocationFields({
           <span>{t.value.rackNumber}</span>
           <input
             aria-label={t.value.rackNumber}
+            autoComplete="off"
             value={formState.rackNumber}
-            onChange={(event) => updateStationField("rackNumber", event.currentTarget.value)}
+            onInput={(event) => updateStationField("rackNumber", event.currentTarget.value)}
           />
         </label>
       ) : null}
@@ -131,8 +130,8 @@ export function StationLocationFields({
 
       {showDetails ? (
         <div className="details-panel">
-          <CoordsField coords={formState.coords} status={geoStatus} onCapture={onCaptureLocation} />
           <NotesField value={formState.notes} onChange={onNotesChange} />
+          <CoordsField coords={formState.coords} status={geoStatus} onCapture={onCaptureLocation} />
           <PhotoField
             photoFile={formState.photoFile}
             onPhotoChange={onPhotoChange}

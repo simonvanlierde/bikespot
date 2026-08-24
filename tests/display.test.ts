@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   formatAccuracy,
+  formatRelativeTimestamp,
   formatTimestamp,
   getDetailFacts,
   getPrimaryLabel,
@@ -154,5 +155,17 @@ describe("getDetailFacts", () => {
 
   it("skips lane when it is the headline field", () => {
     expect(getDetailFacts(station({ lane: "4", side: "left" }))).toEqual(["Left side"]);
+  });
+});
+
+describe("formatRelativeTimestamp", () => {
+  const now = Date.parse("2026-04-20T12:00:00.000Z");
+
+  it("speaks in elapsed time inside a week and dates beyond it", () => {
+    expect(formatRelativeTimestamp("2026-04-20T11:59:30.000Z", now)).toBe("just now");
+    expect(formatRelativeTimestamp("2026-04-20T09:00:00.000Z", now)).toBe("3 hours ago");
+    expect(formatRelativeTimestamp("2026-04-18T12:00:00.000Z", now)).toBe("2 days ago");
+    expect(formatRelativeTimestamp("2026-04-01T12:00:00.000Z", now)).toMatch(/2026/);
+    expect(formatRelativeTimestamp(undefined, now)).toBe("not saved yet");
   });
 });

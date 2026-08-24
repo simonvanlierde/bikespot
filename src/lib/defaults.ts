@@ -1,9 +1,7 @@
-import type { AppData, LocationRecord, StationConfig } from "./app-data";
-import { createLocationRecord } from "./domain";
-import { t } from "./i18n";
+import type { AppData, StationConfig } from "./app-data";
 
 export const defaultStationConfig: StationConfig = {
-  name: t.value.seedStationName,
+  name: "",
   laneInputMode: "number",
   laneLabels: ["4", "5", "6"],
   floorInputMode: "number",
@@ -18,45 +16,10 @@ export const defaultStationConfig: StationConfig = {
   },
 };
 
-const starterCurrent: LocationRecord = createLocationRecord(
-  {
-    mode: "station",
-    stationName: defaultStationConfig.name,
-    lane: "4",
-    side: "right",
-    rackLevel: "bottom",
-    distance: "middle",
-    floor: "1",
-    notes: t.value.seedStarterNote,
-    visibleFields: {
-      side: true,
-      rackLevel: true,
-      distance: true,
-    },
-  },
-  "2026-04-19T08:00:00.000Z",
-);
-
+// First run is honest: no bike parked, nothing in history. The card's empty
+// state explains the app instead of a fabricated starter spot.
 export const defaultAppData: AppData = {
   station: defaultStationConfig,
-  current: starterCurrent,
-  recent: [
-    createLocationRecord(
-      {
-        mode: "station",
-        stationName: defaultStationConfig.name,
-        lane: "5",
-        side: "left",
-        rackLevel: "top",
-        distance: "close",
-        floor: "1",
-        visibleFields: {
-          side: true,
-          rackLevel: true,
-          distance: true,
-        },
-      },
-      "2026-04-18T18:20:00.000Z",
-    ),
-  ],
+  current: null,
+  recent: [],
 };

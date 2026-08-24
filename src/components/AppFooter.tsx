@@ -1,4 +1,5 @@
 import { Code2 } from "lucide-preact";
+import { t } from "@/lib/i18n";
 
 const SOURCE_URL = "https://github.com/simonvanlierde/bikespot";
 
@@ -13,7 +14,7 @@ export function AppFooter() {
         href={SOURCE_URL}
         target="_blank"
         rel="noreferrer"
-        aria-label={`View source code, version ${__APP_VERSION__}`}
+        aria-label={t.value.viewSourceVersion(__APP_VERSION__)}
       >
         <Code2 aria-hidden="true" className="app-footer__icon" />v{__APP_VERSION__}
       </a>

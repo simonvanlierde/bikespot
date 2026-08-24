@@ -1,11 +1,29 @@
 import type { ReactNode } from "preact/compat";
 
+// Arrow keys move the selection like a native radio group (the buttons stay
+// aria-pressed toggles, which AT already announces with state).
+export function segmentKeyHandler<T>(options: T[], value: T, onChange: (value: T) => void) {
+  return (event: KeyboardEvent) => {
+    const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[event.key];
+    if (!step) {
+      return;
+    }
+    event.preventDefault();
+    const index = (options.indexOf(value) + step + options.length) % options.length;
+    onChange(options[index]);
+    (event.currentTarget as HTMLElement).parentElement
+      ?.querySelectorAll<HTMLButtonElement>("button")
+      [index]?.focus();
+  };
+}
+
 export function SegmentedControl<T extends string>({
   label,
   onChange,
   options,
   value,
   titleCase,
+  hint,
   labelSuffix,
 }: {
   label: string;
@@ -15,6 +33,9 @@ export function SegmentedControl<T extends string>({
   // Renders one option value for display (segment text + aria-label); pass a
   // translator or titleCase.
   titleCase: (value: T) => string;
+  // One line of always-visible help under the options: no hover tooltips on a
+  // touch-first app.
+  hint?: string;
   labelSuffix?: ReactNode;
 }) {
   return (
@@ -31,12 +52,14 @@ export function SegmentedControl<T extends string>({
             aria-pressed={value === option}
             className={`segment${value === option ? " is-active" : ""}`}
             onClick={() => onChange(option)}
+            onKeyDown={segmentKeyHandler(options, value, onChange)}
             type="button"
           >
             {titleCase(option)}
           </button>
         ))}
       </div>
+      {hint ? <p className="segmented-field__hint">{hint}</p> : null}
     </fieldset>
   );
 }

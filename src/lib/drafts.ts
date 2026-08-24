@@ -52,39 +52,25 @@ export function createStationSettingsDraft(station: StationConfig): StationSetti
   };
 }
 
-// The draft describes a NEW parking event, so it carries over structural
-// habits (mode, lane, side, floor, ...) but never the previous spot's
-// evidence — notes, photo, GPS coords, and rack number belong to the old spot.
+// The draft describes a NEW parking event. In a Dutch station you rarely get
+// the same spot twice, but usually the same floor: carry the floor over, start
+// every other locator (lane, side, rack, distance) and all evidence fresh, so a
+// careless tap can never re-save yesterday's lane as today's.
 export function createLocationDraft(
   current: LocationRecord | null,
   station: StationConfig,
 ): LocationDraft {
-  if (!current) {
-    return {
-      kind: "station",
-      lane: station.laneLabels[0] ?? "",
-      side: "right",
-      rackLevel: "bottom",
-      distance: "middle",
-      floor: station.floorLabels[0] ?? "",
-      rackNumber: "",
-      notes: "",
-      photoFile: null,
-      coords: null,
-    };
-  }
-
-  if (current.mode === "outside") {
+  if (current?.mode === "outside") {
     return createOutsideLocationDraft();
   }
 
   return {
     kind: "station",
-    lane: current.lane ?? station.laneLabels[0] ?? "",
-    side: current.side ?? "right",
-    rackLevel: current.rackLevel ?? "bottom",
-    distance: current.distance ?? "middle",
-    floor: current.floor ?? station.floorLabels[0] ?? "",
+    lane: "",
+    side: "right",
+    rackLevel: "bottom",
+    distance: "middle",
+    floor: current?.floor ?? station.floorLabels[0] ?? "",
     rackNumber: "",
     notes: "",
     photoFile: null,
@@ -121,24 +107,41 @@ export function buildLocationRecordInput(
     };
   }
 
-  const lane = station.enabledFields.lane ? draft.lane.trim() : undefined;
+  return buildStationInput(draft, station);
+}
+
+function buildStationInput(
+  draft: StationLocationDraft,
+  station: StationConfig,
+): LocationRecordInput | null {
+  const { enabledFields } = station;
+  const lane = enabledFields.lane ? draft.lane.trim() : undefined;
 
   // Lane is required only when the field is enabled.
-  if (station.enabledFields.lane && !lane) {
+  if (enabledFields.lane && !lane) {
     return null;
   }
 
-  return {
+  const input: LocationRecordInput = {
     mode: "station",
     lane,
-    side: station.enabledFields.side ? draft.side : undefined,
-    rackLevel: station.enabledFields.rackLevel ? draft.rackLevel : undefined,
-    distance: station.enabledFields.distance ? draft.distance : undefined,
-    floor: station.enabledFields.floor ? emptyToUndefined(draft.floor) : undefined,
-    rackNumber: station.enabledFields.rackNumber ? emptyToUndefined(draft.rackNumber) : undefined,
+    side: enabledFields.side ? draft.side : undefined,
+    rackLevel: enabledFields.rackLevel ? draft.rackLevel : undefined,
+    distance: enabledFields.distance ? draft.distance : undefined,
+    floor: enabledFields.floor ? emptyToUndefined(draft.floor) : undefined,
+    rackNumber: enabledFields.rackNumber ? emptyToUndefined(draft.rackNumber) : undefined,
     notes: emptyToUndefined(draft.notes),
     coords: draft.coords ?? undefined,
   };
+
+  // With every field disabled the record would be blank and displace the real
+  // current spot; require something to find the bike by, like the outside branch.
+  const { mode: _mode, ...values } = input;
+  if (!(draft.photoFile || Object.values(values).some((value) => value !== undefined))) {
+    return null;
+  }
+
+  return input;
 }
 
 function emptyToUndefined(value: string): string | undefined {

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { defaultAppData } from "../src/lib/defaults.ts";
 import {
@@ -8,6 +8,7 @@ import {
   savePhotoBlob,
 } from "../src/lib/photos.ts";
 import { APP_DATA_STORAGE_KEY, loadAppData, saveAppData } from "../src/lib/repository.ts";
+import { sampleAppData } from "./fixtures.ts";
 
 describe("app data repository", () => {
   beforeEach(async () => {
@@ -25,14 +26,14 @@ describe("app data repository", () => {
     );
 
     const nextData = {
-      ...defaultAppData,
+      ...sampleAppData,
       current:
-        defaultAppData.current && defaultAppData.current.mode === "station"
+        sampleAppData.current && sampleAppData.current.mode === "station"
           ? {
-              ...defaultAppData.current,
+              ...sampleAppData.current,
               photoId,
             }
-          : defaultAppData.current,
+          : sampleAppData.current,
     };
 
     await saveAppData(nextData);
@@ -67,7 +68,7 @@ describe("app data repository", () => {
   });
 
   it("round-trips valid coordinates and drops invalid ones on load", async () => {
-    const base = defaultAppData.current;
+    const base = sampleAppData.current;
 
     if (base?.mode !== "station") {
       throw new Error("expected a station current record in defaults");
@@ -76,11 +77,11 @@ describe("app data repository", () => {
     window.localStorage.setItem(
       APP_DATA_STORAGE_KEY,
       JSON.stringify({
-        ...defaultAppData,
+        ...sampleAppData,
         current: { ...base, coords: { lat: 52.379189, lng: 4.899431, accuracy: 12 } },
         recent: [
-          { ...defaultAppData.recent[0], coords: { lat: 999, lng: 4.9 } },
-          { ...defaultAppData.recent[0], id: "no-coords", coords: undefined },
+          { ...sampleAppData.recent[0], coords: { lat: 999, lng: 4.9 } },
+          { ...sampleAppData.recent[0], id: "no-coords", coords: undefined },
         ],
       }),
     );
@@ -94,7 +95,7 @@ describe("app data repository", () => {
   });
 
   it("keeps a valid current spot when the stored recent list is malformed", async () => {
-    const base = defaultAppData.current;
+    const base = sampleAppData.current;
 
     if (base?.mode !== "station") {
       throw new Error("expected a station current record in defaults");
@@ -102,7 +103,7 @@ describe("app data repository", () => {
 
     window.localStorage.setItem(
       APP_DATA_STORAGE_KEY,
-      JSON.stringify({ ...defaultAppData, recent: "not-an-array" }),
+      JSON.stringify({ ...sampleAppData, recent: "not-an-array" }),
     );
 
     const hydrated = await loadAppData();
@@ -117,9 +118,9 @@ describe("app data repository", () => {
       JSON.stringify({
         version: 2,
         state: {
-          ...defaultAppData,
+          ...sampleAppData,
           current: {
-            ...defaultAppData.current,
+            ...sampleAppData.current,
             photoDataUrl: "data:image/png;base64,bGVnYWN5LXBob3Rv",
           },
         },
@@ -127,5 +128,13 @@ describe("app data repository", () => {
     );
 
     await expect(loadAppData()).resolves.toEqual(defaultAppData);
+  });
+
+  it("falls back to defaults when storage access throws", async () => {
+    const spy = vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+      throw new Error("blocked");
+    });
+    await expect(loadAppData()).resolves.toEqual(defaultAppData);
+    spy.mockRestore();
   });
 });

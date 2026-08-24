@@ -22,6 +22,7 @@ export function RecentLocationsSheet({
       onClose={onClose}
     >
       <div className="recent-list recent-list--sheet">
+        {recent.length === 0 ? <p className="sheet-description">{t.value.noRecentYet}</p> : null}
         {recent.map((entry) => {
           const title = getPrimaryLabel(entry);
           const meta = getRecentMeta(entry);

@@ -20,7 +20,15 @@ function openPhotoDb(): Promise<IDBDatabase> {
         request.result.createObjectStore(PHOTO_STORE_NAME);
       }
     };
-    request.onsuccess = () => resolve(request.result);
+    request.onsuccess = () => {
+      // A future version bump must not hang behind this tab's open connection.
+      request.result.onversionchange = () => request.result.close();
+      resolve(request.result);
+    };
+    request.onblocked = () => {
+      dbPromise = null;
+      reject(new Error("Photo database is open in another tab"));
+    };
     request.onerror = () => {
       // Drop the cached promise so a later call can retry instead of
       // rejecting forever.
@@ -44,6 +52,27 @@ async function withStore<T>(
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error ?? new Error("Photo store request failed"));
   });
+}
+
+const FILE_EXTENSION = /\.[^.]+$/;
+
+// Re-encodes through a canvas so EXIF (GPS, device, timestamp) never reaches
+// storage. Falls back to the original file where the APIs are missing.
+export async function stripPhotoMetadata(file: File): Promise<File> {
+  if (typeof createImageBitmap !== "function" || typeof OffscreenCanvas !== "function") {
+    return file;
+  }
+
+  try {
+    const bitmap = await createImageBitmap(file);
+    const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
+    canvas.getContext("2d")?.drawImage(bitmap, 0, 0);
+    bitmap.close();
+    const blob = await canvas.convertToBlob({ type: "image/jpeg", quality: 0.9 });
+    return new File([blob], `${file.name.replace(FILE_EXTENSION, "")}.jpg`, { type: blob.type });
+  } catch {
+    return file;
+  }
 }
 
 export async function savePhotoBlob(blob: Blob): Promise<string> {
@@ -87,7 +116,6 @@ export async function listPhotoIds(): Promise<string[]> {
   return keys.filter((key): key is string => typeof key === "string");
 }
 
-// NOTE: only tests call this — kept here because it needs the store internals.
 export async function clearPhotoBlobs(): Promise<void> {
   memoryPhotoStore.clear();
 
