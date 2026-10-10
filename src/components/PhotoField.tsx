@@ -7,10 +7,12 @@ import { usePhotoUrl } from "./usePhotoUrl";
 
 export function PhotoField({
   photoFile,
+  metadataKept,
   onPhotoChange,
   onPhotoRemove,
 }: {
   photoFile: File | null;
+  metadataKept: boolean;
   onPhotoChange: (event: TargetedEvent<HTMLInputElement>) => void;
   onPhotoRemove: () => void;
 }) {
@@ -24,6 +26,9 @@ export function PhotoField({
           <img src={photoUrl} alt={t.value.photoPreviewAlt} />
         </figure>
       ) : null}
+      <p className="form-error" role="status">
+        {metadataKept ? t.value.photoMetadataKept : ""}
+      </p>
       <div className="photo-field__actions">
         <label className="file-trigger">
           <ImagePlus aria-hidden="true" className="button-icon" />

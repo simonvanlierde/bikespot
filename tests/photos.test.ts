@@ -1,7 +1,7 @@
 import "fake-indexeddb/auto";
 // node:buffer's Blob survives fake-indexeddb's structured clone; jsdom's does not.
 import { Blob as NodeBlob } from "node:buffer";
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   clearPhotoBlobs,
@@ -9,6 +9,7 @@ import {
   listPhotoIds,
   loadPhotoBlob,
   savePhotoBlob,
+  stripPhotoMetadata,
 } from "../src/lib/photos.ts";
 
 // Structurally identical to the DOM Blob our code expects; cast once so call sites type-check.
@@ -47,5 +48,51 @@ describe("photo blob store (IndexedDB)", () => {
     await savePhotoBlob(new Blob(["x"]));
     await clearPhotoBlobs();
     expect(await listPhotoIds()).toEqual([]);
+  });
+});
+
+describe("stripPhotoMetadata", () => {
+  const photo = new File(["exif-laden"], "IMG_0001.HEIC", { type: "image/heic" });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("re-encodes the photo to a JPEG through a canvas", async () => {
+    const drawImage = vi.fn();
+    const close = vi.fn();
+    vi.stubGlobal("createImageBitmap", vi.fn().mockResolvedValue({ width: 4, height: 3, close }));
+    vi.stubGlobal(
+      "OffscreenCanvas",
+      class {
+        getContext() {
+          return { drawImage };
+        }
+        convertToBlob() {
+          return Promise.resolve(new Blob(["clean"], { type: "image/jpeg" }));
+        }
+      },
+    );
+
+    const stripped = await stripPhotoMetadata(photo);
+
+    expect(stripped?.name).toBe("IMG_0001.jpg");
+    expect(stripped?.type).toBe("image/jpeg");
+    expect(drawImage).toHaveBeenCalledOnce();
+    expect(close).toHaveBeenCalledOnce();
+  });
+
+  it("returns null when the browser lacks OffscreenCanvas", async () => {
+    vi.stubGlobal("createImageBitmap", vi.fn());
+    vi.stubGlobal("OffscreenCanvas", undefined);
+
+    expect(await stripPhotoMetadata(photo)).toBeNull();
+  });
+
+  it("returns null when the photo cannot be decoded", async () => {
+    vi.stubGlobal("createImageBitmap", vi.fn().mockRejectedValue(new Error("bad image")));
+    vi.stubGlobal("OffscreenCanvas", class {});
+
+    expect(await stripPhotoMetadata(photo)).toBeNull();
   });
 });

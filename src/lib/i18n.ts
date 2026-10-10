@@ -97,6 +97,7 @@ type Dict = {
   replacePhoto: string;
   addPhoto: string;
   removePhoto: string;
+  photoMetadataKept: string;
 
   close: string;
 
@@ -213,6 +214,8 @@ const en: Dict = {
   replacePhoto: "Replace photo",
   addPhoto: "Add a photo",
   removePhoto: "Remove photo",
+  photoMetadataKept:
+    "This browser could not remove the photo's location data. The photo stays on this device.",
 
   close: "Close",
 
@@ -325,6 +328,8 @@ const nl: Dict = {
   replacePhoto: "Foto vervangen",
   addPhoto: "Foto toevoegen",
   removePhoto: "Foto verwijderen",
+  photoMetadataKept:
+    "Deze browser kon de locatiegegevens niet uit de foto halen. De foto blijft op dit apparaat.",
 
   close: "Sluiten",
 

@@ -20,6 +20,7 @@ import {
   locationDraft,
   openOverlay,
   overlay,
+  photoMetadataKept,
   setLocationDraft,
   showEditorDetails,
   stationDraft,
@@ -42,6 +43,7 @@ export function AppOverlays() {
           station={appData.station}
           showDetails={showEditorDetails.value}
           geoStatus={geoStatus.value}
+          photoMetadataKept={photoMetadataKept.value}
           error={editorError.value}
           title={appData.current ? t.value.changeLocation : t.value.saveSpot}
           setFormState={setLocationDraft}
