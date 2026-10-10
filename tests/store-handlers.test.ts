@@ -1,11 +1,12 @@
 import type { TargetedEvent } from "preact";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-
+import { createOutsideLocationDraft } from "../src/lib/drafts.ts";
 import {
   closeOverlay,
   data,
   geoStatus,
   handleCaptureLocation,
+  handleLocationSubmit,
   handlePhotoChange,
   handlePhotoRemove,
   handleStationChange,
@@ -133,6 +134,27 @@ describe("store handlers", () => {
       } as unknown as TargetedEvent<HTMLInputElement>);
       handlePhotoRemove();
       expect(locationDraft.value).toBeNull();
+    });
+  });
+
+  describe("handleLocationSubmit", () => {
+    async function saveOutsideSpot(notes: string) {
+      openOverlay({ kind: "edit-location" });
+      locationDraft.value = { ...createOutsideLocationDraft(), notes };
+      await handleLocationSubmit({
+        preventDefault: vi.fn(),
+      } as unknown as TargetedEvent<HTMLFormElement>);
+    }
+
+    it("asks once for persistent storage after a save, ignoring a refusal", async () => {
+      const persist = vi.fn().mockRejectedValue(new Error("refused"));
+      vi.stubGlobal("navigator", { storage: { persist } });
+
+      await saveOutsideSpot("by the tree");
+      await saveOutsideSpot("by the lamp post");
+
+      expect(data.value.current).toMatchObject({ outsideDescription: "by the lamp post" });
+      expect(persist).toHaveBeenCalledTimes(1);
     });
   });
 

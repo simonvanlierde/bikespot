@@ -284,6 +284,22 @@ export async function handleLocationSubmit(event: TargetedEvent<HTMLFormElement>
     text: replaced ? t.value.noticeLocationReplaced : t.value.noticeLocationUpdated,
   };
   await commitData(next);
+  requestPersistentStorage();
+}
+
+let persistRequested = false;
+
+// Without this the browser may evict localStorage and IndexedDB under storage
+// pressure, taking the saved spot and photo with it. Asked once, after the
+// first save, so a first visit gets no prompt (Firefox asks the user).
+// Unsupported or refused is fine: storage then stays best-effort.
+function requestPersistentStorage(): void {
+  if (persistRequested) {
+    return;
+  }
+
+  persistRequested = true;
+  navigator.storage?.persist?.().catch(() => undefined);
 }
 
 // Settings apply as you change them — there is no Save step. The draft stays
