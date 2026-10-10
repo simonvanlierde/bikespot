@@ -18,6 +18,7 @@ export function LocationEditorSheet({
   station,
   showDetails,
   geoStatus,
+  photoMetadataKept,
   error,
   title,
   setFormState,
@@ -32,6 +33,7 @@ export function LocationEditorSheet({
   station: StationConfig;
   showDetails: boolean;
   geoStatus: "idle" | "capturing" | "error";
+  photoMetadataKept: boolean;
   error: string | null;
   title: string;
   setFormState: Dispatch<SetStateAction<LocationDraft>>;
@@ -89,6 +91,7 @@ export function LocationEditorSheet({
             />
             <PhotoField
               photoFile={formState.photoFile}
+              metadataKept={photoMetadataKept}
               onPhotoChange={onPhotoChange}
               onPhotoRemove={onPhotoRemove}
             />
@@ -99,6 +102,7 @@ export function LocationEditorSheet({
             station={station}
             showDetails={showDetails}
             geoStatus={geoStatus}
+            photoMetadataKept={photoMetadataKept}
             laneInvalid={Boolean(error) && !formState.lane.trim()}
             updateStationField={updateStationField}
             onNotesChange={updateNotes}

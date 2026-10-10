@@ -13,6 +13,7 @@ import {
   locationDraft,
   notice,
   openOverlay,
+  photoMetadataKept,
   setLocationDraft,
   showEditorDetails,
   stationDraft,
@@ -114,7 +115,8 @@ describe("store handlers", () => {
   });
 
   describe("photo draft handlers", () => {
-    it("sets and clears the pending photo file on the draft", async () => {
+    it("keeps a photo it cannot strip and flags its metadata until removed", async () => {
+      // jsdom has no OffscreenCanvas, so stripping always fails here.
       openOverlay({ kind: "edit-location" });
       const file = new File(["x"], "spot.jpg", { type: "image/jpeg" });
 
@@ -122,9 +124,11 @@ describe("store handlers", () => {
         currentTarget: { files: [file], value: "" },
       } as unknown as TargetedEvent<HTMLInputElement>);
       expect(locationDraft.value?.photoFile).toBe(file);
+      expect(photoMetadataKept.value).toBe(true);
 
       handlePhotoRemove();
       expect(locationDraft.value?.photoFile).toBeNull();
+      expect(photoMetadataKept.value).toBe(false);
     });
 
     it("ignores photo change and remove without a location draft", () => {

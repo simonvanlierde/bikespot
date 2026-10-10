@@ -48,6 +48,9 @@ export const notice = signal<{ text: string; tone?: "error" } | null>(null);
 export const editorError = signal<string | null>(null);
 export const hydrated = signal(false);
 export const geoStatus = signal<"idle" | "capturing" | "error">("idle");
+// True while the draft's photo is the original file, EXIF location included,
+// because this browser could not re-encode it.
+export const photoMetadataKept = signal(false);
 
 // Persist app data whenever it changes, but only after the initial load so we
 // never overwrite stored data with the default placeholder.
@@ -96,6 +99,7 @@ export function initStore(): () => void {
   notice.value = null;
   editorError.value = null;
   geoStatus.value = "idle";
+  photoMetadataKept.value = false;
   restoredDraft = null;
 
   let active = true;
@@ -204,6 +208,7 @@ export function openOverlay(next: OverlayState): void {
   showEditorDetails.value = false;
   editorError.value = null;
   geoStatus.value = "idle";
+  photoMetadataKept.value = false;
 
   if (next.kind === "edit-location") {
     // Work saved from an interrupted edit wins over a fresh draft, but only
@@ -234,6 +239,7 @@ export function closeOverlay(): void {
   showEditorDetails.value = false;
   editorError.value = null;
   geoStatus.value = "idle";
+  photoMetadataKept.value = false;
   // Saving and cancelling both land here, and both mean the draft is spent.
   restoredDraft = null;
   // biome-ignore lint/complexity/noVoid: deliberate fire-and-forget cleanup
@@ -350,14 +356,17 @@ export async function handlePhotoChange(event: TargetedEvent<HTMLInputElement>):
   }
 
   const session = editorSession;
-  const file = picked ? await stripPhotoMetadata(picked) : null;
+  const stripped = picked ? await stripPhotoMetadata(picked) : null;
   const draft = locationDraft.value;
 
   if (!draft || session !== editorSession) {
     return;
   }
 
-  locationDraft.value = { ...draft, photoFile: file };
+  // The photo never leaves the device, so keep it rather than lose the
+  // reference, but say its location metadata is still in it.
+  photoMetadataKept.value = picked !== null && stripped === null;
+  locationDraft.value = { ...draft, photoFile: stripped ?? picked };
 }
 
 export function handlePhotoRemove(): void {
@@ -367,6 +376,7 @@ export function handlePhotoRemove(): void {
     return;
   }
 
+  photoMetadataKept.value = false;
   locationDraft.value = { ...draft, photoFile: null };
 }
 
