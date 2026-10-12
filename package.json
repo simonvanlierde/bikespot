@@ -13,7 +13,7 @@
     "lint": "biome check .",
     "format": "biome check . --write",
     "typecheck": "tsc -b",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && node scripts/writeCspHeaders.mjs && node scripts/checkCspHeaders.mjs",
     "check": "pnpm lint && pnpm test && pnpm build",
     "preview": "vite preview",
     "test": "vitest run",
@@ -38,12 +38,12 @@
     "@vitest/coverage-v8": "5.0.3",
     "fake-indexeddb": "^6.2.5",
     "jsdom": "^30.1.1",
-    "lefthook": "^2.1.16",
+    "lefthook": "^2.2.1",
     "typescript": "^7.0.2",
-    "vite": "^8.3.2",
+    "vite": "^8.3.4",
     "vite-plugin-pwa": "^1.3.0",
     "vitest": "^5.0.3",
     "vitest-axe": "^0.1.0",
-    "wrangler": "^4.147.0"
+    "wrangler": "^4.149.0"
   }
 }

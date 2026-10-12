@@ -57,10 +57,11 @@ async function withStore<T>(
 const FILE_EXTENSION = /\.[^.]+$/;
 
 // Re-encodes through a canvas so EXIF (GPS, device, timestamp) never reaches
-// storage. Falls back to the original file where the APIs are missing.
-export async function stripPhotoMetadata(file: File): Promise<File> {
+// storage. Resolves to null where the APIs are missing or decoding fails, so the
+// caller can keep the original file and tell the user its metadata stayed.
+export async function stripPhotoMetadata(file: File): Promise<File | null> {
   if (typeof createImageBitmap !== "function" || typeof OffscreenCanvas !== "function") {
-    return file;
+    return null;
   }
 
   try {
@@ -71,7 +72,7 @@ export async function stripPhotoMetadata(file: File): Promise<File> {
     const blob = await canvas.convertToBlob({ type: "image/jpeg", quality: 0.9 });
     return new File([blob], `${file.name.replace(FILE_EXTENSION, "")}.jpg`, { type: blob.type });
   } catch {
-    return file;
+    return null;
   }
 }
 

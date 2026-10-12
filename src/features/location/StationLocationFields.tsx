@@ -30,6 +30,7 @@ export function StationLocationFields({
   station,
   showDetails,
   geoStatus,
+  photoMetadataKept = false,
   laneInvalid = false,
   updateStationField,
   onNotesChange,
@@ -42,6 +43,7 @@ export function StationLocationFields({
   station: StationConfig;
   showDetails: boolean;
   geoStatus: "idle" | "capturing" | "error";
+  photoMetadataKept?: boolean;
   laneInvalid?: boolean;
   updateStationField: UpdateStationField;
   onNotesChange: (notes: string) => void;
@@ -134,6 +136,7 @@ export function StationLocationFields({
           <CoordsField coords={formState.coords} status={geoStatus} onCapture={onCaptureLocation} />
           <PhotoField
             photoFile={formState.photoFile}
+            metadataKept={photoMetadataKept}
             onPhotoChange={onPhotoChange}
             onPhotoRemove={onPhotoRemove}
           />
