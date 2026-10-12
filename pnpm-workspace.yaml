@@ -4,8 +4,6 @@ allowBuilds:
   sharp: true
   workerd: true
 overrides:
-  # GHSA-w293-vg96-wgc3 and earlier undici 7 advisories; drop once jsdom and miniflare both require >=7.29.1.
-  undici: ^7.29.1
   "@babel/core": ^7.29.6
   "@babel/plugin-transform-modules-systemjs": ^7.29.4
   serialize-javascript: ^7.0.5
