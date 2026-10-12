@@ -1,3 +1,4 @@
+import { Download, Upload } from "lucide-preact";
 import { Fragment } from "preact";
 import type { Dispatch, SetStateAction } from "preact/compat";
 
@@ -6,7 +7,7 @@ import { SheetDialog } from "@/components/SheetDialog";
 import { ToggleField } from "@/components/ToggleField";
 import type { StationSettingsDraft } from "@/lib/drafts";
 import { LANGS, lang, setLang, t } from "@/lib/i18n";
-import { handleClearAllData } from "@/lib/store";
+import { handleClearAllData, handleExportSpots, handleImportSpots } from "@/lib/store";
 import { setTheme, THEMES, theme } from "@/lib/theme";
 import { FieldInputSettings } from "./FieldInputSettings";
 
@@ -111,6 +112,25 @@ export function StationSettingsSheet({
             onChange={setTheme}
             titleCase={(option) => t.value.themeOpts[option]}
           />
+          <button
+            className="ghost-button ghost-button--wide"
+            type="button"
+            onClick={handleExportSpots}
+          >
+            <Download aria-hidden="true" className="button-icon" />
+            <span>{t.value.exportSpots}</span>
+          </button>
+          <label className="file-trigger">
+            <Upload aria-hidden="true" className="button-icon" />
+            <span>{t.value.importSpots}</span>
+            <input
+              accept="application/json,.json"
+              aria-label={t.value.importSpots}
+              className="sr-only"
+              onChange={handleImportSpots}
+              type="file"
+            />
+          </label>
           <button
             className="ghost-button ghost-button--wide ghost-button--danger"
             type="button"

@@ -148,6 +148,10 @@ type Dict = {
   noticeLoadFailed: string;
   noticeDataCleared: string;
   clearAllData: string;
+  exportSpots: string;
+  importSpots: string;
+  noticeImported: (count: number) => string;
+  noticeImportInvalid: string;
   clearAllDataConfirm: string;
   viewSourceVersion: (version: string) => string;
 
@@ -262,6 +266,10 @@ const en: Dict = {
   noticeLoadFailed: "Could not read saved data — starting fresh",
   noticeDataCleared: "All data cleared",
   clearAllData: "Clear all data",
+  exportSpots: "Export spots",
+  importSpots: "Import spots",
+  noticeImported: (count) => (count === 1 ? "1 spot added" : `${count} spots added`),
+  noticeImportInvalid: "Not a Bikespot export file — nothing imported",
   clearAllDataConfirm: "Delete all saved locations, photos and settings from this device?",
   viewSourceVersion: (version) => `View source code, version ${version}`,
 
@@ -376,6 +384,10 @@ const nl: Dict = {
   noticeLoadFailed: "Kon opgeslagen gegevens niet lezen — opnieuw begonnen",
   noticeDataCleared: "Alle gegevens gewist",
   clearAllData: "Alle gegevens wissen",
+  exportSpots: "Plekken exporteren",
+  importSpots: "Plekken importeren",
+  noticeImported: (count) => (count === 1 ? "1 plek toegevoegd" : `${count} plekken toegevoegd`),
+  noticeImportInvalid: "Geen Bikespot-exportbestand — niets geïmporteerd",
   clearAllDataConfirm:
     "Alle opgeslagen locaties, foto's en instellingen van dit apparaat verwijderen?",
   viewSourceVersion: (version) => `Broncode bekijken, versie ${version}`,

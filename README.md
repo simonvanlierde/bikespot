@@ -25,7 +25,7 @@ An offline-first PWA for remembering where you parked your bike. Everything stay
 - **Configurable station** — name, which details your garage has (floor, lane, distance, side, rack level, rack number), and number-or-preset input per field. Settings apply as you change them.
 - **Installable and offline** via a generated service worker and web manifest.
 
-By design, the app is single-device: no cross-device sync. State lives in `localStorage`; photos live in IndexedDB.
+By design, the app is single-device: no cross-device sync. State lives in `localStorage`; photos live in IndexedDB. To move spots to another device or keep a backup, use Export spots and Import spots in Settings. The file is `{"version": 1, "spots": [...]}` and leaves photos out.
 
 ## Roadmap
 

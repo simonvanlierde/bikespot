@@ -154,7 +154,7 @@ function normalizeAppData(value: unknown): AppData {
   };
 }
 
-function normalizeLocationRecord(value: unknown): LocationRecord | null {
+export function normalizeLocationRecord(value: unknown): LocationRecord | null {
   if (!value || typeof value !== "object") {
     return null;
   }

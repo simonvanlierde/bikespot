@@ -35,6 +35,7 @@ import {
   saveAppData,
   saveDraft,
 } from "./repository";
+import { exportSpots, mergeSpots, parseSpotsFile } from "./spotsTransfer";
 
 export const data = signal<AppData>(defaultAppData);
 export const overlay = signal<OverlayState>({ kind: "closed" });
@@ -421,6 +422,37 @@ export async function handleClearAllData(): Promise<void> {
   data.value = defaultAppData;
   notice.value = { text: t.value.noticeDataCleared };
   await clearPhotoBlobs().catch(() => undefined);
+}
+
+export function handleExportSpots(): void {
+  const blob = new Blob([exportSpots(data.value)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `bikespot-${new Date().toISOString().slice(0, 10)}.json`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+export async function handleImportSpots(event: TargetedEvent<HTMLInputElement>): Promise<void> {
+  const file = event.currentTarget.files?.[0];
+  // Reset the input so picking the same file again still fires change.
+  event.currentTarget.value = "";
+
+  if (!file) {
+    return;
+  }
+
+  const spots = parseSpotsFile(await file.text().catch(() => ""));
+
+  if (!spots) {
+    notice.value = { text: t.value.noticeImportInvalid, tone: "error" };
+    return;
+  }
+
+  const result = mergeSpots(data.value, spots);
+  data.value = result.data;
+  notice.value = { text: t.value.noticeImported(result.added) };
 }
 
 export function toggleEditorDetails(): void {
