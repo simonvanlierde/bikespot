@@ -35,7 +35,7 @@
     "@testing-library/preact": "3.2.4",
     "@testing-library/user-event": "^14.6.7",
     "@types/node": "^24.19.2",
-    "@vitest/coverage-v8": "4.1.9",
+    "@vitest/coverage-v8": "4.1.11",
     "fake-indexeddb": "^6.2.5",
     "jsdom": "^29.1.1",
     "lefthook": "^2.2.1",
