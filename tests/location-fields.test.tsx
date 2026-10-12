@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/preact";
+import { act, fireEvent, render, screen } from "@testing-library/preact";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { CoordsField } from "../src/components/CoordsField.tsx";
@@ -153,7 +153,10 @@ describe("usePhotoUrl", () => {
     const id = await savePhotoBlob(new File(["x"], "a.jpg"));
     const { unmount } = render(<Probe photoId={id} />);
     expect(await screen.findByText("blob:x")).toBeInTheDocument();
-    unmount();
+    // Preact 11 runs useEffect cleanups after paint; act() flushes them.
+    act(() => {
+      unmount();
+    });
     expect(revokeObjectUrl).toHaveBeenCalledWith("blob:x");
   });
 });

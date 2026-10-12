@@ -1,4 +1,4 @@
-import { fireEvent, render } from "@testing-library/preact";
+import { act, fireEvent, render } from "@testing-library/preact";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { SheetDialog } from "../src/components/SheetDialog.tsx";
@@ -21,7 +21,10 @@ describe("SheetDialog focus trap", () => {
   it("locks body scroll while open and restores it on unmount", () => {
     const { unmount } = renderSheet();
     expect(document.body.style.overflow).toBe("hidden");
-    unmount();
+    // Preact 11 runs useEffect cleanups after paint; act() flushes them.
+    act(() => {
+      unmount();
+    });
     expect(document.body.style.overflow).toBe("");
   });
 
