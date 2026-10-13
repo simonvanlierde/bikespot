@@ -6,7 +6,7 @@ web
 
 ## Users
 
-One person who parks a bike at a big Dutch station bike park and has to find it again hours later. They save the spot with one hand while walking away from the bike, often outside in bright light. They read it back on the way in, with the bike park's own signs in view.
+Anyone who parks a bike at a big Dutch station bike park and has to find it again hours later. They save the spot with one hand while walking away from the bike, often outside in bright light. They read it back on the way in, with the bike park's own signs in view. The app names no station: each person sets up their own.
 
 ## Product Purpose
 
@@ -28,8 +28,13 @@ Bikespot describes the spot the way the bike park does (lane, side, rack level, 
 - A PWA that runs only in the browser. You can install it, it works offline, and it lives on one device on purpose. The [README](README.md) covers features, storage, export and hosting.
 - The app strips location data from photos where the browser allows it, and tells you when it could not.
 - English and Dutch. The app picks one from the browser, and you can switch in Settings. Dutch uses its own adjective forms, not translated templates.
-- Light, dark and system themes.
+- Light, dark and system themes. Dark mode is for reading the spot outside at night, so it keeps the same contrast rules as light mode.
 - Terms: *spot*, *current spot*, *recent locations*, *station*, *lane*, *side*, *rack level*, *rack number*, *bike collected*.
+
+## Plans
+
+- Planned: a map of the spots that have a GPS fix. It must work offline and send no spot to a map server.
+- Not planned: sync between devices, because there is no server. Export and import move spots to a new phone.
 
 ## Brand Commitments
 
@@ -53,6 +58,7 @@ Bikespot describes the spot the way the bike park does (lane, side, rack level, 
 
 ## Accessibility & Inclusion
 
+- The target is WCAG 2.2 AA.
 - The tests run axe on the main view and on every overlay.
 - Live regions announce saves and errors.
 - The rules for touch-target size, contrast and motion are in [DESIGN.md](DESIGN.md#do).
