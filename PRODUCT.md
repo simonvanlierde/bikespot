@@ -6,28 +6,28 @@ web
 
 ## Users
 
-One person who parks a bike at a large Dutch station bike park and has to find it again hours later. They save the spot one-handed while walking away from the bike, often outdoors in bright light, and read it back on the way in, with the bike park's own signs in view.
+One person who parks a bike at a big Dutch station bike park and has to find it again hours later. They save the spot with one hand while walking away from the bike, often outside in bright light. They read it back on the way in, with the bike park's own signs in view.
 
 ## Product Purpose
 
-Bikespot remembers where you left your bike: the current spot, the last five spots, and how your station is laid out. Success is walking straight to the bike without searching the rows.
+Bikespot remembers where you left your bike: the current spot, the last five spots, and how your station is laid out. It has done its job when you walk straight to the bike without searching the rows.
 
 ## Positioning
 
-The spot is described in the bike park's own terms (lane, side, rack level, distance from the entrance, floor, rack number), not as a pin on a map. GPS is optional. A note such as "next to the green bike" is part of a spot's identity, not a comment on it. Everything stays on the device: no account, no server.
+Bikespot describes the spot the way the bike park does (lane, side, rack level, distance from the entrance, floor, rack number), not as a pin on a map. GPS is optional. A note such as "next to the green bike" is part of what the spot is, not a comment on it. Everything stays on the device: there is no account and no server.
 
 ## Operating Context
 
 - People save while walking away from the bike, so saving takes few taps and survives an interruption.
 - People read the spot while walking back in, often with no signal underground or inside the bike park.
-- A spot is either *in the station* (structured fields; the lane is required when the station has one) or *outside* (free text; it needs a note, a photo or a GPS fix).
-- Each person configures their own station: its name, which fields the bike park has, and number or preset input for lane and floor.
+- A spot is either *in the station* or *outside*. In the station it has fields, and the lane is required when the station has lanes. Outside it is free text, and it needs a note, a photo or a GPS fix.
+- Each person sets up their own station: its name, which fields the bike park has, and whether lane and floor are typed as numbers or picked from presets.
 
 ## Capabilities and Constraints
 
-- Client-only PWA, installable, works offline, single device by design. The [README](README.md) covers features, storage, export and hosting.
-- Photo location metadata is stripped where the browser allows it; the user is told when it could not be.
-- English and Dutch, picked from the browser and switchable in Settings. Dutch uses its own adjectival forms, not translated templates.
+- A PWA that runs only in the browser. You can install it, it works offline, and it lives on one device on purpose. The [README](README.md) covers features, storage, export and hosting.
+- The app strips location data from photos where the browser allows it, and tells you when it could not.
+- English and Dutch. The app picks one from the browser, and you can switch in Settings. Dutch uses its own adjective forms, not translated templates.
 - Light, dark and system themes.
 - Terms: *spot*, *current spot*, *recent locations*, *station*, *lane*, *side*, *rack level*, *rack number*, *bike collected*.
 
@@ -40,19 +40,19 @@ The spot is described in the bike park's own terms (lane, side, rack level, dist
 ## Evidence on Hand
 
 - Screenshots: `docs/screenshots/home-light.png`, `docs/screenshots/home-dark.png`.
-- No users, testimonials or usage data exist. Do not invent any.
-- First run shows no fake data: no parked bike and empty history, with an empty state that explains the app.
+- We have no users, testimonials or usage data. Don't make any up.
+- The first run shows no fake data: no parked bike, an empty history, and an empty state that explains the app.
 
 ## Product Principles
 
-1. Finding the bike beats everything else. The current spot is the first and largest thing on screen.
-2. One hand, one glance. Every action works with a thumb while walking, and the spot reads at a glance in sunlight.
-3. The device is the whole system. Nothing leaves it unless the user exports it or opens the spot in Google Maps.
-4. Speak the bike park's language. Fields match the signs overhead, and the user turns off the ones their station lacks.
-5. Honest by default. No sample data, no silent data loss, and errors stay on screen until the next action.
+1. Finding the bike comes first. The current spot is the first and biggest thing on screen.
+2. One hand, one glance. You can do everything with a thumb while walking, and you can read the spot at a glance in sunlight.
+3. The device is the whole system. Nothing leaves it unless you export it or open the spot in Google Maps.
+4. Use the bike park's words. The fields match the signs overhead, and you turn off the ones your station doesn't have.
+5. Be honest. No sample data, no data lost without a word, and errors stay on screen until the next action.
 
 ## Accessibility & Inclusion
 
-- The test suite runs axe on the main view and on every overlay.
+- The tests run axe on the main view and on every overlay.
 - Live regions announce saves and errors.
-- Touch-target size, contrast and motion rules are in [DESIGN.md](DESIGN.md#do).
+- The rules for touch-target size, contrast and motion are in [DESIGN.md](DESIGN.md#do).
