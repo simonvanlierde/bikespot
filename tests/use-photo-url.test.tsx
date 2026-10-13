@@ -28,7 +28,7 @@ describe("usePhotoUrl", () => {
 
     rerender({ photoId: "broken", photoFile: null });
 
-    await waitFor(() => expect(loadPhotoBlob).toHaveBeenCalledWith("broken"));
     await waitFor(() => expect(result.current).toBeNull());
+    expect(loadPhotoBlob).toHaveBeenCalledWith("broken");
   });
 });
