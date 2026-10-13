@@ -203,6 +203,29 @@ describe("bike storage tracker app", () => {
     expect(await within(detailsSheet).findByAltText(/saved bike reference/i)).toBeInTheDocument();
   });
 
+  it("keeps notes and photo when switching between station and outside", async () => {
+    const user = userEvent.setup();
+
+    await renderApp();
+
+    await openSheet(user, /change location/i);
+    await user.click(screen.getByRole("button", { name: /parked outside/i }));
+    await user.type(screen.getByLabelText(/notes/i), "By the bike shop");
+    await user.upload(
+      screen.getByLabelText(/photo/i),
+      new File(["outside"], "outside.png", { type: "image/png" }),
+    );
+
+    await user.click(screen.getByRole("button", { name: /in the station/i }));
+    await user.click(screen.getByRole("button", { name: /more details/i }));
+    expect(screen.getByLabelText(/notes/i)).toHaveValue("By the bike shop");
+    expect(await screen.findByAltText(/bike reference preview/i)).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /parked outside/i }));
+    expect(screen.getByLabelText(/notes/i)).toHaveValue("By the bike shop");
+    expect(await screen.findByAltText(/bike reference preview/i)).toBeInTheDocument();
+  });
+
   it("previews an added photo in the editor and removes it again", async () => {
     const user = userEvent.setup();
 
