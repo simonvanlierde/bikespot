@@ -56,7 +56,7 @@ State is a set of `@preact/signals` in [`lib/store.ts`](src/lib/store.ts). UI re
 
 ## Development
 
-Requires Node.js 24 and pnpm.
+Requires Node.js 26 and pnpm.
 
 ```bash
 pnpm install

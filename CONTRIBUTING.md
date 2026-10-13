@@ -4,7 +4,7 @@ Thanks for your interest in Bikespot. Issues and pull requests are welcome.
 
 ## Prerequisites
 
-- Node.js 24 (pinned in [`.node-version`](.node-version))
+- Node.js 26 (pinned in [`.node-version`](.node-version))
 - pnpm (run `corepack enable` to use the version pinned in `package.json`)
 
 ## Workflow
