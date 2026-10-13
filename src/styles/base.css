@@ -17,6 +17,8 @@
   --muted: #5c6880;
   --line: #e1e5ec;
   --line-strong: #c9cfda;
+  /* Edge of an input or switch track: at least 3:1 against surface, sunken and bg. */
+  --control-edge: #7a8496;
 
   --sign: #1d3d91;
   --sign-edge: #16307a;
@@ -59,6 +61,7 @@
     --muted: #9aa4bb;
     --line: #2b3450;
     --line-strong: #3c4666;
+    --control-edge: #6b7591;
 
     --sign: #2450b4;
     --sign-edge: #1d4098;
@@ -80,6 +83,7 @@
   --muted: #9aa4bb;
   --line: #2b3450;
   --line-strong: #3c4666;
+  --control-edge: #6b7591;
 
   --sign: #2450b4;
   --sign-edge: #1d4098;

@@ -1,5 +1,22 @@
-@import "@fontsource-variable/overpass";
-@import "@fontsource-variable/overpass-mono";
 @import "./styles/base.css";
 @import "./styles/surfaces.css";
 @import "./styles/features.css";
+
+/* Latin subset only: the UI is English and Dutch, and every font file is precached for offline use. */
+@font-face {
+  font-family: "Overpass Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("@fontsource-variable/overpass/files/overpass-latin-wght-normal.woff2")
+    format("woff2-variations");
+}
+
+@font-face {
+  font-family: "Overpass Mono Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 300 700;
+  src: url("@fontsource-variable/overpass-mono/files/overpass-mono-latin-wght-normal.woff2")
+    format("woff2-variations");
+}

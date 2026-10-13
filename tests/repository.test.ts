@@ -112,6 +112,16 @@ describe("app data repository", () => {
     expect(hydrated.recent).toEqual([]);
   });
 
+  it("keeps the station settings when no spot has been saved yet", async () => {
+    const station = { ...defaultAppData.station, name: "Utrecht Centraal", laneInputMode: "quick" };
+    window.localStorage.setItem(
+      APP_DATA_STORAGE_KEY,
+      JSON.stringify({ station, current: null, recent: [] }),
+    );
+
+    await expect(loadAppData()).resolves.toEqual({ station, current: null, recent: [] });
+  });
+
   it("starts fresh when legacy versioned state is found", async () => {
     window.localStorage.setItem(
       APP_DATA_STORAGE_KEY,

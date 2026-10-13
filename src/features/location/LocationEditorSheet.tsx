@@ -62,11 +62,14 @@ export function LocationEditorSheet({
     );
   };
 
+  // Notes, GPS and photo describe the spot in either mode, so they survive a switch;
+  // an outside spot saves its notes as the description.
   function switchMode(kind: LocationDraft["kind"]) {
     if (kind !== formState.kind) {
-      setFormState(
-        kind === "outside" ? createOutsideLocationDraft() : createLocationDraft(null, station),
-      );
+      const { notes, photoFile, coords } = formState;
+      const fresh =
+        kind === "outside" ? createOutsideLocationDraft() : createLocationDraft(null, station);
+      setFormState({ ...fresh, notes, photoFile, coords });
     }
   }
 

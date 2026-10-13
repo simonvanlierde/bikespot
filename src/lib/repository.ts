@@ -141,12 +141,7 @@ function normalizeAppData(value: unknown): AppData {
     : [];
 
   // Each field degrades independently: a malformed `recent` becomes empty rather
-  // than discarding a valid current spot. Only a blob with nothing salvageable
-  // falls back to the friendly starter state.
-  if (!current && recent.length === 0) {
-    return defaultAppData;
-  }
-
+  // than discarding a valid current spot or the station settings.
   return {
     station,
     current,

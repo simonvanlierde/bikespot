@@ -26,7 +26,7 @@ export function PhotoField({
           <img src={photoUrl} alt={t.value.photoPreviewAlt} />
         </figure>
       ) : null}
-      <p className="form-error" role="status">
+      <p className="field-hint" role="status">
         {metadataKept ? t.value.photoMetadataKept : ""}
       </p>
       <div className="photo-field__actions">

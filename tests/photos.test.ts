@@ -44,6 +44,22 @@ describe("photo blob store (IndexedDB)", () => {
     expect(await loadPhotoBlob(a)).toBeNull();
   });
 
+  it("rejects a save whose transaction aborts after the request succeeded", async () => {
+    const put = IDBObjectStore.prototype.put;
+    const spy = vi.spyOn(IDBObjectStore.prototype, "put").mockImplementation(function (
+      this: IDBObjectStore,
+      ...args: Parameters<typeof put>
+    ) {
+      const request = put.apply(this, args);
+      request.addEventListener("success", () => this.transaction.abort());
+      return request;
+    });
+
+    await expect(savePhotoBlob(new Blob(["lost"]))).rejects.toBeInstanceOf(Error);
+    spy.mockRestore();
+    expect(await listPhotoIds()).toEqual([]);
+  });
+
   it("clears every stored blob", async () => {
     await savePhotoBlob(new Blob(["x"]));
     await clearPhotoBlobs();

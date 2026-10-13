@@ -31,7 +31,8 @@
   color: var(--ink);
 }
 
-.coords-field__status {
+.coords-field__status,
+.field-hint {
   margin: 0;
   font-size: 0.85rem;
   color: var(--muted);
@@ -111,7 +112,6 @@
 }
 
 .recent-title {
-  margin: 0;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;

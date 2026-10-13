@@ -90,6 +90,17 @@ describe("saveLocation in the same spot", () => {
 
     expect(next.recent).toEqual([start.current]);
   });
+
+  it("treats different notes as a different spot", () => {
+    const next = saveLocation(start, {
+      mode: "station",
+      lane: "4",
+      side: "left",
+      notes: "next to the green bike",
+    });
+
+    expect(next.recent).toEqual([start.current]);
+  });
 });
 
 describe("clearCurrentLocation and removeRecentLocation", () => {
