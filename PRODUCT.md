@@ -10,7 +10,7 @@ One person who parks a bike at a large Dutch station bike park and has to find i
 
 ## Product Purpose
 
-Bikespot remembers where you left your bike: one current spot, the last five spots, and the station's layout. Success is walking straight to the bike without searching the rows.
+Bikespot remembers where you left your bike: the current spot, the last five spots, and how your station is laid out. Success is walking straight to the bike without searching the rows.
 
 ## Positioning
 
@@ -18,8 +18,8 @@ The spot is described in the bike park's own terms (lane, side, rack level, dist
 
 ## Operating Context
 
-- Saving happens while moving away from the bike, so the save path must be short and survive interruption. An interrupted edit comes back after a reload for up to an hour.
-- Reading happens while walking back in, often with no signal underground or inside the bike park.
+- People save while walking away from the bike, so saving takes few taps and survives an interruption. An interrupted edit comes back after a reload for up to an hour.
+- People read the spot while walking back in, often with no signal underground or inside the bike park.
 - A spot is either *in the station* (structured fields; the lane is required) or *outside* (free text; it needs a note, a photo or a GPS fix).
 - Each person configures their own station: its name, which fields the bike park has, and number or preset input for lane and floor.
 - **Bike collected** clears the current spot and keeps it in history.
@@ -50,11 +50,11 @@ The spot is described in the bike park's own terms (lane, side, rack level, dist
 1. Finding the bike beats everything else. The current spot is the first and largest thing on screen.
 2. One hand, one glance. Every action works with a thumb while walking, and the spot reads at a glance in sunlight.
 3. The device is the whole system. Nothing leaves it unless the user exports it.
-4. Speak the bike park's language. Fields match the signs in the garage, and the user turns off the ones their station lacks.
+4. Speak the bike park's language. Fields match the signs in the bike park, and the user turns off the ones their station lacks.
 5. Honest by default. No sample data, no silent data loss, and errors stay on screen until the next action.
 
 ## Accessibility & Inclusion
 
-- Axe checks run in the test suite on every overlay.
+- The test suite runs axe on the main view and on every overlay.
 - Touch targets are at least 2.75rem (44px); control edges keep 3:1 contrast against their background.
 - Motion respects `prefers-reduced-motion`. Live regions announce saves and errors.

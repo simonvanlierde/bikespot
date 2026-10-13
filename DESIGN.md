@@ -114,7 +114,7 @@ components:
 
 **Creative North Star: "Stationsbord"**
 
-The interface borrows the wayfinding of Dutch stations and their bike parks: deep sign blue, a white keyline set inside the panel, signal yellow, and heavy road-sign type. The current spot is drawn as one of those signs, so the phone shows the same visual language as the panels overhead in the garage.
+The interface borrows the wayfinding of Dutch stations and their bike parks: deep sign blue, a white keyline set inside the panel, signal yellow, and heavy road-sign type. The current spot is drawn as one of those signs, so the phone shows the same visual language as the panels overhead in the bike park.
 
 Everything else steps back. Secondary cards, sheets and forms sit on pale concrete surfaces with hairline borders, so the sign stays the only loud thing on screen. Density is low and targets are large for one-handed use outdoors.
 
@@ -160,7 +160,7 @@ A blue-and-concrete palette with one yellow signal and one red for errors.
 **Display Font:** Overpass Variable (with Segoe UI, sans-serif)
 **Label/Mono Font:** Overpass Mono Variable (with ui-monospace, monospace)
 
-**Character:** Overpass is modelled on the US Highway Gothic road-sign letters, which gives the sign its weight. The mono cut acts like the small object codes stamped on station signs. Both are self-hosted, Latin subset only, and precached for offline use.
+**Character:** Overpass is based on Highway Gothic, the US road-sign typeface, which gives the sign its weight. The mono cut acts like the small object codes stamped on station signs. Both are self-hosted, Latin subset only, and precached for offline use.
 
 ### Hierarchy
 
@@ -199,7 +199,7 @@ Three radii: controls 0.75rem, cards 1rem, sheets 1.25rem. Counts and the add-pr
 
 ### Current-Spot Sign
 
-The signature component. A sign-blue panel with the inset keyline, the spot headline, an optional square photo beside it (`clamp(5rem, 22vw, 8.5rem)`), facts separated by middle dots, the note, a mono timestamp, and actions. The whole card opens the details sheet; a full-size button behind the content gives keyboard and screen-reader users the same path. With no spot saved it shows an empty state and the save action.
+The signature component: a sign-blue panel with the inset keyline, the spot headline, an optional square photo beside it (`clamp(5rem, 22vw, 8.5rem)`), facts separated by middle dots, the note, a mono timestamp, and actions. The whole card opens the details sheet; a full-size button behind the content gives keyboard and screen-reader users the same path. With no spot saved it shows an empty state and the save action.
 
 ### Buttons
 
@@ -207,7 +207,7 @@ The signature component. A sign-blue panel with the inset keyline, the spot head
 - **Primary:** sign blue with white text, weight 700.
 - **On the sign:** roles invert to a white plate with sign-blue text. The Maps link beside it is a tonal white (16% opacity) fill.
 - **Ghost:** transparent with a `line-strong` border; the danger variant uses a danger border and text.
-- **Hover / Active:** sunken fill for ghost buttons, `sign-blue-edge` for primary; a 0.985 press scale and 150ms colour transitions, both only without reduced motion.
+- **Hover / Active:** sunken fill for ghost buttons, `sign-blue-edge` for primary; a 0.985 press scale and 150ms colour transitions, both off under reduced motion.
 
 ### Segmented Controls
 
