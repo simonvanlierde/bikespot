@@ -29,21 +29,21 @@ export function RecentLocationsSheet({
 
           return (
             <button
-              aria-label={t.value.restore(title)}
+              aria-label={t.value.viewRecent(title)}
               key={entry.id}
               className="recent-item"
               type="button"
               onClick={() => onPreview(entry.id)}
             >
-              <div className="recent-item__body">
-                <p className="recent-title">
+              <span className="recent-item__body">
+                <span className="recent-title">
                   {title}
                   {entry.coords ? (
                     <MapPin aria-label={t.value.hasGps} className="recent-title__pin" />
                   ) : null}
-                </p>
-                {meta ? <p className="recent-meta">{meta}</p> : null}
-              </div>
+                </span>
+                {meta ? <span className="recent-meta">{meta}</span> : null}
+              </span>
               <span className="recent-time">{formatTimestamp(entry.updatedAt)}</span>
             </button>
           );

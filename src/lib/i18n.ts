@@ -108,7 +108,7 @@ type Dict = {
   openInMaps: string;
   stationFloor: string;
   useThisLocation: string;
-  restore: (title: string) => string;
+  viewRecent: (title: string) => string;
 
   station: string;
   stationName: string;
@@ -226,7 +226,7 @@ const en: Dict = {
   openInMaps: "Open in Maps",
   stationFloor: "Station floor",
   useThisLocation: "Use this location",
-  restore: (title) => `Restore ${title} from recent locations`,
+  viewRecent: (title) => `View ${title}`,
 
   station: "Station",
   stationName: "Station name",
@@ -340,7 +340,7 @@ const nl: Dict = {
   openInMaps: "Openen in Maps",
   stationFloor: "Verdieping stalling",
   useThisLocation: "Deze locatie gebruiken",
-  restore: (title) => `${title} herstellen uit recente locaties`,
+  viewRecent: (title) => `${title} bekijken`,
 
   station: "Stalling",
   stationName: "Naam van de stalling",

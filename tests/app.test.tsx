@@ -266,7 +266,7 @@ describe("bike storage tracker app", () => {
     await openSheet(user, /recent locations/i);
     await user.click(
       screen.getByRole("button", {
-        name: /restore lane 4 from recent locations/i,
+        name: /^view lane 4$/i,
       }),
     );
 
@@ -300,7 +300,7 @@ describe("bike storage tracker app", () => {
     await openSheet(user, /recent locations/i);
     await user.click(
       screen.getByRole("button", {
-        name: /restore lane 4 from recent locations/i,
+        name: /^view lane 4$/i,
       }),
     );
 
