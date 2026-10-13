@@ -239,8 +239,8 @@ The save confirmation is a small signal-yellow tag. It clears itself after a few
 ### Do
 
 - **Do** keep the current-spot sign as the only filled sign-blue panel, with its inset keyline.
-- **Do** take every colour from the custom properties in `src/styles/base.css`, and update both dark-mode blocks together.
-- **Do** keep touch targets at 2.75rem or more and input edges at 3:1 contrast.
+- **Do** take every colour from the tokens, and update both dark-mode blocks together.
+- **Do** keep touch targets at 2.75rem (44px) or more and input edges at 3:1 contrast against their background.
 - **Do** set kickers, timestamps and counts in Overpass Mono, uppercase only for kickers.
 - **Do** wrap motion in `prefers-reduced-motion: no-preference`.
 

@@ -18,16 +18,14 @@ The spot is described in the bike park's own terms (lane, side, rack level, dist
 
 ## Operating Context
 
-- People save while walking away from the bike, so saving takes few taps and survives an interruption. An interrupted edit comes back after a reload for up to an hour.
+- People save while walking away from the bike, so saving takes few taps and survives an interruption.
 - People read the spot while walking back in, often with no signal underground or inside the bike park.
 - A spot is either *in the station* (structured fields; the lane is required when the station has one) or *outside* (free text; it needs a note, a photo or a GPS fix).
 - Each person configures their own station: its name, which fields the bike park has, and number or preset input for lane and floor.
-- **Bike collected** clears the current spot and keeps it in history.
 
 ## Capabilities and Constraints
 
-- Client-only Preact PWA, installable, works offline. Hosted as a static site on Cloudflare Pages at bikespot.duinlab.nl.
-- App data lives in `localStorage`, photos in IndexedDB ([ADR 0001](docs/adr/0001-split-persistence-across-localstorage-and-indexeddb.md)). Single device by design. Export and import move spots as JSON, without photos.
+- Client-only PWA, installable, works offline, single device by design. The [README](README.md) covers features, storage, export and hosting.
 - Photo location metadata is stripped where the browser allows it; the user is told when it could not be.
 - English and Dutch, picked from the browser and switchable in Settings. Dutch uses its own adjectival forms, not translated templates.
 - Light, dark and system themes.
@@ -35,7 +33,7 @@ The spot is described in the bike park's own terms (lane, side, rack level, dist
 
 ## Brand Commitments
 
-- Name: Bikespot. MIT-licensed, by Simon van Lierde.
+- Name: Bikespot.
 - The look borrows from Dutch station wayfinding signs (see [DESIGN.md](DESIGN.md)).
 - Voice: short, plain, second person ("Save where you leave your bike, and find it again later. Everything stays on this phone.").
 
@@ -56,5 +54,5 @@ The spot is described in the bike park's own terms (lane, side, rack level, dist
 ## Accessibility & Inclusion
 
 - The test suite runs axe on the main view and on every overlay.
-- Touch targets are at least 2.75rem (44px); control edges keep 3:1 contrast against their background.
-- Motion respects `prefers-reduced-motion`. Live regions announce saves and errors.
+- Live regions announce saves and errors.
+- Touch-target size, contrast and motion rules are in [DESIGN.md](DESIGN.md#do).
