@@ -27,8 +27,9 @@ app reads and writes it:
 
 - **App data → `localStorage`**, as a single JSON blob under one key
   ([`lib/repository.ts`](../../src/lib/repository.ts)). The app checks each
-  field when it loads, so a corrupt blob degrades gracefully instead of
-  throwing.
+  field when it loads, so a bad field falls back on its own instead of
+  throwing. A blob that is not valid JSON resets all app data to the
+  defaults.
 - **Photos → IndexedDB**, keyed by an opaque `photoId`
   ([`lib/photos.ts`](../../src/lib/photos.ts)). A `LocationRecord` stores only
   the `photoId` string, and the app fetches the blob when it needs it. When
@@ -38,7 +39,8 @@ app reads and writes it:
 The only link between the two stores is the `photoId` reference. They can get
 out of step: a record can point at a blob that failed to write, or a deleted
 record can leave its blob behind. So a cleanup pass on load drops references to
-missing blobs, and a record never shows a broken image.
+missing blobs, and a record never shows a broken image. The same pass deletes
+stored photos that no record uses.
 
 ## Consequences
 
