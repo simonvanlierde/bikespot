@@ -25,7 +25,7 @@ Bikespot describes the spot the way the bike park does (lane, side, rack level, 
 
 ## Capabilities and Constraints
 
-- A PWA that runs only in the browser. You can install it, it works offline, and it lives on one device on purpose. The [README](README.md) covers features, storage, export and hosting.
+- A PWA that runs only in the browser. You can install it, it works offline, and it lives on one device on purpose. [docs/architecture.md](docs/architecture.md) covers storage, export and hosting.
 - The app strips location data from photos where the browser allows it, and tells you when it could not.
 - English and Dutch. The app picks one from the browser, and you can switch in Settings. Dutch uses its own adjective forms, not translated templates.
 - Light, dark and system themes. Dark mode is for reading the spot outside at night, so it keeps the same contrast rules as light mode.
