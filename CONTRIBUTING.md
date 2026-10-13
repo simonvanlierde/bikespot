@@ -16,4 +16,4 @@ pnpm check    # lint, test, and build — must pass before opening a PR
 ```
 
 - Commits follow [Conventional Commits](https://www.conventionalcommits.org/) (e.g. `feat:`, `fix:`, `docs:`).
-- Keep changes focused; CI (lint, test, build) must be green.
+- Keep each change to one topic. CI (lint, test, build) must pass.

@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![PWA](https://img.shields.io/badge/PWA-installable-5a3.svg)](https://bikespot.duinlab.nl)
 
-An offline-first PWA for remembering where you parked your bike. Everything stays on your device — no account, no server.
+Bikespot helps you remember where you parked your bike. It's a web app you can install like an app (a PWA), and it works offline. Everything stays on your device: there's no account and no server.
 
 <p align="center">
 <picture>
@@ -17,15 +17,15 @@ An offline-first PWA for remembering where you parked your bike. Everything stay
 
 ## Features
 
-- **Save your spot** as a structured *station* location (lane, side, rack level, distance, floor, rack number) or a free-text *outside* description.
-- **Optional GPS coordinates, photos and notes** attached to any spot.
-- **Interrupted edits survive a reload** for up to an hour, so a backgrounded tab doesn't cost you what you typed.
-- **Bike collected** clears the current spot once you have your bike back; it stays in history.
-- **Recent history** of your last five spots, each restorable as the current one or removable.
-- **Configurable station** — name, which details your garage has (floor, lane, distance, side, rack level, rack number), and number-or-preset input per field. Settings apply as you change them.
-- **Installable and offline** via a generated service worker and web manifest.
+- **Save your spot** in one of two ways. A *station* spot is a location in a bike garage, made of fields (lane, side, rack level, distance, floor, rack number). An *outside* spot is a free-text description.
+- **Add GPS coordinates, photos and notes** to any spot if you want.
+- **Interrupted edits survive a reload** for up to an hour. If the tab goes to the background, you don't lose what you typed.
+- **Bike collected** clears the current spot once you have your bike back. The spot stays in history.
+- **Recent history** keeps your last five spots. You can make one the current spot again, or remove it.
+- **Set up your station:** its name, which details your garage has (floor, lane, distance, side, rack level, rack number), and whether each field takes a number or a preset. Settings apply as you change them.
+- **Install it and use it offline.** A generated service worker and web manifest make this work.
 
-By design, the app is single-device: no cross-device sync. State lives in `localStorage`; photos live in IndexedDB. To move spots to another device or keep a backup, use Export spots and Import spots in Settings. The file is `{"version": 1, "spots": [...]}` and leaves photos out.
+The app works on one device only, on purpose: there's no sync between devices. App state lives in `localStorage` and photos live in IndexedDB. To move spots to another device or keep a backup, use Export spots and Import spots in Settings. The file is `{"version": 1, "spots": [...]}` and leaves photos out.
 
 ## Roadmap
 
@@ -34,7 +34,7 @@ By design, the app is single-device: no cross-device sync. State lives in `local
 
 ## Install
 
-Bikespot runs in the browser and installs as an app — no app store needed.
+Bikespot runs in the browser and installs as an app. You don't need an app store.
 
 1. Open **[bikespot.duinlab.nl](https://bikespot.duinlab.nl)**.
 2. Add it to your home screen:
@@ -50,22 +50,30 @@ Preact + `@preact/signals`, TypeScript, Vite, `vite-plugin-pwa` (Workbox), Biome
 
 ## Architecture
 
-The app is a small client-only PWA. `src/` has three layers — `components/` (presentational UI primitives) → `features/` (domain modules wiring store to UI) → `lib/` (types, pure domain logic, persistence, and the signals store) — over a single global store.
+The app is a small PWA that runs entirely in the browser. `src/` has three layers on top of one global store:
 
-State is a set of `@preact/signals` in [`lib/store.ts`](src/lib/store.ts). UI reads signals directly; updates go through **pure functions** in [`lib/domain.ts`](src/lib/domain.ts) rather than in-place mutation, and an `effect()` persists the `data` signal whenever it changes. There is no router — navigation is modal state, modelled as the `OverlayState` discriminated union and rendered by [`features/app/AppOverlays.tsx`](src/features/app/AppOverlays.tsx). Persistence is split: structured app data in `localStorage` ([`lib/repository.ts`](src/lib/repository.ts)) and photos in IndexedDB with an in-memory fallback ([`lib/photos.ts`](src/lib/photos.ts)) — the reasoning is recorded in [ADR 0001](docs/adr/0001-split-persistence-across-localstorage-and-indexeddb.md).
+- `components/` holds the basic UI pieces, which only display things.
+- `features/` holds the app's features, each connecting the store to the UI.
+- `lib/` holds the types, the domain logic (pure functions), saving and loading, and the signals store.
+
+State is a set of `@preact/signals` in [`lib/store.ts`](src/lib/store.ts). The UI reads signals directly. Updates go through **pure functions** in [`lib/domain.ts`](src/lib/domain.ts) instead of changing data in place. An `effect()` saves the `data` signal whenever it changes.
+
+There is no router. Navigation is modal state: the `OverlayState` discriminated union describes which overlay is open, and [`features/app/AppOverlays.tsx`](src/features/app/AppOverlays.tsx) renders it.
+
+Data is saved in two places. Structured app data goes to `localStorage` ([`lib/repository.ts`](src/lib/repository.ts)). Photos go to IndexedDB, with an in-memory fallback ([`lib/photos.ts`](src/lib/photos.ts)). [ADR 0001](docs/adr/0001-split-persistence-across-localstorage-and-indexeddb.md) explains why.
 
 ## Development
 
 Prerequisites and the dev commands are in [CONTRIBUTING.md](CONTRIBUTING.md).
 
-`pnpm build` outputs a static site to `dist/`, deployable to any static host.
+`pnpm build` writes a static site to `dist/`. You can deploy it to any static host.
 
 ## Deployment
 
-**[bikespot.duinlab.nl](https://bikespot.duinlab.nl)** is hosted on Cloudflare Pages via its Git
-integration: a push to `main` triggers a build (`pnpm build`) that publishes `dist/`. The build
-command and preview settings live in the Cloudflare dashboard; the repo only pins the output
-directory in [`wrangler.jsonc`](wrangler.jsonc).
+**[bikespot.duinlab.nl](https://bikespot.duinlab.nl)** runs on Cloudflare Pages, through its Git
+integration. A push to `main` starts a build (`pnpm build`), which publishes `dist/`. The build
+command and preview settings live in the Cloudflare dashboard. The repo only sets the output
+directory, in [`wrangler.jsonc`](wrangler.jsonc).
 
 To deploy from a local checkout: `pnpm deploy` (`wrangler pages deploy`).
 

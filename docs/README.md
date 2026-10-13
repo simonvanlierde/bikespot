@@ -1,6 +1,6 @@
 # docs
 
-Supporting documentation for Bikespot.
+More documentation for Bikespot.
 
-- [`adr/`](adr/) — Architecture Decision Records, following MADR. Each ADR is a self-contained document describing a single decision, its context, and consequences.
-- `screenshots/` — images used in the root README.
+- [`adr/`](adr/): Architecture Decision Records (ADRs), in the MADR format. Each ADR records one decision on its own: the context, the decision and what follows from it.
+- `screenshots/`: images used in the root README.
