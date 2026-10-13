@@ -57,6 +57,7 @@ export function saveLocation(
       current: {
         ...nextCurrent,
         id: data.current.id,
+        notes: nextCurrent.notes ?? data.current.notes,
         photoId: nextCurrent.photoId ?? data.current.photoId,
         coords: nextCurrent.coords ?? data.current.coords,
       },
@@ -95,8 +96,7 @@ function isSameSpot(a: LocationRecord, b: LocationRecord): boolean {
     a.rackLevel === b.rackLevel &&
     a.distance === b.distance &&
     (a.floor ?? "") === (b.floor ?? "") &&
-    (a.rackNumber ?? "") === (b.rackNumber ?? "") &&
-    (a.notes ?? "") === (b.notes ?? "")
+    (a.rackNumber ?? "") === (b.rackNumber ?? "")
   );
 }
 
