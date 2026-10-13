@@ -795,7 +795,7 @@
 
 .segment.is-active {
   background: var(--sign);
-  border-color: var(--sign-edge);
+  border-color: var(--selected);
   color: var(--sign-ink);
   font-weight: 700;
 }
@@ -887,7 +887,7 @@
 }
 
 .toggle-row__input:checked {
-  background: var(--sign);
+  background: var(--selected);
 }
 
 .toggle-row__input:checked::before {
@@ -897,4 +897,37 @@
 .toggle-row__input:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
+}
+
+/* High-contrast modes repaint backgrounds with one system colour, which would
+   hide the knob and the checked state; draw them in system colours instead. */
+@media (forced-colors: active) {
+  .toggle-row__input {
+    forced-color-adjust: none;
+    background: Canvas;
+    border: 1px solid ButtonText;
+  }
+
+  .toggle-row__input::before {
+    top: calc(0.15rem - 1px);
+    left: calc(0.15rem - 1px);
+    background: ButtonText;
+    box-shadow: none;
+  }
+
+  .toggle-row__input:checked {
+    background: Highlight;
+    border-color: Highlight;
+  }
+
+  .toggle-row__input:checked::before {
+    background: HighlightText;
+  }
+
+  .segment.is-active {
+    forced-color-adjust: none;
+    background: Highlight;
+    border-color: Highlight;
+    color: HighlightText;
+  }
 }
