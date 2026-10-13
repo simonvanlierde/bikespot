@@ -56,13 +56,7 @@ State is a set of `@preact/signals` in [`lib/store.ts`](src/lib/store.ts). UI re
 
 ## Development
 
-Requires Node.js 26 and pnpm.
-
-```bash
-pnpm install
-pnpm dev      # start the dev server
-pnpm check    # lint, test, and build
-```
+Prerequisites and the dev commands are in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 `pnpm build` outputs a static site to `dist/`, deployable to any static host.
 
