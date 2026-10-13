@@ -1,0 +1,250 @@
+---
+name: Bikespot
+description: Where you parked, shown as a station sign.
+colors:
+  sign-blue: "#1d3d91"
+  sign-blue-edge: "#16307a"
+  sign-ink: "#ffffff"
+  signal-yellow: "#ffc917"
+  signal-ink: "#231d02"
+  concrete: "#f2f4f7"
+  surface: "#ffffff"
+  surface-sunken: "#eceff4"
+  ink: "#16233f"
+  muted: "#5c6880"
+  line: "#e1e5ec"
+  line-strong: "#c9cfda"
+  control-edge: "#7a8496"
+  danger: "#b5372a"
+  danger-plate: "#ffe1dc"
+  danger-plate-ink: "#5a1a10"
+  night: "#0f1522"
+  night-surface: "#1a2135"
+  night-surface-sunken: "#141a2b"
+  night-ink: "#e9edf5"
+  night-muted: "#9aa4bb"
+  night-line: "#2b3450"
+  night-sign-blue: "#2450b4"
+  night-link: "#9db4f0"
+  night-danger: "#f08d7e"
+typography:
+  display:
+    fontFamily: "Overpass Variable, Segoe UI, sans-serif"
+    fontSize: "clamp(2.85rem, 14vw, 4.4rem)"
+    fontWeight: 800
+    lineHeight: 0.95
+    letterSpacing: "-0.03em"
+  headline:
+    fontFamily: "Overpass Variable, Segoe UI, sans-serif"
+    fontSize: "1.55rem"
+    fontWeight: 800
+    lineHeight: 1.1
+    letterSpacing: "-0.02em"
+  body:
+    fontFamily: "Overpass Variable, Segoe UI, sans-serif"
+    fontSize: "1rem"
+    fontWeight: 500
+    lineHeight: 1.45
+  label:
+    fontFamily: "Overpass Mono Variable, ui-monospace, monospace"
+    fontSize: "0.72rem"
+    fontWeight: 600
+    lineHeight: 1.2
+    letterSpacing: "0.14em"
+  stamp:
+    fontFamily: "Overpass Mono Variable, ui-monospace, monospace"
+    fontSize: "0.82rem"
+rounded:
+  control: "0.75rem"
+  card: "1rem"
+  sheet: "1.25rem"
+  pill: "999px"
+spacing:
+  gutter: "0.95rem"
+  stack: "1rem"
+  card: "1.1rem"
+  sign: "1.45rem"
+  sign-wide: "1.9rem"
+components:
+  button-primary:
+    backgroundColor: "{colors.sign-blue}"
+    textColor: "{colors.sign-ink}"
+    rounded: "{rounded.control}"
+    padding: "0.9rem 1rem"
+    height: "2.75rem"
+  button-primary-hover:
+    backgroundColor: "{colors.sign-blue-edge}"
+  button-primary-on-sign:
+    backgroundColor: "{colors.sign-ink}"
+    textColor: "{colors.sign-blue}"
+    rounded: "{rounded.control}"
+  button-ghost:
+    backgroundColor: "transparent"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.control}"
+    padding: "0.9rem 1rem"
+  segment-active:
+    backgroundColor: "{colors.sign-blue}"
+    textColor: "{colors.sign-ink}"
+    rounded: "{rounded.control}"
+  input:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.control}"
+    padding: "0.9rem 1rem"
+    height: "3rem"
+  current-card:
+    backgroundColor: "{colors.sign-blue}"
+    textColor: "{colors.sign-ink}"
+    rounded: "{rounded.card}"
+    padding: "{spacing.sign}"
+  notice:
+    backgroundColor: "{colors.signal-yellow}"
+    textColor: "{colors.signal-ink}"
+    rounded: "0.5rem"
+    padding: "0.5rem 0.8rem"
+  notice-error:
+    backgroundColor: "{colors.danger-plate}"
+    textColor: "{colors.danger-plate-ink}"
+---
+
+# Design System: Bikespot
+
+## Overview
+
+**Creative North Star: "Stationsbord"**
+
+The interface borrows the wayfinding of Dutch stations and their bike parks: deep sign blue, a white keyline set inside the panel, signal yellow, and heavy road-sign type. The current spot is drawn as one of those signs, so the phone shows the same visual language as the panels overhead in the garage.
+
+Everything else steps back. Secondary cards, sheets and forms sit on pale concrete surfaces with hairline borders, so the sign stays the only loud thing on screen. Density is low and targets are large for one-handed use outdoors.
+
+Tokens live as CSS custom properties in `src/styles/base.css`. The frontmatter lists the light palette plus the dark (`night-`) overrides.
+
+**Key Characteristics:**
+
+- One sign-blue panel per screen, with an inset keyline.
+- Heavy, tight Overpass for the spot; Overpass Mono for labels, timestamps and counts.
+- Flat surfaces with hairlines; shadow only on the sign and on sheets.
+- Light and dark palettes, forced from Settings or following the OS.
+
+## Colors
+
+A blue-and-concrete palette with one yellow signal and one red for errors.
+
+### Primary
+
+- **Sign Blue** (`sign-blue`): the current-spot sign, primary buttons, the active segment and checked switches. `sign-blue-edge` is its border and hover. In dark mode it brightens to `night-sign-blue`.
+
+### Secondary
+
+- **Signal Yellow** (`signal-yellow`): the save confirmation tag, text selection, and the focus ring in dark mode. Text on it is `signal-ink`.
+
+### Neutral
+
+- **Concrete** (`concrete`): the page background; also the light `theme-color` and manifest background.
+- **Surface** / **Surface Sunken**: cards and sheets; insets, notes, counts and hover fills.
+- **Ink** / **Muted**: body text; kickers, hints and timestamps.
+- **Line** / **Line Strong** / **Control Edge**: hairlines; ghost button and segment borders; input borders and switch tracks (at least 3:1 against every surface).
+- **Danger** with **Danger Plate**: error text and destructive outlines; the error notice.
+
+### Named Rules
+
+**The One Sign Rule.** Sign blue as a filled panel appears once per screen, on the current spot. Elsewhere it is limited to controls the user acts on.
+
+**The Signal Rule.** Yellow means "done": the save confirmation. It is never decoration and never a button.
+
+**The Link Split Rule.** Sign blue reads as a link on light surfaces only. Dark mode uses `night-link` for links and yellow for the focus ring, because a blue ring would vanish on blue buttons.
+
+## Typography
+
+**Display Font:** Overpass Variable (with Segoe UI, sans-serif)
+**Label/Mono Font:** Overpass Mono Variable (with ui-monospace, monospace)
+
+**Character:** Overpass is modelled on the US Highway Gothic road-sign letters, which gives the sign its weight. The mono cut acts like the small object codes stamped on station signs. Both are self-hosted, Latin subset only, and precached for offline use.
+
+### Hierarchy
+
+- **Display** (800, `clamp(2.85rem, 14vw, 4.4rem)`, 0.95): the spot headline on the sign ("Rack 42", "Lane 4"). An outside spot drops to `clamp(1.85rem, 8vw, 2.7rem)`, since it is a phrase, not a marker.
+- **Headline** (800, 1.55rem, 1.1): sheet titles. No eyebrow above them.
+- **Body** (500, 1rem, 1.45): spot facts, summaries and notes. Notes on the sign are clamped to three lines.
+- **Label** (mono 600, 0.72rem, 0.14em, uppercase): section kickers and detail-row labels.
+- **Stamp** (mono, 0.82rem): timestamps, GPS accuracy, counts and the version chip.
+
+### Named Rules
+
+**The Plate Rule.** The spot headline is the largest text in the app and nothing competes with it. Long values wrap (`overflow-wrap: anywhere`, balanced) instead of shrinking.
+
+## Layout
+
+A single column, `min(40rem, 100%)` wide, centred, with safe-area-aware padding (at least 0.95rem at the sides). The order is fixed: the sign, then two utility buttons (Recent locations, Settings), then a footer pushed to the bottom of the viewport.
+
+All other screens are sheets over a dimmed backdrop: they rise from the bottom below 640px and sit top-anchored as a centred dialog (`min(34rem, 100%)`) above it. A sheet's submit row sticks to its bottom edge so Save never scrolls behind the keyboard.
+
+At 640px and wider, the sign's timestamp and actions share one row and the sign padding grows from 1.45rem to 1.9rem. Below 640px the actions go full width and recent items stack.
+
+## Elevation & Depth
+
+Flat by default, with tonal layering (concrete, surface, sunken) and 1px hairlines. Two shadows exist, both tokens in `base.css`:
+
+- **Sign shadow** (`0 12px 28px rgba(29, 61, 145, 0.22)`; darker and neutral in dark mode): lifts the current-spot sign off the page.
+- **Sheet shadow** (`0 -8px 32px rgba(14, 21, 34, 0.18)`): separates a sheet from the backdrop.
+
+**The Two Shadows Rule.** Only the sign and sheets cast shadows. Cards, buttons and inputs stay flat.
+
+## Shapes
+
+Three radii: controls 0.75rem, cards 1rem, sheets 1.25rem. Counts and the add-preset button are pills. The sign's keyline is a 1.5px translucent white border inset 0.45rem, with its radius reduced by the same amount so the corners stay concentric. A reference photo on the sign gets the same keyline border.
+
+## Components
+
+### Current-Spot Sign
+
+The signature component. A sign-blue panel with the inset keyline, the spot headline, an optional square photo beside it (`clamp(5rem, 22vw, 8.5rem)`), facts separated by middle dots, the note, a mono timestamp, and actions. The whole card opens the details sheet; a full-size button behind the content gives keyboard and screen-reader users the same path. With no spot saved it shows an empty state and the save action.
+
+### Buttons
+
+- **Shape:** control radius (0.75rem), at least 2.75rem tall.
+- **Primary:** sign blue with white text, weight 700.
+- **On the sign:** roles invert to a white plate with sign-blue text. The Maps link beside it is a tonal white (16% opacity) fill.
+- **Ghost:** transparent with a `line-strong` border; the danger variant uses a danger border and text.
+- **Hover / Active:** sunken fill for ghost buttons, `sign-blue-edge` for primary; a 0.985 press scale and 150ms colour transitions, both only without reduced motion.
+
+### Segmented Controls
+
+A grid of outlined segments inside a bordered fieldset. The active segment fills sign blue. Used for station/outside, side, rack level, distance, theme and language.
+
+### Inputs / Fields
+
+- **Style:** bold label above a surface-filled input with a `control-edge` border and control radius, at least 3rem tall.
+- **Focus:** a 2px `focus-ring` outline offset 2px (sign blue in light mode, signal yellow in dark mode).
+- **Error:** danger border plus a danger message in a live region.
+
+### Switches
+
+A 2.75rem by 1.6rem pill track in `control-edge` that turns sign blue when on, with a white knob.
+
+### Detail List
+
+Like a departures board: label left in mono uppercase, value right in bold, hairlines between rows, inside a bordered box.
+
+### Notices
+
+The save confirmation is a small signal-yellow tag. It clears itself after a few seconds. Errors use the danger plate and stay until the next action replaces them.
+
+## Do's and Don'ts
+
+### Do
+
+- **Do** keep the current-spot sign as the only filled sign-blue panel, with its inset keyline.
+- **Do** take every colour from the custom properties in `src/styles/base.css`, and update both dark-mode blocks together.
+- **Do** keep touch targets at 2.75rem or more and input edges at 3:1 contrast.
+- **Do** set kickers, timestamps and counts in Overpass Mono, uppercase only for kickers.
+- **Do** wrap motion in `prefers-reduced-motion: no-preference`.
+
+### Don't
+
+- **Don't** use signal yellow for buttons, links or decoration.
+- **Don't** add shadows to cards, buttons or inputs.
+- **Don't** use sign blue as a link or focus colour in dark mode.
+- **Don't** shrink the spot headline to fit; let it wrap.
+- **Don't** load fonts or assets from a network at runtime: the app must work offline.
