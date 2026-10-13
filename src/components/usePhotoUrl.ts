@@ -28,7 +28,8 @@ export function usePhotoUrl(photoId?: string, photoFile?: File | null) {
         return;
       }
 
-      const blob = await loadPhotoBlob(photoId);
+      // A blocked or broken photo store shows no photo rather than an unhandled rejection.
+      const blob = await loadPhotoBlob(photoId).catch(() => null);
       objectUrl = blob ? URL.createObjectURL(blob) : null;
 
       if (isActive) {
