@@ -47,10 +47,16 @@ async function withStore<T>(
   const database = await openPhotoDb();
 
   return new Promise<T>((resolve, reject) => {
-    const request = run(database.transaction(PHOTO_STORE_NAME, mode).objectStore(PHOTO_STORE_NAME));
+    const transaction = database.transaction(PHOTO_STORE_NAME, mode);
+    const request = run(transaction.objectStore(PHOTO_STORE_NAME));
+    const fail = () =>
+      reject(request.error ?? transaction.error ?? new Error("Photo store request failed"));
 
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error ?? new Error("Photo store request failed"));
+    // A write is durable only once its transaction commits; a request can
+    // succeed and still be rolled back by an abort.
+    transaction.oncomplete = () => resolve(request.result);
+    transaction.onerror = fail;
+    transaction.onabort = fail;
   });
 }
 
