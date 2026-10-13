@@ -25,6 +25,8 @@
   --sign-ink: #ffffff;
   --sign-ink-soft: rgba(255, 255, 255, 0.78);
   --sign-keyline: rgba(255, 255, 255, 0.55);
+  /* Track of a checked switch: at least 3:1 against surface, sunken and bg. */
+  --switch-on: var(--sign);
 
   --signal: #ffc917;
   --signal-ink: #231d02;
@@ -65,6 +67,7 @@
 
     --sign: #2450b4;
     --sign-edge: #1d4098;
+    --switch-on: #5b80e0;
 
     --danger: #f08d7e;
     --link: #9db4f0;
@@ -87,6 +90,7 @@
 
   --sign: #2450b4;
   --sign-edge: #1d4098;
+  --switch-on: #5b80e0;
 
   --danger: #f08d7e;
   --link: #9db4f0;
