@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const css = readFileSync("src/styles/base.css", "utf8");
+const surfaces = readFileSync("src/styles/surfaces.css", "utf8");
 
 // The token blocks in order: light (:root), dark (media query), forced dark.
 const blocks = [...css.matchAll(/:root(?:[^{]*)\{([^}]*)\}/g)].map((m) => m[1]);
@@ -26,6 +27,16 @@ function ratio(a: string, b: string): number {
 }
 
 describe("palette contrast", () => {
+  // A new :root block (say a prefers-contrast palette) needs its own entry below.
+  it("finds exactly the light, dark and forced-dark token blocks", () => {
+    expect(blocks).toHaveLength(3);
+  });
+
+  it("draws selected-state indicators with the --selected token", () => {
+    expect(surfaces).toMatch(/\.toggle-row__input:checked \{\s*background: var\(--selected\);/);
+    expect(surfaces).toMatch(/\.segment\.is-active \{[^}]*border-color: var\(--selected\);/);
+  });
+
   const light = tokens(blocks[0]);
   const palettes = {
     light,
@@ -39,9 +50,9 @@ describe("palette contrast", () => {
       return ref ? resolve(palette[ref[1]]) : value;
     };
 
-    it(`gives a checked switch 3:1 against every ${name} background`, () => {
+    it(`gives selected controls 3:1 against every ${name} background`, () => {
       for (const bg of ["--bg", "--surface", "--surface-sunken"]) {
-        expect(ratio(resolve(palette["--switch-on"]), resolve(palette[bg]))).toBeGreaterThanOrEqual(
+        expect(ratio(resolve(palette["--selected"]), resolve(palette[bg]))).toBeGreaterThanOrEqual(
           3,
         );
       }

@@ -28,7 +28,7 @@ colors:
   night-control-edge: "#6b7591"
   night-sign-blue: "#2450b4"
   night-sign-blue-edge: "#1d4098"
-  night-switch-on: "#5b80e0"
+  night-selected: "#5b80e0"
   night-link: "#9db4f0"
   night-danger: "#f08d7e"
 typography:
@@ -137,7 +137,7 @@ Blue and concrete, with one yellow signal and one red for errors.
 
 ### Primary
 
-- **Sign Blue** (`sign-blue`): the current-spot sign, primary buttons, the active segment and switches that are on (in dark mode, switches use the lighter `night-switch-on`, because night sign blue is only 2.19:1 against the surface). `sign-blue-edge` is its border and hover colour. In dark mode it gets brighter: `night-sign-blue`.
+- **Sign Blue** (`sign-blue`): the current-spot sign, primary buttons, the active segment and switches that are on. In dark mode a switch track and the active segment's edge use the lighter `night-selected`, because night sign blue is below 3:1 against the surface. `sign-blue-edge` is its border and hover colour. In dark mode it gets brighter: `night-sign-blue`.
 
 ### Secondary
 
@@ -215,7 +215,7 @@ The main component: a sign-blue panel with the keyline inside, the spot headline
 
 ### Segmented Controls
 
-A grid of outlined segments inside a bordered fieldset. The active segment is filled sign blue. Used for station/outside, side, rack level, distance, theme and language.
+A grid of outlined segments inside a bordered fieldset. The active segment is filled sign blue, with a `night-selected` edge in dark mode. Used for station/outside, side, rack level, distance, theme and language.
 
 ### Inputs / Fields
 
@@ -225,7 +225,7 @@ A grid of outlined segments inside a bordered fieldset. The active segment is fi
 
 ### Switches
 
-A pill track of 2.75rem by 1.6rem in `control-edge` that turns sign blue when on (`night-switch-on` in dark mode, at least 3:1 against every surface), with a white knob.
+A pill track of 2.75rem by 1.6rem in `control-edge` that turns sign blue when on (`night-selected` in dark mode, at least 3:1 against every surface), with a white knob.
 
 ### Detail List
 
