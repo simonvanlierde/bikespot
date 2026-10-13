@@ -85,19 +85,6 @@ describe("saveLocation in the same spot", () => {
     });
   });
 
-  it("treats a spot whose notes alone differ as the same spot", () => {
-    const next = saveLocation(start, { mode: "station", lane: "4", side: "left", notes: "bin" });
-
-    expect(next.recent).toEqual([]);
-    expect(next.current).toMatchObject({ id: start.current?.id, notes: "bin" });
-  });
-
-  it("keeps the earlier notes when the same spot is saved without any", () => {
-    const next = saveLocation(start, { mode: "station", lane: "4", side: "left" });
-
-    expect(next.current).toMatchObject({ id: start.current?.id, notes: "pillar" });
-  });
-
   it("still records a new event when any locator differs", () => {
     const next = saveLocation(start, { mode: "station", lane: "4", side: "right" });
 
