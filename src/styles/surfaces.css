@@ -643,8 +643,8 @@
   align-items: center;
   justify-content: center;
   flex: none;
-  width: 2.6rem;
-  height: 2.6rem;
+  width: 2.75rem;
+  height: 2.75rem;
   padding: 0;
   border: 1px solid var(--line);
   border-radius: var(--radius-control);
@@ -692,7 +692,7 @@
   align-items: center;
   gap: 0.4rem;
   width: fit-content;
-  min-height: 1.75rem;
+  min-height: 2.75rem;
   padding: 0.25rem 0.65rem;
   border-radius: 999px;
   border: 1px solid var(--line);
@@ -754,7 +754,7 @@
 .field input,
 .field textarea {
   width: 100%;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--control-edge);
   border-radius: var(--radius-control);
   padding: 0.9rem 1rem;
   background: var(--surface);
@@ -764,17 +764,6 @@
 .segmented-field--compact {
   padding: 0.7rem 0.8rem 0.8rem;
   background: var(--surface-sunken);
-}
-
-.segmented-field--micro {
-  padding: 0.45rem 0.55rem 0.55rem;
-  border-color: var(--line);
-  background: var(--surface-sunken);
-}
-
-.segmented-field--micro legend {
-  font-size: 0.7rem;
-  color: var(--muted);
 }
 
 .segmented-field__options {
@@ -801,26 +790,8 @@
   padding-inline: 0.7rem;
 }
 
-.segment--compact {
-  min-height: 2.4rem;
-  padding: 0.65rem 0.8rem;
-  border-radius: 999px;
-  font-size: 0.92rem;
-}
-
 .segment--dense {
-  min-height: 2.45rem;
   padding: 0.65rem 0.55rem;
-}
-
-.segment--micro {
-  min-height: 2rem;
-  padding: 0.45rem 0.7rem;
-  border-radius: 999px;
-  background: var(--surface);
-  border-color: var(--line);
-  color: var(--muted);
-  font-size: 0.84rem;
 }
 
 .segment.is-active {
@@ -857,7 +828,7 @@
 }
 
 .file-trigger:has(input:focus-visible) {
-  outline: 2px solid var(--sign);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -890,7 +861,7 @@
   padding: 0;
   border: 0;
   border-radius: 999px;
-  background: var(--line-strong);
+  background: var(--control-edge);
   cursor: pointer;
 }
 
@@ -925,6 +896,6 @@
 }
 
 .toggle-row__input:focus-visible {
-  outline: 2px solid var(--sign);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
