@@ -78,8 +78,9 @@ export function saveLocation(
   };
 }
 
-// Two records describe the same spot when every locator field matches. Notes,
-// photo, GPS and timestamps are evidence about the spot, not its identity.
+// Two records describe the same spot when every locator field matches,
+// notes included: "next to the green bike" tells two spots apart. Photo, GPS
+// and timestamps are evidence about the spot, not its identity.
 function isSameSpot(a: LocationRecord, b: LocationRecord): boolean {
   if (a.mode === "outside" || b.mode === "outside") {
     return (
