@@ -24,7 +24,10 @@ colors:
   night-ink: "#e9edf5"
   night-muted: "#9aa4bb"
   night-line: "#2b3450"
+  night-line-strong: "#3c4666"
+  night-control-edge: "#6b7591"
   night-sign-blue: "#2450b4"
+  night-sign-blue-edge: "#1d4098"
   night-link: "#9db4f0"
   night-danger: "#f08d7e"
 typography:
@@ -118,7 +121,7 @@ The interface borrows the wayfinding of Dutch stations and their bike parks: dee
 
 Everything else steps back. Secondary cards, sheets and forms sit on pale concrete surfaces with hairline borders, so the sign stays the only loud thing on screen. Density is low and targets are large for one-handed use outdoors.
 
-Tokens live as CSS custom properties in `src/styles/base.css`. The frontmatter lists the light palette plus the dark (`night-`) overrides.
+Tokens live as CSS custom properties in `src/styles/base.css`. The frontmatter lists the light palette plus the dark (`night-`) overrides. Four names differ in CSS: `sign-blue` is `--sign`, `sign-blue-edge` is `--sign-edge`, `signal-yellow` is `--signal` and `concrete` is `--bg`.
 
 **Key Characteristics:**
 
@@ -151,7 +154,7 @@ A blue-and-concrete palette with one yellow signal and one red for errors.
 
 **The One Sign Rule.** Sign blue as a filled panel appears once per screen, on the current spot. Elsewhere it is limited to controls the user acts on.
 
-**The Signal Rule.** Yellow means "done": the save confirmation. It is never decoration and never a button.
+**The Signal Rule.** Yellow fills only the save confirmation, which means "done". Elsewhere it marks text selection and the dark-mode focus ring. It is never decoration and never a button.
 
 **The Link Split Rule.** Sign blue reads as a link on light surfaces only. Dark mode uses `night-link` for links and yellow for the focus ring, because a blue ring would vanish on blue buttons.
 
@@ -164,11 +167,11 @@ A blue-and-concrete palette with one yellow signal and one red for errors.
 
 ### Hierarchy
 
-- **Display** (800, `clamp(2.85rem, 14vw, 4.4rem)`, 0.95): the spot headline on the sign ("Rack 42", "Lane 4"). An outside spot drops to `clamp(1.85rem, 8vw, 2.7rem)`, since it is a phrase, not a marker.
+- **Display** (800, `clamp(2.85rem, 14vw, 4.4rem)`, 0.95): the spot headline on the sign ("Rack 42", "Lane 4"). An outside spot and the empty state drop to `clamp(1.85rem, 8vw, 2.7rem)`, since they are phrases, not markers.
 - **Headline** (800, 1.55rem, 1.1): sheet titles. No eyebrow above them.
-- **Body** (500, 1rem, 1.45): spot facts, summaries and notes. Notes on the sign are clamped to three lines.
+- **Body** (500, 1rem, 1.45): spot facts and summaries. Notes on the sign are 0.95rem and clamped to three lines.
 - **Label** (mono 600, 0.72rem, 0.14em, uppercase): section kickers and detail-row labels.
-- **Stamp** (mono, 0.82rem): timestamps, GPS accuracy, counts and the version chip.
+- **Stamp** (mono, 0.82rem): timestamps and GPS accuracy. Counts (0.78rem) and the version chip (0.8rem) use the same mono face.
 
 ### Named Rules
 
@@ -178,22 +181,22 @@ A blue-and-concrete palette with one yellow signal and one red for errors.
 
 A single column, `min(40rem, 100%)` wide, centred, with safe-area-aware padding (at least 0.95rem at the sides). The order is fixed: the sign, then two utility buttons (Recent locations, Settings), then a footer pushed to the bottom of the viewport.
 
-All other screens are sheets over a dimmed backdrop: they rise from the bottom below 640px and sit top-anchored as a centred dialog (`min(34rem, 100%)`) above it. A sheet's submit row sticks to its bottom edge so Save never scrolls behind the keyboard.
+All other screens are sheets (`min(34rem, 100%)` wide) over a dimmed backdrop. Below 640px a sheet is centred in the viewport; at 640px and wider it is anchored near the top. It slides up as it opens, unless reduced motion is on. A sheet's submit row sticks to its bottom edge so Save never scrolls behind the keyboard.
 
-At 640px and wider, the sign's timestamp and actions share one row and the sign padding grows from 1.45rem to 1.9rem. Below 640px the actions go full width and recent items stack.
+At 640px and wider, the sign's timestamp and actions share one row and the sign padding grows from 1.45rem to 1.9rem. Below 640px the actions go full width, and the utility buttons and recent items stack.
 
 ## Elevation & Depth
 
-Flat by default, with tonal layering (concrete, surface, sunken) and 1px hairlines. Two shadows exist, both tokens in `base.css`:
+Flat by default, with tonal layering (concrete, surface, sunken) and 1px hairlines. Two shadow tokens exist in `base.css`:
 
 - **Sign shadow** (`0 12px 28px rgba(29, 61, 145, 0.22)`; darker and neutral in dark mode): lifts the current-spot sign off the page.
 - **Sheet shadow** (`0 -8px 32px rgba(14, 21, 34, 0.18)`): separates a sheet from the backdrop.
 
-**The Two Shadows Rule.** Only the sign and sheets cast shadows. Cards, buttons and inputs stay flat.
+**The Two Shadows Rule.** Only the sign and sheets cast shadows, apart from a 1px drop under the switch knob. Cards, buttons and inputs stay flat.
 
 ## Shapes
 
-Three radii: controls 0.75rem, cards 1rem, sheets 1.25rem. Counts and the add-preset button are pills. The sign's keyline is a 1.5px translucent white border inset 0.45rem, with its radius reduced by the same amount so the corners stay concentric. A reference photo on the sign gets the same keyline border.
+Three radii: controls 0.75rem, cards 1rem, sheets 1.25rem. The notice tag uses 0.5rem. Counts and the add-preset button are pills. The sign's keyline is a 1.5px translucent white border inset 0.45rem, with its radius reduced by the same amount so the corners stay concentric. A reference photo on the sign gets the same keyline border.
 
 ## Components
 

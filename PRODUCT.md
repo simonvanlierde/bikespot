@@ -20,7 +20,7 @@ The spot is described in the bike park's own terms (lane, side, rack level, dist
 
 - People save while walking away from the bike, so saving takes few taps and survives an interruption. An interrupted edit comes back after a reload for up to an hour.
 - People read the spot while walking back in, often with no signal underground or inside the bike park.
-- A spot is either *in the station* (structured fields; the lane is required) or *outside* (free text; it needs a note, a photo or a GPS fix).
+- A spot is either *in the station* (structured fields; the lane is required when the station has one) or *outside* (free text; it needs a note, a photo or a GPS fix).
 - Each person configures their own station: its name, which fields the bike park has, and number or preset input for lane and floor.
 - **Bike collected** clears the current spot and keeps it in history.
 
@@ -49,8 +49,8 @@ The spot is described in the bike park's own terms (lane, side, rack level, dist
 
 1. Finding the bike beats everything else. The current spot is the first and largest thing on screen.
 2. One hand, one glance. Every action works with a thumb while walking, and the spot reads at a glance in sunlight.
-3. The device is the whole system. Nothing leaves it unless the user exports it.
-4. Speak the bike park's language. Fields match the signs in the bike park, and the user turns off the ones their station lacks.
+3. The device is the whole system. Nothing leaves it unless the user exports it or opens the spot in Google Maps.
+4. Speak the bike park's language. Fields match the signs overhead, and the user turns off the ones their station lacks.
 5. Honest by default. No sample data, no silent data loss, and errors stay on screen until the next action.
 
 ## Accessibility & Inclusion
