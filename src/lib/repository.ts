@@ -3,11 +3,11 @@ import { DISTANCES, RACK_LEVELS, RECENT_LIMIT, SIDES, VISIBLE_FIELD_KEYS } from 
 import { defaultAppData, defaultStationConfig } from "./defaults";
 import { normalizeStationConfig } from "./domain";
 import type { LocationDraft, StationLocationDraft } from "./drafts";
+import { clearPhotoBlobs, deletePhotoBlob, listPhotoIds, savePhotoBlob } from "./photos";
 
 export const APP_DATA_STORAGE_KEY = "bikespot-app";
 
-// biome-ignore lint/suspicious/useAwait: async is the storage-boundary contract (localStorage now, IndexedDB later)
-export async function loadAppData(): Promise<AppData> {
+export function loadAppData(): AppData {
   // getItem itself can throw when storage is blocked (private mode, extensions).
   try {
     const raw = window.localStorage.getItem(APP_DATA_STORAGE_KEY);
@@ -17,8 +17,8 @@ export async function loadAppData(): Promise<AppData> {
   }
 }
 
-// biome-ignore lint/suspicious/useAwait: async is the storage-boundary contract (localStorage now, IndexedDB later)
-export async function saveAppData(data: AppData): Promise<void> {
+// Throws when storage is full or blocked; the caller tells the user.
+export function saveAppData(data: AppData): void {
   window.localStorage.setItem(APP_DATA_STORAGE_KEY, JSON.stringify(data));
 }
 
@@ -39,8 +39,7 @@ export const DRAFT_MAX_AGE_MS = 60 * 60 * 1000;
 // never a record, and must never be mistaken for a real spot. A pending photo
 // is a File, so it cannot be serialized — it is the one part of a draft that a
 // refresh still drops.
-// biome-ignore lint/suspicious/useAwait: async is the storage-boundary contract (localStorage now, IndexedDB later)
-export async function loadDraft(now: number = Date.now()): Promise<StoredDraft | null> {
+export function loadDraft(now: number = Date.now()): StoredDraft | null {
   try {
     const raw = window.localStorage.getItem(DRAFT_STORAGE_KEY);
     return raw ? normalizeStoredDraft(JSON.parse(raw), now) : null;
@@ -49,15 +48,110 @@ export async function loadDraft(now: number = Date.now()): Promise<StoredDraft |
   }
 }
 
-// biome-ignore lint/suspicious/useAwait: async is the storage-boundary contract (localStorage now, IndexedDB later)
-export async function saveDraft(draft: LocationDraft, showDetails: boolean): Promise<void> {
+export function saveDraft(draft: LocationDraft, showDetails: boolean): void {
   const savedAt = new Date().toISOString();
   window.localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify({ draft, showDetails, savedAt }));
 }
 
-// biome-ignore lint/suspicious/useAwait: async is the storage-boundary contract (localStorage now, IndexedDB later)
-export async function clearDraft(): Promise<void> {
+export function clearDraft(): void {
   window.localStorage.removeItem(DRAFT_STORAGE_KEY);
+}
+
+// Everything the store keeps on the device, behind one seam a test can swap.
+// App data and drafts are synchronous localStorage calls. Photos are blobs in
+// IndexedDB (ADR 0001), linked to records only by photoId, so this seam also
+// keeps the two in step.
+export type SpotRepository = {
+  loadAppData(): AppData;
+  saveAppData(data: AppData): void;
+  loadDraft(): StoredDraft | null;
+  saveDraft(draft: LocationDraft, showDetails: boolean): void;
+  clearDraft(): void;
+  savePhoto(blob: Blob): Promise<string>;
+  /** Deletes the blobs `previous` used that `next` no longer does. Never rejects. */
+  dropUnusedPhotos(previous: AppData, next: AppData): Promise<void>;
+  /**
+   * Load-time sweep: deletes blobs no record uses, and resolves to `data` minus
+   * the photoIds whose blob is gone, or to null when there is nothing to strip
+   * or `isCurrent()` turned false during the IO. Never rejects.
+   */
+  reconcilePhotos(data: AppData, isCurrent: () => boolean): Promise<AppData | null>;
+  clearPhotos(): Promise<void>;
+};
+
+export const browserRepository: SpotRepository = {
+  loadAppData,
+  saveAppData,
+  loadDraft,
+  saveDraft,
+  clearDraft,
+  savePhoto: savePhotoBlob,
+  dropUnusedPhotos,
+  reconcilePhotos,
+  clearPhotos: clearPhotoBlobs,
+};
+
+async function dropUnusedPhotos(previous: AppData, next: AppData): Promise<void> {
+  const nextIds = referencedPhotoIds(next);
+
+  // Best-effort: a failed delete only leaves a blob for the next load-time sweep.
+  await Promise.all(
+    [...referencedPhotoIds(previous)]
+      .filter((id) => !nextIds.has(id))
+      .map((id) => deletePhotoBlob(id).catch(() => undefined)),
+  );
+}
+
+// Catches blobs no record uses (e.g. the record was dropped by load-time
+// normalization) and photoIds whose blob is gone (e.g. saved via the in-memory
+// fallback in a past session), so neither side can leak or dangle forever.
+async function reconcilePhotos(data: AppData, isCurrent: () => boolean): Promise<AppData | null> {
+  try {
+    const stored = new Set(await listPhotoIds());
+
+    // A save landing during our IO mints new app data; its blob and photoId
+    // could be misread as orphaned or dangling against this stale snapshot.
+    // Bail and let that save's own cleanup (and the next startup) handle it.
+    if (!isCurrent()) {
+      return null;
+    }
+
+    const referenced = referencedPhotoIds(data);
+    await Promise.all([...stored].filter((id) => !referenced.has(id)).map(deletePhotoBlob));
+
+    const dropMissing = (entry: LocationRecord): LocationRecord =>
+      entry.photoId && !stored.has(entry.photoId) ? { ...entry, photoId: undefined } : entry;
+    const hasDangling =
+      (data.current?.photoId && !stored.has(data.current.photoId)) ||
+      data.recent.some((entry) => entry.photoId && !stored.has(entry.photoId));
+
+    return hasDangling
+      ? {
+          ...data,
+          current: data.current ? dropMissing(data.current) : null,
+          recent: data.recent.map(dropMissing),
+        }
+      : null;
+  } catch {
+    // Best-effort cleanup; never block or break startup on it.
+    return null;
+  }
+}
+
+function referencedPhotoIds(value: AppData): Set<string> {
+  const ids = new Set<string>();
+
+  if (value.current?.photoId) {
+    ids.add(value.current.photoId);
+  }
+
+  for (const entry of value.recent) {
+    if (entry.photoId) {
+      ids.add(entry.photoId);
+    }
+  }
+
+  return ids;
 }
 
 function normalizeStoredDraft(value: unknown, now: number): StoredDraft | null {

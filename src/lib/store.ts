@@ -2,7 +2,7 @@ import { effect, type Signal, signal } from "@preact/signals";
 import type { TargetedEvent } from "preact";
 import type { Dispatch, SetStateAction } from "preact/compat";
 
-import type { AppData, LocationRecord, OverlayState } from "./app-data";
+import type { AppData, OverlayState } from "./app-data";
 import { defaultAppData } from "./defaults";
 import {
   clearCurrentLocation,
@@ -20,21 +20,8 @@ import {
 } from "./drafts";
 import { captureCoords } from "./geolocation";
 import { t } from "./i18n";
-import {
-  clearPhotoBlobs,
-  deletePhotoBlob,
-  listPhotoIds,
-  savePhotoBlob,
-  stripPhotoMetadata,
-} from "./photos";
-import {
-  clearDraft,
-  loadAppData,
-  loadDraft,
-  type StoredDraft,
-  saveAppData,
-  saveDraft,
-} from "./repository";
+import { stripPhotoMetadata } from "./photos";
+import { browserRepository as repo, type StoredDraft } from "./repository";
 import { exportSpots, mergeSpots, parseSpotsFile } from "./spotsTransfer";
 
 export const data = signal<AppData>(defaultAppData);
@@ -63,9 +50,11 @@ effect(() => {
     return;
   }
 
-  saveAppData(snapshot).catch(() => {
+  try {
+    repo.saveAppData(snapshot);
+  } catch {
     notice.value = { text: t.value.noticeSaveFailed, tone: "error" };
-  });
+  }
 });
 
 // A draft left behind by a refresh mid-edit, handed to the next editor open.
@@ -83,7 +72,7 @@ effect(() => {
     return;
   }
 
-  saveDraft(draft, showDetails).catch(() => undefined);
+  ignoreFailure(() => repo.saveDraft(draft, showDetails));
 });
 
 // Resets transient UI state and (re)loads persisted data. Called on App mount,
@@ -105,24 +94,17 @@ export function initStore(): () => void {
 
   let active = true;
 
-  // biome-ignore lint/complexity/noVoid: deliberate fire-and-forget hydration
-  void Promise.all([
-    loadAppData().catch(() => {
-      notice.value = { text: t.value.noticeLoadFailed, tone: "error" };
-      return defaultAppData;
-    }),
-    loadDraft().catch(() => null),
-  ]).then(([loaded, storedDraft]) => {
-    if (!active) {
-      return;
-    }
+  data.value = repo.loadAppData();
+  restoredDraft = repo.loadDraft();
+  hydrated.value = true;
 
-    data.value = loaded;
-    restoredDraft = storedDraft;
-    // Always flip, even after a failed load, so later edits still persist.
-    hydrated.value = true;
-    // biome-ignore lint/complexity/noVoid: deliberate fire-and-forget cleanup
-    void reconcilePhotoBlobs(() => active);
+  const snapshot = data.value;
+  const isCurrent = () => active && data.value === snapshot;
+  // biome-ignore lint/complexity/noVoid: deliberate fire-and-forget cleanup
+  void repo.reconcilePhotos(snapshot, isCurrent).then((cleaned) => {
+    if (cleaned && isCurrent()) {
+      data.value = cleaned;
+    }
   });
 
   return () => {
@@ -130,73 +112,12 @@ export function initStore(): () => void {
   };
 }
 
-// Load-time sweep pairing the commitData diff: deletes stored blobs no record
-// references (e.g. the record was dropped by load-normalization) and strips
-// photoIds whose blob is gone (e.g. saved via the in-memory fallback in a past
-// session), so neither side can leak or dangle forever.
-async function reconcilePhotoBlobs(isActive: () => boolean): Promise<void> {
-  const snapshot = data.value;
-  try {
-    const stored = new Set(await listPhotoIds());
-
-    // A save landing during our IO mints a new data.value; its blob and photoId
-    // could be misread as orphaned/dangling against these stale snapshots. Bail
-    // and let its own commitData (and the next startup) handle cleanup.
-    if (!isActive() || data.value !== snapshot) {
-      return;
-    }
-
-    const referenced = referencedPhotoIds(snapshot);
-    await Promise.all([...stored].filter((id) => !referenced.has(id)).map(deletePhotoBlob));
-
-    const dropMissing = (entry: LocationRecord): LocationRecord =>
-      entry.photoId && !stored.has(entry.photoId) ? { ...entry, photoId: undefined } : entry;
-    const hasDangling =
-      (snapshot.current?.photoId && !stored.has(snapshot.current.photoId)) ||
-      snapshot.recent.some((entry) => entry.photoId && !stored.has(entry.photoId));
-
-    if (isActive() && data.value === snapshot && hasDangling) {
-      data.value = {
-        ...snapshot,
-        current: snapshot.current ? dropMissing(snapshot.current) : null,
-        recent: snapshot.recent.map(dropMissing),
-      };
-    }
-  } catch {
-    // Best-effort cleanup; never block or break startup on it.
-  }
-}
-
-function referencedPhotoIds(value: AppData): Set<string> {
-  const ids = new Set<string>();
-
-  if (value.current?.photoId) {
-    ids.add(value.current.photoId);
-  }
-
-  for (const entry of value.recent) {
-    if (entry.photoId) {
-      ids.add(entry.photoId);
-    }
-  }
-
-  return ids;
-}
-
-// Applies a data mutation and deletes any photo blobs the mutation orphaned
-// (record overwritten or evicted from recent), so IndexedDB doesn't grow forever.
+// Applies a data mutation and deletes any photo blobs it orphaned (record
+// overwritten or evicted from recent), so IndexedDB doesn't grow forever.
 async function commitData(next: AppData): Promise<void> {
-  const previousIds = referencedPhotoIds(data.value);
+  const previous = data.value;
   data.value = next;
-  const nextIds = referencedPhotoIds(next);
-
-  // Best-effort: a cleanup failure must not reject the submit/promote flow after
-  // data.value has already changed (would leave the sheet open, no success notice).
-  await Promise.all(
-    [...previousIds]
-      .filter((id) => !nextIds.has(id))
-      .map((id) => deletePhotoBlob(id).catch(() => undefined)),
-  );
+  await repo.dropUnusedPhotos(previous, next);
 }
 
 // Bumped on every open/close so an in-flight geolocation fix from a previous
@@ -243,8 +164,7 @@ export function closeOverlay(): void {
   photoMetadataKept.value = false;
   // Saving and cancelling both land here, and both mean the draft is spent.
   restoredDraft = null;
-  // biome-ignore lint/complexity/noVoid: deliberate fire-and-forget cleanup
-  void clearDraft().catch(() => undefined);
+  ignoreFailure(() => repo.clearDraft());
 }
 
 export async function handleLocationSubmit(event: TargetedEvent<HTMLFormElement>): Promise<void> {
@@ -272,7 +192,7 @@ export async function handleLocationSubmit(event: TargetedEvent<HTMLFormElement>
   let photoId: string | undefined;
 
   try {
-    photoId = draft.photoFile ? await savePhotoBlob(draft.photoFile) : undefined;
+    photoId = draft.photoFile ? await repo.savePhoto(draft.photoFile) : undefined;
   } catch {
     // Keep the sheet open so the user can retry or drop the photo.
     notice.value = { text: t.value.noticeSaveFailed, tone: "error" };
@@ -421,7 +341,7 @@ export async function handleClearAllData(): Promise<void> {
   closeOverlay();
   data.value = defaultAppData;
   notice.value = { text: t.value.noticeDataCleared };
-  await clearPhotoBlobs().catch(() => undefined);
+  await repo.clearPhotos().catch(() => undefined);
 }
 
 export function handleExportSpots(): void {
@@ -474,3 +394,12 @@ function signalSetter<T>(target: Signal<T | null>): Dispatch<SetStateAction<T>> 
 
 export const setLocationDraft = signalSetter(locationDraft);
 export const setStationDraft = signalSetter(stationDraft);
+
+// Draft writes are a convenience: a full or blocked storage must not break editing.
+function ignoreFailure(write: () => void): void {
+  try {
+    write();
+  } catch {
+    // Nothing to tell the user; the edit itself is still in memory.
+  }
+}

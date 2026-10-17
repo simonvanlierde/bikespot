@@ -46,30 +46,30 @@ describe("draft storage", () => {
     closeOverlay();
   });
 
-  it("round-trips an in-progress edit", async () => {
-    await saveDraft(draft, true);
+  it("round-trips an in-progress edit", () => {
+    saveDraft(draft, true);
 
-    await expect(loadDraft()).resolves.toEqual({ draft, showDetails: true });
+    expect(loadDraft()).toEqual({ draft, showDetails: true });
   });
 
-  it("drops a pending photo, which cannot be serialized", async () => {
+  it("drops a pending photo, which cannot be serialized", () => {
     const photoFile = new File(["x"], "spot.jpg", { type: "image/jpeg" });
-    await saveDraft({ ...draft, photoFile }, false);
+    saveDraft({ ...draft, photoFile }, false);
 
-    const stored = await loadDraft();
+    const stored = loadDraft();
 
     expect(stored?.draft.photoFile).toBeNull();
     expect(stored?.draft).toMatchObject({ lane: "12" });
   });
 
-  it("ignores a draft old enough to belong to another trip", async () => {
-    await saveDraft(draft, false);
+  it("ignores a draft old enough to belong to another trip", () => {
+    saveDraft(draft, false);
 
-    await expect(loadDraft(Date.now() + DRAFT_MAX_AGE_MS + 1000)).resolves.toBeNull();
-    await expect(loadDraft(Date.now() + DRAFT_MAX_AGE_MS - 1000)).resolves.not.toBeNull();
+    expect(loadDraft(Date.now() + DRAFT_MAX_AGE_MS + 1000)).toBeNull();
+    expect(loadDraft(Date.now() + DRAFT_MAX_AGE_MS - 1000)).not.toBeNull();
   });
 
-  it("ignores malformed, undated, and unknown-mode drafts", async () => {
+  it("ignores malformed, undated, and unknown-mode drafts", () => {
     const cases = [
       "not json",
       JSON.stringify({ draft: { kind: "station" } }),
@@ -77,21 +77,19 @@ describe("draft storage", () => {
       JSON.stringify({ savedAt: new Date().toISOString() }),
     ];
 
-    const results = await Promise.all(
-      cases.map((raw) => {
-        window.localStorage.setItem(DRAFT_STORAGE_KEY, raw);
-        return loadDraft();
-      }),
-    );
+    const results = cases.map((raw) => {
+      window.localStorage.setItem(DRAFT_STORAGE_KEY, raw);
+      return loadDraft();
+    });
 
     expect(results).toEqual(cases.map(() => null));
   });
 
-  it("clears the stored draft", async () => {
-    await saveDraft(draft, false);
-    await clearDraft();
+  it("clears the stored draft", () => {
+    saveDraft(draft, false);
+    clearDraft();
 
-    await expect(loadDraft()).resolves.toBeNull();
+    expect(loadDraft()).toBeNull();
   });
 });
 
@@ -138,7 +136,7 @@ describe("draft restore through the store", () => {
     locationDraft.value = { ...draft };
     closeOverlay();
 
-    await expect(loadDraft()).resolves.toBeNull();
+    expect(loadDraft()).toBeNull();
     stop();
   });
 });

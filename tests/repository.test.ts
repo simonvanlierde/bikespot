@@ -16,8 +16,8 @@ describe("app data repository", () => {
     await clearPhotoBlobs();
   });
 
-  it("hydrates the default app data when nothing has been stored yet", async () => {
-    await expect(loadAppData()).resolves.toEqual(defaultAppData);
+  it("hydrates the default app data when nothing has been stored yet", () => {
+    expect(loadAppData()).toEqual(defaultAppData);
   });
 
   it("stores photo blobs outside localStorage and can read them back by photo id", async () => {
@@ -36,7 +36,7 @@ describe("app data repository", () => {
           : sampleAppData.current,
     };
 
-    await saveAppData(nextData);
+    saveAppData(nextData);
 
     const persisted = window.localStorage.getItem(APP_DATA_STORAGE_KEY);
 
@@ -48,7 +48,7 @@ describe("app data repository", () => {
       },
     });
 
-    const hydrated = await loadAppData();
+    const hydrated = loadAppData();
 
     expect(hydrated.current).toMatchObject({
       photoId,
@@ -67,7 +67,7 @@ describe("app data repository", () => {
     expect(await loadPhotoBlob(photoId)).toBeNull();
   });
 
-  it("round-trips valid coordinates and drops invalid ones on load", async () => {
+  it("round-trips valid coordinates and drops invalid ones on load", () => {
     const base = sampleAppData.current;
 
     if (base?.mode !== "station") {
@@ -86,7 +86,7 @@ describe("app data repository", () => {
       }),
     );
 
-    const hydrated = await loadAppData();
+    const hydrated = loadAppData();
 
     expect(hydrated.current?.coords).toEqual({ lat: 52.379189, lng: 4.899431, accuracy: 12 });
     // Out-of-range latitude is rejected, and records without coords still load.
@@ -94,7 +94,7 @@ describe("app data repository", () => {
     expect(hydrated.recent[1]?.coords).toBeUndefined();
   });
 
-  it("keeps a valid current spot when the stored recent list is malformed", async () => {
+  it("keeps a valid current spot when the stored recent list is malformed", () => {
     const base = sampleAppData.current;
 
     if (base?.mode !== "station") {
@@ -106,23 +106,23 @@ describe("app data repository", () => {
       JSON.stringify({ ...sampleAppData, recent: "not-an-array" }),
     );
 
-    const hydrated = await loadAppData();
+    const hydrated = loadAppData();
 
     expect(hydrated.current).toMatchObject({ id: base.id, lane: base.lane });
     expect(hydrated.recent).toEqual([]);
   });
 
-  it("keeps the station settings when no spot has been saved yet", async () => {
+  it("keeps the station settings when no spot has been saved yet", () => {
     const station = { ...defaultAppData.station, name: "Utrecht Centraal", laneInputMode: "quick" };
     window.localStorage.setItem(
       APP_DATA_STORAGE_KEY,
       JSON.stringify({ station, current: null, recent: [] }),
     );
 
-    await expect(loadAppData()).resolves.toEqual({ station, current: null, recent: [] });
+    expect(loadAppData()).toEqual({ station, current: null, recent: [] });
   });
 
-  it("starts fresh when legacy versioned state is found", async () => {
+  it("starts fresh when legacy versioned state is found", () => {
     window.localStorage.setItem(
       APP_DATA_STORAGE_KEY,
       JSON.stringify({
@@ -137,14 +137,14 @@ describe("app data repository", () => {
       }),
     );
 
-    await expect(loadAppData()).resolves.toEqual(defaultAppData);
+    expect(loadAppData()).toEqual(defaultAppData);
   });
 
-  it("falls back to defaults when storage access throws", async () => {
+  it("falls back to defaults when storage access throws", () => {
     const spy = vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
       throw new Error("blocked");
     });
-    await expect(loadAppData()).resolves.toEqual(defaultAppData);
+    expect(loadAppData()).toEqual(defaultAppData);
     spy.mockRestore();
   });
 });

@@ -145,7 +145,6 @@ type Dict = {
   noticeCollected: string;
   noticeRecentRemoved: string;
   noticeLocationFromRecent: string;
-  noticeLoadFailed: string;
   noticeDataCleared: string;
   clearAllData: string;
   exportSpots: string;
@@ -263,7 +262,6 @@ const en: Dict = {
   noticeCollected: "Spot cleared — kept in Recent",
   noticeRecentRemoved: "Removed from Recent",
   noticeLocationFromRecent: "Earlier spot restored",
-  noticeLoadFailed: "Could not read saved data — starting fresh",
   noticeDataCleared: "All data cleared",
   clearAllData: "Clear all data",
   exportSpots: "Export spots",
@@ -381,7 +379,6 @@ const nl: Dict = {
   noticeCollected: "Plek gewist — bewaard bij Recent",
   noticeRecentRemoved: "Uit Recent verwijderd",
   noticeLocationFromRecent: "Eerdere plek hersteld",
-  noticeLoadFailed: "Kon opgeslagen gegevens niet lezen — opnieuw begonnen",
   noticeDataCleared: "Alle gegevens gewist",
   clearAllData: "Alle gegevens wissen",
   exportSpots: "Plekken exporteren",
