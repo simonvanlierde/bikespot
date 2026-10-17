@@ -1,6 +1,10 @@
-export type Side = "left" | "right";
-export type RackLevel = "top" | "bottom";
-export type Distance = "close" | "middle" | "far";
+export const SIDES = ["left", "right"] as const;
+export const RACK_LEVELS = ["top", "bottom"] as const;
+export const DISTANCES = ["close", "middle", "far"] as const;
+
+export type Side = (typeof SIDES)[number];
+export type RackLevel = (typeof RACK_LEVELS)[number];
+export type Distance = (typeof DISTANCES)[number];
 export type FieldInputMode = "quick" | "number";
 
 export type Coords = {

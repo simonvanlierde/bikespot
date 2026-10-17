@@ -1,8 +1,6 @@
 import type {
   Coords,
   Distance,
-  EnabledFields,
-  FieldInputMode,
   LocationRecord,
   LocationRecordInput,
   RackLevel,
@@ -32,14 +30,9 @@ export type OutsideLocationDraft = {
 
 export type LocationDraft = StationLocationDraft | OutsideLocationDraft;
 
-export type StationSettingsDraft = {
-  name: string;
-  laneInputMode: FieldInputMode;
-  laneLabels: string[];
-  floorInputMode: FieldInputMode;
-  floorLabels: string[];
-  enabledFields: EnabledFields;
-};
+// Same shape as the config, but holds raw input: a half-typed preset label
+// stays here while normalization drops it from the config.
+export type StationSettingsDraft = StationConfig;
 
 export function createStationSettingsDraft(station: StationConfig): StationSettingsDraft {
   return {

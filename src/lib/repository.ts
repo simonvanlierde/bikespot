@@ -1,13 +1,5 @@
-import type {
-  AppData,
-  Coords,
-  Distance,
-  LocationRecord,
-  RackLevel,
-  Side,
-  VisibleFields,
-} from "./app-data";
-import { RECENT_LIMIT, VISIBLE_FIELD_KEYS } from "./app-data";
+import type { AppData, Coords, LocationRecord, VisibleFields } from "./app-data";
+import { DISTANCES, RACK_LEVELS, RECENT_LIMIT, SIDES, VISIBLE_FIELD_KEYS } from "./app-data";
 import { defaultAppData, defaultStationConfig } from "./defaults";
 import { normalizeStationConfig } from "./domain";
 import type { LocationDraft, StationLocationDraft } from "./drafts";
@@ -110,9 +102,9 @@ function normalizeLocationDraft(value: unknown): LocationDraft | null {
   return {
     kind: "station",
     lane: normalizeDraftText(candidate.lane),
-    side: normalizeEnum<Side>(candidate.side, ["left", "right"]) ?? "right",
-    rackLevel: normalizeEnum<RackLevel>(candidate.rackLevel, ["top", "bottom"]) ?? "bottom",
-    distance: normalizeEnum<Distance>(candidate.distance, ["close", "middle", "far"]) ?? "middle",
+    side: normalizeEnum(candidate.side, SIDES) ?? "right",
+    rackLevel: normalizeEnum(candidate.rackLevel, RACK_LEVELS) ?? "bottom",
+    distance: normalizeEnum(candidate.distance, DISTANCES) ?? "middle",
     floor: normalizeDraftText(candidate.floor),
     rackNumber: normalizeDraftText(candidate.rackNumber),
     notes,
@@ -194,9 +186,9 @@ export function normalizeLocationRecord(value: unknown): LocationRecord | null {
     mode: "station",
     stationName,
     lane: normalizeOptionalString(entry.lane),
-    side: normalizeEnum<Side>(entry.side, ["left", "right"]),
-    rackLevel: normalizeEnum<RackLevel>(entry.rackLevel, ["top", "bottom"]),
-    distance: normalizeEnum<Distance>(entry.distance, ["close", "middle", "far"]),
+    side: normalizeEnum(entry.side, SIDES),
+    rackLevel: normalizeEnum(entry.rackLevel, RACK_LEVELS),
+    distance: normalizeEnum(entry.distance, DISTANCES),
     floor: normalizeOptionalString(entry.floor),
     rackNumber: normalizeOptionalString(entry.rackNumber),
     notes: normalizeOptionalString(entry.notes),
