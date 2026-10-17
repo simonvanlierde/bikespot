@@ -370,7 +370,7 @@ describe("location storage", () => {
     expect(nextState.current?.coords).toEqual({ lat: 52.379189, lng: 4.899431, accuracy: 12 });
   });
 
-  it("keeps an outside entry saved with only a photo or GPS, no description", async () => {
+  it("keeps an outside entry saved with only a photo or GPS, no description", () => {
     window.localStorage.setItem(
       APP_DATA_STORAGE_KEY,
       JSON.stringify({
@@ -386,7 +386,7 @@ describe("location storage", () => {
       }),
     );
 
-    const loaded = await loadAppData();
+    const loaded = loadAppData();
 
     expect(loaded.current).toMatchObject({
       mode: "outside",
@@ -395,7 +395,7 @@ describe("location storage", () => {
     });
   });
 
-  it("resets malformed persisted state back to the default state", async () => {
+  it("resets malformed persisted state back to the default state", () => {
     window.localStorage.setItem(
       APP_DATA_STORAGE_KEY,
       JSON.stringify({
@@ -405,10 +405,10 @@ describe("location storage", () => {
       }),
     );
 
-    await expect(loadAppData()).resolves.toEqual(defaultAppData);
+    expect(loadAppData()).toEqual(defaultAppData);
   });
 
-  it("rejects the old storage shape and starts fresh", async () => {
+  it("rejects the old storage shape and starts fresh", () => {
     window.localStorage.setItem(
       "bikespot-state",
       JSON.stringify({
@@ -421,6 +421,6 @@ describe("location storage", () => {
       }),
     );
 
-    await expect(loadAppData()).resolves.toEqual(defaultAppData);
+    expect(loadAppData()).toEqual(defaultAppData);
   });
 });

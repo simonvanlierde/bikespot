@@ -1,34 +1,26 @@
 import type { TargetedEvent } from "preact";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createOutsideLocationDraft } from "../src/lib/drafts.ts";
-import {
-  closeOverlay,
-  data,
-  geoStatus,
-  handleCaptureLocation,
-  handleLocationSubmit,
-  handlePhotoChange,
-  handlePhotoRemove,
-  handleStationChange,
-  locationDraft,
-  notice,
-  openOverlay,
-  photoMetadataKept,
-  setLocationDraft,
-  showEditorDetails,
-  stationDraft,
-  toggleEditorDetails,
-} from "../src/lib/store.ts";
+import { t } from "../src/lib/i18n.ts";
+import { browserRepository } from "../src/lib/repository.ts";
+import { exportSpots } from "../src/lib/spotsTransfer.ts";
+import { createStore, type Store } from "../src/lib/store.ts";
+import { editorOf, sampleAppData } from "./fixtures.ts";
 
 function stubGeolocation(impl: Parameters<typeof vi.fn>[0]) {
   vi.stubGlobal("navigator", { geolocation: { getCurrentPosition: vi.fn(impl) } });
 }
 
+function submitEvent() {
+  return { preventDefault: vi.fn() } as unknown as TargetedEvent<HTMLFormElement>;
+}
+
 describe("store handlers", () => {
+  let store: Store;
+
   beforeEach(() => {
-    closeOverlay();
-    notice.value = null;
-    geoStatus.value = "idle";
+    window.localStorage.clear();
+    store = createStore();
   });
 
   afterEach(() => {
@@ -36,118 +28,140 @@ describe("store handlers", () => {
   });
 
   describe("handleCaptureLocation", () => {
-    it("does nothing without an open location draft", async () => {
-      await handleCaptureLocation();
-      expect(geoStatus.value).toBe("idle");
+    it("does nothing without an open location editor", async () => {
+      await store.handleCaptureLocation();
+      expect(store.overlay.value).toEqual({ kind: "closed" });
     });
 
     it("stores captured coords on the draft and clears the capturing state", async () => {
-      openOverlay({ kind: "edit-location" });
+      store.openOverlay({ kind: "edit-location" });
       stubGeolocation((success: PositionCallback) => {
         success({
           coords: { latitude: 52.1, longitude: 4.2, accuracy: 8 },
         } as GeolocationPosition);
       });
 
-      await handleCaptureLocation();
+      await store.handleCaptureLocation();
 
-      expect(geoStatus.value).toBe("idle");
-      expect(locationDraft.value?.coords).toEqual({ lat: 52.1, lng: 4.2, accuracy: 8 });
+      expect(editorOf(store).geoStatus).toBe("idle");
+      expect(editorOf(store).draft.coords).toEqual({ lat: 52.1, lng: 4.2, accuracy: 8 });
+    });
+
+    it("shows the capturing state while the fix is pending", () => {
+      store.openOverlay({ kind: "edit-location" });
+      stubGeolocation(() => undefined);
+
+      // biome-ignore lint/complexity/noVoid: the fix never resolves in this test
+      void store.handleCaptureLocation();
+
+      expect(editorOf(store).geoStatus).toBe("capturing");
     });
 
     it("drops a fix that resolves after the editor was closed and reopened", async () => {
-      openOverlay({ kind: "edit-location" });
+      store.openOverlay({ kind: "edit-location" });
       let resolveFix: PositionCallback = () => undefined;
       stubGeolocation((success: PositionCallback) => {
         resolveFix = success;
       });
 
-      const pending = handleCaptureLocation();
-      closeOverlay();
-      openOverlay({ kind: "edit-location" });
+      const pending = store.handleCaptureLocation();
+      store.closeOverlay();
+      store.openOverlay({ kind: "edit-location" });
       resolveFix({ coords: { latitude: 1, longitude: 2, accuracy: 3 } } as GeolocationPosition);
       await pending;
 
-      expect(locationDraft.value?.coords).toBeNull();
-      expect(geoStatus.value).toBe("idle");
+      expect(editorOf(store).draft.coords).toBeNull();
+      expect(editorOf(store).geoStatus).toBe("idle");
     });
 
     it("flags an error when geolocation is unavailable", async () => {
-      openOverlay({ kind: "edit-location" });
+      store.openOverlay({ kind: "edit-location" });
       vi.stubGlobal("navigator", {});
 
-      await handleCaptureLocation();
+      await store.handleCaptureLocation();
 
-      expect(geoStatus.value).toBe("error");
+      expect(editorOf(store).geoStatus).toBe("error");
     });
 
     it("flags an error when the lookup rejects", async () => {
-      openOverlay({ kind: "edit-location" });
+      store.openOverlay({ kind: "edit-location" });
       stubGeolocation((_s: PositionCallback, error?: PositionErrorCallback) => {
         error?.({ code: 1, message: "denied" } as GeolocationPositionError);
       });
 
-      await handleCaptureLocation();
+      await store.handleCaptureLocation();
 
-      expect(geoStatus.value).toBe("error");
+      expect(editorOf(store).geoStatus).toBe("error");
     });
   });
 
   describe("handleStationChange", () => {
     it("applies every station change immediately, keeping the draft as typed", () => {
-      openOverlay({ kind: "station-settings" });
+      store.openOverlay({ kind: "station-settings" });
 
-      handleStationChange((previous) => ({ ...previous, name: "Amsterdam Zuid" }));
-      expect(data.value.station.name).toBe("Amsterdam Zuid");
+      store.handleStationChange((previous) => ({ ...previous, name: "Amsterdam Zuid" }));
+      expect(store.data.value.station.name).toBe("Amsterdam Zuid");
 
       // A half-typed blank preset stays in the draft but is dropped from config.
-      handleStationChange((previous) => ({ ...previous, laneLabels: ["4", ""] }));
-      expect(stationDraft.value?.laneLabels).toEqual(["4", ""]);
-      expect(data.value.station.laneLabels).toEqual(["4"]);
+      store.handleStationChange((previous) => ({ ...previous, laneLabels: ["4", ""] }));
+      const overlay = store.overlay.value;
+      expect(overlay.kind === "station-settings" && overlay.draft.laneLabels).toEqual(["4", ""]);
+      expect(store.data.value.station.laneLabels).toEqual(["4"]);
     });
 
-    it("does nothing without a station draft", () => {
-      closeOverlay(); // stationDraft is null
-      const before = data.value;
-      handleStationChange((previous) => ({ ...previous, name: "x" }));
-      expect(data.value).toBe(before);
+    it("does nothing while the settings sheet is closed", () => {
+      const before = store.data.value;
+      store.handleStationChange((previous) => ({ ...previous, name: "x" }));
+      expect(store.data.value).toBe(before);
     });
   });
 
   describe("photo draft handlers", () => {
     it("keeps a photo it cannot strip and flags its metadata until removed", async () => {
       // jsdom has no OffscreenCanvas, so stripping always fails here.
-      openOverlay({ kind: "edit-location" });
+      store.openOverlay({ kind: "edit-location" });
       const file = new File(["x"], "spot.jpg", { type: "image/jpeg" });
 
-      await handlePhotoChange({
+      await store.handlePhotoChange({
         currentTarget: { files: [file], value: "" },
       } as unknown as TargetedEvent<HTMLInputElement>);
-      expect(locationDraft.value?.photoFile).toBe(file);
-      expect(photoMetadataKept.value).toBe(true);
+      expect(editorOf(store).draft.photoFile).toBe(file);
+      expect(editorOf(store).photoMetadataKept).toBe(true);
 
-      handlePhotoRemove();
-      expect(locationDraft.value?.photoFile).toBeNull();
-      expect(photoMetadataKept.value).toBe(false);
+      store.handlePhotoRemove();
+      expect(editorOf(store).draft.photoFile).toBeNull();
+      expect(editorOf(store).photoMetadataKept).toBe(false);
     });
 
-    it("ignores photo change and remove without a location draft", () => {
-      closeOverlay(); // locationDraft is null
-      handlePhotoChange({
+    it("drops a photo picked in an editor that was closed meanwhile", async () => {
+      store.openOverlay({ kind: "edit-location" });
+      const file = new File(["x"], "spot.jpg", { type: "image/jpeg" });
+
+      const pending = store.handlePhotoChange({
+        currentTarget: { files: [file], value: "" },
+      } as unknown as TargetedEvent<HTMLInputElement>);
+      store.closeOverlay();
+      store.openOverlay({ kind: "edit-location" });
+      await pending;
+
+      expect(editorOf(store).draft.photoFile).toBeNull();
+      expect(editorOf(store).photoMetadataKept).toBe(false);
+    });
+
+    it("ignores photo change and remove without an open editor", async () => {
+      await store.handlePhotoChange({
         currentTarget: { files: [], value: "" },
       } as unknown as TargetedEvent<HTMLInputElement>);
-      handlePhotoRemove();
-      expect(locationDraft.value).toBeNull();
+      store.handlePhotoRemove();
+      expect(store.overlay.value).toEqual({ kind: "closed" });
     });
   });
 
   describe("handleLocationSubmit", () => {
     async function saveOutsideSpot(notes: string) {
-      openOverlay({ kind: "edit-location" });
-      locationDraft.value = { ...createOutsideLocationDraft(), notes };
-      await handleLocationSubmit({
-        preventDefault: vi.fn(),
-      } as unknown as TargetedEvent<HTMLFormElement>);
+      store.openOverlay({ kind: "edit-location" });
+      store.setLocationDraft({ ...createOutsideLocationDraft(), notes });
+      await store.handleLocationSubmit(submitEvent());
     }
 
     it("asks once for persistent storage after a save, ignoring a refusal", async () => {
@@ -157,26 +171,95 @@ describe("store handlers", () => {
       await saveOutsideSpot("by the tree");
       await saveOutsideSpot("by the lamp post");
 
-      expect(data.value.current).toMatchObject({ outsideDescription: "by the lamp post" });
+      expect(store.data.value.current).toMatchObject({ outsideDescription: "by the lamp post" });
       expect(persist).toHaveBeenCalledTimes(1);
+    });
+
+    it("keeps the editor open with an error when there is nothing to find the bike by", async () => {
+      store.openOverlay({ kind: "edit-location" });
+
+      await store.handleLocationSubmit(submitEvent());
+
+      expect(editorOf(store).error).toBe(t.value.errorLaneRequired);
+      expect(store.data.value.current).toBeNull();
+    });
+
+    it("clears the error once the spot is savable", async () => {
+      store.openOverlay({ kind: "edit-location" });
+      await store.handleLocationSubmit(submitEvent());
+
+      store.setLocationDraft((draft) => ({ ...draft, lane: "7" }));
+      await store.handleLocationSubmit(submitEvent());
+
+      expect(store.overlay.value).toEqual({ kind: "closed" });
+      expect(store.data.value.current).toMatchObject({ lane: "7" });
+    });
+  });
+
+  describe("persistence", () => {
+    it("lets a failed save replace the success notice", async () => {
+      const failing = createStore({
+        ...browserRepository,
+        saveAppData: () => {
+          throw new Error("quota exceeded");
+        },
+      });
+      const stop = failing.start();
+      failing.notice.value = null;
+
+      const file = new File([exportSpots(sampleAppData)], "spots.json");
+      await failing.handleImportSpots({
+        currentTarget: { files: [file], value: "" },
+      } as unknown as TargetedEvent<HTMLInputElement>);
+
+      expect(failing.data.value.recent).toHaveLength(2);
+
+      expect(failing.notice.value).toEqual({ text: t.value.noticeSaveFailed, tone: "error" });
+      stop();
+    });
+
+    it("keeps the photos of records a failed save left on disk", async () => {
+      vi.stubGlobal("confirm", () => true);
+      const dropUnusedPhotos = vi.fn(() => Promise.resolve());
+      const clearPhotos = vi.fn(() => Promise.resolve());
+      const withPhoto = { ...sampleAppData.recent[0], photoId: "photo-1" };
+      const saveAppData = vi.fn();
+      const failing = createStore({
+        ...browserRepository,
+        loadAppData: () => ({ ...sampleAppData, recent: [withPhoto] }),
+        saveAppData,
+        reconcilePhotos: () => Promise.resolve(null),
+        dropUnusedPhotos,
+        clearPhotos,
+      });
+      const stop = failing.start();
+      saveAppData.mockImplementation(() => {
+        throw new Error("quota exceeded");
+      });
+
+      await failing.handleRemoveRecent(withPhoto.id);
+      await failing.handleClearAllData();
+
+      expect(dropUnusedPhotos).not.toHaveBeenCalled();
+      expect(clearPhotos).not.toHaveBeenCalled();
+      stop();
     });
   });
 
   describe("toggleEditorDetails", () => {
     it("flips the details flag", () => {
-      openOverlay({ kind: "edit-location" }); // resets the flag to false
-      toggleEditorDetails();
-      expect(showEditorDetails.value).toBe(true);
-      toggleEditorDetails();
-      expect(showEditorDetails.value).toBe(false);
+      store.openOverlay({ kind: "edit-location" }); // a fresh opening starts collapsed
+      store.toggleEditorDetails();
+      expect(editorOf(store).showDetails).toBe(true);
+      store.toggleEditorDetails();
+      expect(editorOf(store).showDetails).toBe(false);
     });
   });
 
-  describe("signal setters", () => {
-    it("ignores updates when the target draft is null", () => {
-      closeOverlay(); // locationDraft is null
-      setLocationDraft((draft) => ({ ...draft, notes: "changed" }));
-      expect(locationDraft.value).toBeNull();
+  describe("setLocationDraft", () => {
+    it("ignores updates while the editor is closed", () => {
+      store.setLocationDraft((draft) => ({ ...draft, notes: "changed" }));
+      expect(store.overlay.value).toEqual({ kind: "closed" });
     });
   });
 });

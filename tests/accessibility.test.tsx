@@ -1,20 +1,19 @@
-import { act, render, screen, waitFor } from "@testing-library/preact";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { act, render, screen } from "@testing-library/preact";
+import { beforeEach, describe, expect, it } from "vitest";
 import { axe } from "vitest-axe";
 
 import App from "../src/App.tsx";
-import type { OverlayState } from "../src/lib/app-data.ts";
-import { closeOverlay, data, hydrated, openOverlay } from "../src/lib/store.ts";
+import { createStore, type OverlayRequest, type Store } from "../src/lib/store.ts";
 import { seedStorage } from "./fixtures.ts";
 
-// One entry per OverlayState kind; the preview needs a recent id, known only after hydration.
-const overlays: Record<OverlayState["kind"], () => OverlayState> = {
+// One entry per overlay kind; the preview needs a recent id from the seeded data.
+const overlays: Record<OverlayRequest["kind"], (store: Store) => OverlayRequest> = {
   closed: () => ({ kind: "closed" }),
   "edit-location": () => ({ kind: "edit-location" }),
   "station-settings": () => ({ kind: "station-settings" }),
   "location-details": () => ({ kind: "location-details" }),
   "recent-list": () => ({ kind: "recent-list" }),
-  "recent-preview": () => ({ kind: "recent-preview", id: data.value.recent[0].id }),
+  "recent-preview": (store) => ({ kind: "recent-preview", id: store.data.value.recent[0].id }),
 };
 
 // Tests assert on violations directly so the failure message lists offending rules,
@@ -28,23 +27,19 @@ describe("accessibility", () => {
     window.localStorage.clear();
   });
 
-  afterEach(() => {
-    closeOverlay();
-  });
-
   it("renders the first-run main view with no axe violations", async () => {
-    const { container } = render(<App />);
+    const { container } = render(<App store={createStore()} />);
 
     expect(await violations(container)).toEqual([]);
   });
 
-  it.each(Object.keys(overlays) as OverlayState["kind"][])(
+  it.each(Object.keys(overlays) as OverlayRequest["kind"][])(
     "renders the %s overlay with no axe violations",
     async (kind) => {
       seedStorage();
-      const { container } = render(<App />);
-      await waitFor(() => expect(hydrated.value).toBe(true));
-      act(() => openOverlay(overlays[kind]()));
+      const store = createStore();
+      const { container } = render(<App store={store} />);
+      act(() => store.openOverlay(overlays[kind](store)));
       expect(screen.queryByRole("dialog") === null).toBe(kind === "closed");
 
       expect(await violations(container)).toEqual([]);

@@ -4,7 +4,7 @@ import { CoordsField } from "@/components/CoordsField";
 import { NotesField } from "@/components/NotesField";
 import { PhotoField } from "@/components/PhotoField";
 import { SegmentedControl } from "@/components/SegmentedControl";
-import type { StationConfig } from "@/lib/app-data";
+import { DISTANCES, RACK_LEVELS, SIDES, type StationConfig } from "@/lib/app-data";
 import type { StationLocationDraft } from "@/lib/drafts";
 import { type OptKey, t } from "@/lib/i18n";
 import { FieldValueInput } from "./FieldValueInput";
@@ -81,7 +81,7 @@ export function StationLocationFields({
         <SegmentedControl
           label={t.value.distance}
           hint={t.value.distanceHelpText}
-          options={["close", "middle", "far"]}
+          options={DISTANCES}
           value={formState.distance}
           onChange={(distance) => updateStationField("distance", distance)}
           titleCase={optLabel}
@@ -91,7 +91,7 @@ export function StationLocationFields({
       {station.enabledFields.side ? (
         <SegmentedControl
           label={t.value.side}
-          options={["left", "right"]}
+          options={SIDES}
           value={formState.side}
           onChange={(side) => updateStationField("side", side)}
           titleCase={optLabel}
@@ -101,7 +101,7 @@ export function StationLocationFields({
       {station.enabledFields.rackLevel ? (
         <SegmentedControl
           label={t.value.rackLevel}
-          options={["top", "bottom"]}
+          options={RACK_LEVELS}
           value={formState.rackLevel}
           onChange={(rackLevel) => updateStationField("rackLevel", rackLevel)}
           titleCase={optLabel}

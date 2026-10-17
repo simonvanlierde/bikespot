@@ -2,7 +2,11 @@ import type { ReactNode } from "preact/compat";
 
 // Arrow keys move the selection like a native radio group (the buttons stay
 // aria-pressed toggles, which AT already announces with state).
-export function segmentKeyHandler<T>(options: T[], value: T, onChange: (value: T) => void) {
+export function segmentKeyHandler<T>(
+  options: readonly T[],
+  value: T,
+  onChange: (value: T) => void,
+) {
   return (event: KeyboardEvent) => {
     const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[event.key];
     if (!step) {
@@ -28,7 +32,7 @@ export function SegmentedControl<T extends string>({
 }: {
   label: string;
   onChange: (value: T) => void;
-  options: T[];
+  options: readonly T[];
   value: T;
   // Renders one option value for display (segment text + aria-label); pass a
   // translator or titleCase.
