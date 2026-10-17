@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { StationLocationDraft } from "../src/lib/drafts.ts";
 import {
@@ -132,6 +132,45 @@ describe("draft restore through the store", () => {
     store.closeOverlay();
 
     expect(loadDraft()).toBeNull();
+    stop();
+  });
+
+  it("keeps the draft when another sheet opens and closes first", () => {
+    const first = load();
+    first.store.openOverlay({ kind: "edit-location" });
+    type(first.store, draft);
+    first.stop();
+
+    const second = load();
+    second.store.openOverlay({ kind: "location-details" });
+    second.store.closeOverlay();
+    second.store.openOverlay({ kind: "station-settings" });
+    second.store.closeOverlay();
+    second.stop();
+
+    // Still on disk for a later reload, and handed to the editor when it opens.
+    const { store, stop } = load();
+    store.openOverlay({ kind: "edit-location" });
+
+    expect(editorOf(store).draft).toMatchObject({ lane: "12", notes: "by the pillar" });
+    stop();
+  });
+
+  it("discards a waiting draft on clear all", async () => {
+    const first = load();
+    first.store.openOverlay({ kind: "edit-location" });
+    type(first.store, draft);
+    first.stop();
+
+    vi.stubGlobal("confirm", () => true);
+    const { store, stop } = load();
+    store.openOverlay({ kind: "station-settings" });
+    await store.handleClearAllData();
+    vi.unstubAllGlobals();
+
+    expect(loadDraft()).toBeNull();
+    store.openOverlay({ kind: "edit-location" });
+    expect(editorOf(store).draft).toMatchObject({ lane: "", notes: "" });
     stop();
   });
 

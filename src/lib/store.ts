@@ -181,8 +181,17 @@ export function createStore(repo: SpotRepository = browserRepository) {
   }
 
   function closeOverlay(): void {
+    const closingEditor = overlay.value.kind === "edit-location";
     overlay.value = { kind: "closed" };
-    // Saving and cancelling both land here, and both mean the draft is spent.
+
+    // Saving and cancelling the editor both land here, and both mean the draft
+    // is spent. Closing any other sheet keeps a draft waiting for the editor.
+    if (closingEditor) {
+      discardDraft();
+    }
+  }
+
+  function discardDraft(): void {
     restoredDraft = null;
     ignoreFailure(() => repo.clearDraft());
   }
@@ -371,6 +380,7 @@ export function createStore(repo: SpotRepository = browserRepository) {
     }
 
     closeOverlay();
+    discardDraft();
     // Notice before data, so a failed save in the persistence effect replaces it.
     notice.value = { text: t.value.noticeDataCleared };
     data.value = defaultAppData;
