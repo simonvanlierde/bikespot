@@ -4,12 +4,13 @@ import { AppFooter } from "@/components/AppFooter";
 import { AppOverlays } from "@/features/app/AppOverlays";
 import { CurrentSpotCard } from "@/features/location/CurrentSpotCard";
 import { UtilityActions } from "@/features/location/UtilityActions";
-import { data, initStore, notice, openOverlay } from "@/lib/store";
+import type { Store } from "@/lib/store";
 
-export default function App() {
-  // Layout effect so hydration resolves before first paint — a passive effect
-  // runs after paint and flashes the default demo data at returning users.
-  useLayoutEffect(() => initStore(), []);
+export default function App({ store }: { store: Store }) {
+  const { data, notice, openOverlay } = store;
+  // Layout effect so saving is wired up before the first paint, and so before
+  // any input can change the data.
+  useLayoutEffect(() => store.start(), [store]);
 
   const currentNotice = notice.value;
 
@@ -47,7 +48,7 @@ export default function App() {
 
       <AppFooter />
 
-      <AppOverlays />
+      <AppOverlays store={store} />
     </main>
   );
 }

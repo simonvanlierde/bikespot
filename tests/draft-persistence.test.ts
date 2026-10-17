@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 
 import type { StationLocationDraft } from "../src/lib/drafts.ts";
 import {
@@ -8,14 +8,8 @@ import {
   loadDraft,
   saveDraft,
 } from "../src/lib/repository.ts";
-import {
-  closeOverlay,
-  hydrated,
-  initStore,
-  locationDraft,
-  openOverlay,
-  showEditorDetails,
-} from "../src/lib/store.ts";
+import { createStore, type Store } from "../src/lib/store.ts";
+import { editorOf } from "./fixtures.ts";
 
 const draft: StationLocationDraft = {
   kind: "station",
@@ -30,20 +24,23 @@ const draft: StationLocationDraft = {
   coords: { lat: 52.08, lng: 4.32 },
 };
 
-async function hydrate() {
-  const stop = initStore();
-  await vi.waitFor(() => {
-    if (!hydrated.value) {
-      throw new Error("still hydrating");
-    }
-  });
-  return stop;
+// One page load: a fresh store, started as App does on mount.
+function load(): { store: Store; stop: () => void } {
+  const store = createStore();
+  return { store, stop: store.start() };
+}
+
+// What a user typing into the open editor amounts to.
+function type(store: Store, typed: StationLocationDraft, showDetails = false) {
+  store.setLocationDraft(typed);
+  if (showDetails) {
+    store.toggleEditorDetails();
+  }
 }
 
 describe("draft storage", () => {
   beforeEach(() => {
     window.localStorage.clear();
-    closeOverlay();
   });
 
   it("round-trips an in-progress edit", () => {
@@ -96,47 +93,53 @@ describe("draft storage", () => {
 describe("draft restore through the store", () => {
   beforeEach(() => {
     window.localStorage.clear();
-    closeOverlay();
   });
 
-  it("keeps the editor's work when the page reloads mid-edit", async () => {
-    const stop = await hydrate();
-    openOverlay({ kind: "edit-location" });
-    locationDraft.value = { ...draft };
-    showEditorDetails.value = true;
-    stop();
+  it("keeps the editor's work when the page reloads mid-edit", () => {
+    const first = load();
+    first.store.openOverlay({ kind: "edit-location" });
+    type(first.store, draft, true);
+    first.stop();
 
     // A reload: nothing was cancelled or saved, so the draft survives.
-    const restart = await hydrate();
-    openOverlay({ kind: "edit-location" });
+    const second = load();
+    second.store.openOverlay({ kind: "edit-location" });
 
-    expect(locationDraft.value).toMatchObject({ lane: "12", notes: "by the pillar" });
-    expect(showEditorDetails.value).toBe(true);
-    restart();
+    expect(editorOf(second.store).draft).toMatchObject({ lane: "12", notes: "by the pillar" });
+    expect(editorOf(second.store).showDetails).toBe(true);
+    second.stop();
   });
 
-  it("restores the draft only once, then starts fresh", async () => {
-    const stop = await hydrate();
-    openOverlay({ kind: "edit-location" });
-    locationDraft.value = { ...draft };
+  it("restores the draft only once, then starts fresh", () => {
+    const first = load();
+    first.store.openOverlay({ kind: "edit-location" });
+    type(first.store, draft);
+    first.stop();
+
+    const { store, stop } = load();
+    store.openOverlay({ kind: "edit-location" });
+    store.closeOverlay();
+    store.openOverlay({ kind: "edit-location" });
+
+    expect(editorOf(store).draft).toMatchObject({ lane: "", notes: "" });
     stop();
-
-    const restart = await hydrate();
-    openOverlay({ kind: "edit-location" });
-    closeOverlay();
-    openOverlay({ kind: "edit-location" });
-
-    expect(locationDraft.value).toMatchObject({ lane: "", notes: "" });
-    restart();
   });
 
-  it("discards the draft once the editor is closed", async () => {
-    const stop = await hydrate();
-    openOverlay({ kind: "edit-location" });
-    locationDraft.value = { ...draft };
-    closeOverlay();
+  it("discards the draft once the editor is closed", () => {
+    const { store, stop } = load();
+    store.openOverlay({ kind: "edit-location" });
+    type(store, draft);
+    store.closeOverlay();
 
     expect(loadDraft()).toBeNull();
     stop();
+  });
+
+  it("writes nothing to disk before the store is started", () => {
+    const store = createStore();
+    store.openOverlay({ kind: "edit-location" });
+    type(store, draft);
+
+    expect(loadDraft()).toBeNull();
   });
 });

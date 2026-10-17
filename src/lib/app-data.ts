@@ -95,12 +95,4 @@ export type AppData = {
   recent: LocationRecord[];
 };
 
-export type OverlayState =
-  | { kind: "closed" }
-  | { kind: "edit-location" }
-  | { kind: "station-settings" }
-  | { kind: "location-details" }
-  | { kind: "recent-list" }
-  | { kind: "recent-preview"; id: string };
-
 export const RECENT_LIMIT = 5;

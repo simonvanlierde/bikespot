@@ -3,12 +3,12 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "../src/App.tsx";
-import { hydrated } from "../src/lib/store.ts";
+import { createStore } from "../src/lib/store.ts";
 import { seedStorage } from "./fixtures.ts";
 
 // Hydration from storage is async; wait for the seeded sign before interacting.
 async function renderApp() {
-  render(<App />);
+  render(<App store={createStore()} />);
   await screen.findByRole("heading", { name: /lane 4/i });
 }
 
@@ -48,8 +48,7 @@ describe("bike storage tracker app", () => {
     window.localStorage.clear();
     const user = userEvent.setup();
 
-    render(<App />);
-    await waitFor(() => expect(hydrated.value).toBe(true));
+    render(<App store={createStore()} />);
 
     const currentSpotCard = screen.getByRole("region", { name: /current spot/i });
     expect(

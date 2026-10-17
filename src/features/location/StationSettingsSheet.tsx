@@ -1,5 +1,5 @@
 import { Download, Upload } from "lucide-preact";
-import { Fragment } from "preact";
+import { Fragment, type TargetedEvent } from "preact";
 import type { Dispatch, SetStateAction } from "preact/compat";
 
 import { SegmentedControl } from "@/components/SegmentedControl";
@@ -7,7 +7,6 @@ import { SheetDialog } from "@/components/SheetDialog";
 import { ToggleField } from "@/components/ToggleField";
 import type { StationSettingsDraft } from "@/lib/drafts";
 import { LANGS, lang, setLang, t } from "@/lib/i18n";
-import { handleClearAllData, handleExportSpots, handleImportSpots } from "@/lib/store";
 import { setTheme, THEMES, theme } from "@/lib/theme";
 import { FieldInputSettings } from "./FieldInputSettings";
 
@@ -22,10 +21,16 @@ export function StationSettingsSheet({
   stationForm,
   setStationForm,
   onClose,
+  onExportSpots,
+  onImportSpots,
+  onClearAllData,
 }: {
   stationForm: StationSettingsDraft;
   setStationForm: Dispatch<SetStateAction<StationSettingsDraft>>;
   onClose: () => void;
+  onExportSpots: () => void;
+  onImportSpots: (event: TargetedEvent<HTMLInputElement>) => void;
+  onClearAllData: () => void;
 }) {
   function updateStationField<K extends keyof StationSettingsDraft>(
     field: K,
@@ -112,11 +117,7 @@ export function StationSettingsSheet({
             onChange={setTheme}
             titleCase={(option) => t.value.themeOpts[option]}
           />
-          <button
-            className="ghost-button ghost-button--wide"
-            type="button"
-            onClick={handleExportSpots}
-          >
+          <button className="ghost-button ghost-button--wide" type="button" onClick={onExportSpots}>
             <Download aria-hidden="true" className="button-icon" />
             <span>{t.value.exportSpots}</span>
           </button>
@@ -127,14 +128,14 @@ export function StationSettingsSheet({
               accept="application/json,.json"
               aria-label={t.value.importSpots}
               className="sr-only"
-              onChange={handleImportSpots}
+              onChange={onImportSpots}
               type="file"
             />
           </label>
           <button
             className="ghost-button ghost-button--wide ghost-button--danger"
             type="button"
-            onClick={handleClearAllData}
+            onClick={onClearAllData}
           >
             {t.value.clearAllData}
           </button>

@@ -2,6 +2,7 @@ import type { AppData } from "../src/lib/app-data.ts";
 import { defaultStationConfig } from "../src/lib/defaults.ts";
 import { createLocationRecord } from "../src/lib/domain.ts";
 import { APP_DATA_STORAGE_KEY } from "../src/lib/repository.ts";
+import type { EditorState, Store } from "../src/lib/store.ts";
 
 // A returning user's data: one current spot (lane 4) and one earlier spot.
 export const sampleAppData: AppData = {
@@ -39,4 +40,15 @@ export const sampleAppData: AppData = {
 
 export function seedStorage(data: AppData = sampleAppData): void {
   window.localStorage.setItem(APP_DATA_STORAGE_KEY, JSON.stringify(data));
+}
+
+// The open editor's state; fails the test when another overlay is open.
+export function editorOf(store: Store): EditorState {
+  const overlay = store.overlay.value;
+
+  if (overlay.kind !== "edit-location") {
+    throw new Error(`Expected the editor to be open, found ${overlay.kind}`);
+  }
+
+  return overlay;
 }

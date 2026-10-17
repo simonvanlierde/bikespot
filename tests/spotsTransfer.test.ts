@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import type { LocationRecord } from "../src/lib/app-data.ts";
 import { createLocationRecord } from "../src/lib/domain.ts";
 import { exportSpots, mergeSpots, parseSpotsFile } from "../src/lib/spotsTransfer.ts";
-import { data, handleImportSpots, notice } from "../src/lib/store.ts";
+import { createStore, type Store } from "../src/lib/store.ts";
 import { sampleAppData } from "./fixtures.ts";
 
 // The fixture always has a current spot and one recent spot.
@@ -84,24 +84,26 @@ describe("spots transfer", () => {
 });
 
 describe("handleImportSpots", () => {
+  let store: Store;
+
   beforeEach(() => {
-    data.value = sampleAppData;
-    notice.value = null;
+    store = createStore();
+    store.data.value = sampleAppData;
   });
 
   it("adds the file's new spots and says how many", async () => {
     const fresh = outsideSpot("2026-04-19T09:00:00.000Z");
 
-    await handleImportSpots(fileEvent(JSON.stringify({ version: 1, spots: [fresh] })));
+    await store.handleImportSpots(fileEvent(JSON.stringify({ version: 1, spots: [fresh] })));
 
-    expect(data.value.recent[0]?.id).toBe(fresh.id);
-    expect(notice.value).toEqual({ text: "1 spot added" });
+    expect(store.data.value.recent[0]?.id).toBe(fresh.id);
+    expect(store.notice.value).toEqual({ text: "1 spot added" });
   });
 
   it("shows an error and changes nothing for a bad file", async () => {
-    await handleImportSpots(fileEvent(JSON.stringify({ version: 2, spots: [] })));
+    await store.handleImportSpots(fileEvent(JSON.stringify({ version: 2, spots: [] })));
 
-    expect(data.value).toBe(sampleAppData);
-    expect(notice.value?.tone).toBe("error");
+    expect(store.data.value).toBe(sampleAppData);
+    expect(store.notice.value?.tone).toBe("error");
   });
 });

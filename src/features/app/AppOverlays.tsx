@@ -4,90 +4,72 @@ import { LocationDetailsSheet } from "@/features/location/LocationDetailsSheet";
 import { LocationEditorSheet } from "@/features/location/LocationEditorSheet";
 import { StationSettingsSheet } from "@/features/location/StationSettingsSheet";
 import { t } from "@/lib/i18n";
-import {
-  closeOverlay,
-  data,
-  editorError,
-  geoStatus,
-  handleCaptureLocation,
-  handleClearCurrent,
-  handleLocationSubmit,
-  handlePhotoChange,
-  handlePhotoRemove,
-  handleRemoveRecent,
-  handleStationChange,
-  handleUseRecent,
-  locationDraft,
-  openOverlay,
-  overlay,
-  photoMetadataKept,
-  setLocationDraft,
-  showEditorDetails,
-  stationDraft,
-  toggleEditorDetails,
-} from "@/lib/store";
+import type { Store } from "@/lib/store";
 
-export function AppOverlays() {
-  const appData = data.value;
-  const current = overlay.value;
-  const selectedRecent =
-    current.kind === "recent-preview"
-      ? (appData.recent.find((entry) => entry.id === current.id) ?? null)
-      : null;
+export function AppOverlays({ store }: { store: Store }) {
+  const appData = store.data.value;
+  const current = store.overlay.value;
 
-  return (
-    <>
-      {current.kind === "edit-location" && locationDraft.value ? (
+  switch (current.kind) {
+    case "edit-location":
+      return (
         <LocationEditorSheet
-          formState={locationDraft.value}
+          formState={current.draft}
           station={appData.station}
-          showDetails={showEditorDetails.value}
-          geoStatus={geoStatus.value}
-          photoMetadataKept={photoMetadataKept.value}
-          error={editorError.value}
+          showDetails={current.showDetails}
+          geoStatus={current.geoStatus}
+          photoMetadataKept={current.photoMetadataKept}
+          error={current.error}
           title={appData.current ? t.value.changeLocation : t.value.saveSpot}
-          setFormState={setLocationDraft}
-          onClose={closeOverlay}
-          onSubmit={handleLocationSubmit}
-          onToggleDetails={toggleEditorDetails}
-          onPhotoChange={handlePhotoChange}
-          onPhotoRemove={handlePhotoRemove}
-          onCaptureLocation={handleCaptureLocation}
+          setFormState={store.setLocationDraft}
+          onClose={store.closeOverlay}
+          onSubmit={store.handleLocationSubmit}
+          onToggleDetails={store.toggleEditorDetails}
+          onPhotoChange={store.handlePhotoChange}
+          onPhotoRemove={store.handlePhotoRemove}
+          onCaptureLocation={store.handleCaptureLocation}
         />
-      ) : null}
-
-      {current.kind === "station-settings" && stationDraft.value ? (
+      );
+    case "station-settings":
+      return (
         <StationSettingsSheet
-          stationForm={stationDraft.value}
-          setStationForm={handleStationChange}
-          onClose={closeOverlay}
+          stationForm={current.draft}
+          setStationForm={store.handleStationChange}
+          onClose={store.closeOverlay}
+          onExportSpots={store.handleExportSpots}
+          onImportSpots={store.handleImportSpots}
+          onClearAllData={store.handleClearAllData}
         />
-      ) : null}
-
-      {current.kind === "location-details" ? (
+      );
+    case "location-details":
+      return (
         <LocationDetailsSheet
           current={appData.current}
-          onClose={closeOverlay}
-          onCollected={handleClearCurrent}
+          onClose={store.closeOverlay}
+          onCollected={store.handleClearCurrent}
         />
-      ) : null}
-
-      {current.kind === "recent-list" ? (
+      );
+    case "recent-list":
+      return (
         <RecentLocationsSheet
           recent={appData.recent}
-          onClose={closeOverlay}
-          onPreview={(id) => openOverlay({ kind: "recent-preview", id })}
+          onClose={store.closeOverlay}
+          onPreview={(id) => store.openOverlay({ kind: "recent-preview", id })}
         />
-      ) : null}
+      );
+    case "recent-preview": {
+      const selectedRecent = appData.recent.find((entry) => entry.id === current.id);
 
-      {selectedRecent ? (
+      return selectedRecent ? (
         <RecentLocationPreviewSheet
           selectedRecent={selectedRecent}
-          onClose={() => openOverlay({ kind: "recent-list" })}
-          onUse={handleUseRecent}
-          onRemove={handleRemoveRecent}
+          onClose={() => store.openOverlay({ kind: "recent-list" })}
+          onUse={store.handleUseRecent}
+          onRemove={store.handleRemoveRecent}
         />
-      ) : null}
-    </>
-  );
+      ) : null;
+    }
+    default:
+      return null;
+  }
 }
