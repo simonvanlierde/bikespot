@@ -217,6 +217,33 @@ describe("store handlers", () => {
       expect(failing.notice.value).toEqual({ text: t.value.noticeSaveFailed, tone: "error" });
       stop();
     });
+
+    it("keeps the photos of records a failed save left on disk", async () => {
+      vi.stubGlobal("confirm", () => true);
+      const dropUnusedPhotos = vi.fn(() => Promise.resolve());
+      const clearPhotos = vi.fn(() => Promise.resolve());
+      const withPhoto = { ...sampleAppData.recent[0], photoId: "photo-1" };
+      const saveAppData = vi.fn();
+      const failing = createStore({
+        ...browserRepository,
+        loadAppData: () => ({ ...sampleAppData, recent: [withPhoto] }),
+        saveAppData,
+        reconcilePhotos: () => Promise.resolve(null),
+        dropUnusedPhotos,
+        clearPhotos,
+      });
+      const stop = failing.start();
+      saveAppData.mockImplementation(() => {
+        throw new Error("quota exceeded");
+      });
+
+      await failing.handleRemoveRecent(withPhoto.id);
+      await failing.handleClearAllData();
+
+      expect(dropUnusedPhotos).not.toHaveBeenCalled();
+      expect(clearPhotos).not.toHaveBeenCalled();
+      stop();
+    });
   });
 
   describe("toggleEditorDetails", () => {

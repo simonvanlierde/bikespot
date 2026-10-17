@@ -74,6 +74,9 @@ export function createStore(repo: SpotRepository = browserRepository) {
   let restoredDraft = repo.loadDraft();
   let editorSessions = 0;
   let persistRequested = false;
+  // Whether the last write of app data reached storage. When it did not, the
+  // disk still holds the records the in-memory change dropped, photos included.
+  let lastSaveOk = true;
 
   function start(): () => void {
     let active = true;
@@ -84,7 +87,9 @@ export function createStore(repo: SpotRepository = browserRepository) {
 
       try {
         repo.saveAppData(snapshot);
+        lastSaveOk = true;
       } catch {
+        lastSaveOk = false;
         notice.value = { text: t.value.noticeSaveFailed, tone: "error" };
       }
     });
@@ -139,7 +144,12 @@ export function createStore(repo: SpotRepository = browserRepository) {
   async function commitData(next: AppData): Promise<void> {
     const previous = data.value;
     data.value = next;
-    await repo.dropUnusedPhotos(previous, next);
+
+    // The save effect has run by now. If it failed, the stored records still
+    // use these photos; the next load-time sweep removes whatever ends up unused.
+    if (lastSaveOk) {
+      await repo.dropUnusedPhotos(previous, next);
+    }
   }
 
   function openOverlay(request: OverlayRequest): void {
@@ -364,7 +374,11 @@ export function createStore(repo: SpotRepository = browserRepository) {
     // Notice before data, so a failed save in the persistence effect replaces it.
     notice.value = { text: t.value.noticeDataCleared };
     data.value = defaultAppData;
-    await repo.clearPhotos().catch(() => undefined);
+
+    // A failed save leaves the old records on disk; keep their photos with them.
+    if (lastSaveOk) {
+      await repo.clearPhotos().catch(() => undefined);
+    }
   }
 
   function handleExportSpots(): void {
