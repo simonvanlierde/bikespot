@@ -386,7 +386,7 @@ describe("location storage", () => {
       }),
     );
 
-    const loaded = loadAppData();
+    const loaded = loadAppData().data;
 
     expect(loaded.current).toMatchObject({
       mode: "outside",
@@ -405,7 +405,7 @@ describe("location storage", () => {
       }),
     );
 
-    expect(loadAppData()).toEqual(defaultAppData);
+    expect(loadAppData().data).toEqual(defaultAppData);
   });
 
   it("rejects the old storage shape and starts fresh", () => {
@@ -421,6 +421,6 @@ describe("location storage", () => {
       }),
     );
 
-    expect(loadAppData()).toEqual(defaultAppData);
+    expect(loadAppData().data).toEqual(defaultAppData);
   });
 });

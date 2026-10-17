@@ -31,6 +31,8 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - A failed save no longer deletes the photos of spots still stored on the device.
 - An interrupted edit is no longer discarded by opening and closing another sheet before the
   editor.
+- Saved spots that can no longer be read are no longer wiped without a word. The app says
+  so, keeps a copy of the stored data on the device, and keeps the photos it refers to.
 
 ### Security
 

@@ -7,19 +7,63 @@ import { clearPhotoBlobs, deletePhotoBlob, listPhotoIds, savePhotoBlob } from ".
 
 export const APP_DATA_STORAGE_KEY = "bikespot-app";
 
-export function loadAppData(): AppData {
+// The last stored app data that could not be read in full, kept as raw text so
+// a bad load never destroys it. One key: a newer unreadable load replaces it.
+export const UNREADABLE_BACKUP_KEY = "bikespot-app-unreadable";
+
+/** "all": nothing could be read; "some": records were dropped; null: nothing lost. */
+export type LoadLoss = "all" | "some" | null;
+
+export type LoadedAppData = { data: AppData; lost: LoadLoss };
+
+// Set when unreadable data could not be backed up: saving would then destroy it.
+let keepStoredData = false;
+
+export function loadAppData(): LoadedAppData {
+  let raw: string | null;
+
   // getItem itself can throw when storage is blocked (private mode, extensions).
   try {
-    const raw = window.localStorage.getItem(APP_DATA_STORAGE_KEY);
-    return raw ? normalizeAppData(JSON.parse(raw)) : defaultAppData;
+    raw = window.localStorage.getItem(APP_DATA_STORAGE_KEY);
   } catch {
-    return defaultAppData;
+    return { data: defaultAppData, lost: null };
   }
+
+  if (!raw) {
+    return { data: defaultAppData, lost: null };
+  }
+
+  let loaded: LoadedAppData;
+
+  try {
+    loaded = normalizeAppData(JSON.parse(raw));
+  } catch {
+    loaded = { data: defaultAppData, lost: "all" };
+  }
+
+  try {
+    if (loaded.lost) {
+      window.localStorage.setItem(UNREADABLE_BACKUP_KEY, raw);
+    }
+    keepStoredData = false;
+  } catch {
+    keepStoredData = true;
+  }
+
+  return loaded;
 }
 
 // Throws when storage is full or blocked; the caller tells the user.
 export function saveAppData(data: AppData): void {
+  if (keepStoredData) {
+    throw new Error("Unreadable app data has no backup yet");
+  }
+
   window.localStorage.setItem(APP_DATA_STORAGE_KEY, JSON.stringify(data));
+}
+
+export function clearUnreadableBackup(): void {
+  window.localStorage.removeItem(UNREADABLE_BACKUP_KEY);
 }
 
 export const DRAFT_STORAGE_KEY = "bikespot-draft";
@@ -62,8 +106,9 @@ export function clearDraft(): void {
 // IndexedDB (ADR 0001), linked to records only by photoId, so this seam also
 // keeps the two in step.
 export type SpotRepository = {
-  loadAppData(): AppData;
+  loadAppData(): LoadedAppData;
   saveAppData(data: AppData): void;
+  clearUnreadableBackup(): void;
   loadDraft(): StoredDraft | null;
   saveDraft(draft: LocationDraft, showDetails: boolean): void;
   clearDraft(): void;
@@ -82,6 +127,7 @@ export type SpotRepository = {
 export const browserRepository: SpotRepository = {
   loadAppData,
   saveAppData,
+  clearUnreadableBackup,
   loadDraft,
   saveDraft,
   clearDraft,
@@ -102,9 +148,9 @@ async function dropUnusedPhotos(previous: AppData, next: AppData): Promise<void>
   );
 }
 
-// Catches blobs no record uses (e.g. the record was dropped by load-time
-// normalization) and photoIds whose blob is gone (e.g. saved via the in-memory
-// fallback in a past session), so neither side can leak or dangle forever.
+// Catches blobs no record uses (e.g. a deleted record left one behind) and
+// photoIds whose blob is gone (e.g. saved via the in-memory fallback in a past
+// session), so neither side can leak or dangle forever.
 async function reconcilePhotos(data: AppData, isCurrent: () => boolean): Promise<AppData | null> {
   try {
     const stored = new Set(await listPhotoIds());
@@ -117,7 +163,11 @@ async function reconcilePhotos(data: AppData, isCurrent: () => boolean): Promise
     }
 
     const referenced = referencedPhotoIds(data);
-    await Promise.all([...stored].filter((id) => !referenced.has(id)).map(deletePhotoBlob));
+    // Photos of records only the unreadable backup still holds stay with it.
+    const backup = window.localStorage.getItem(UNREADABLE_BACKUP_KEY) ?? "";
+    await Promise.all(
+      [...stored].filter((id) => !(referenced.has(id) || backup.includes(id))).map(deletePhotoBlob),
+    );
 
     const dropMissing = (entry: LocationRecord): LocationRecord =>
       entry.photoId && !stored.has(entry.photoId) ? { ...entry, photoId: undefined } : entry;
@@ -211,27 +261,30 @@ function normalizeDraftText(value: unknown): string {
   return typeof value === "string" ? value : "";
 }
 
-function normalizeAppData(value: unknown): AppData {
-  if (!value || typeof value !== "object") {
-    return defaultAppData;
+function normalizeAppData(value: unknown): LoadedAppData {
+  // The app always writes an object with a station, so anything else is not
+  // its data (or an older format) and none of it can be used.
+  if (!value || typeof value !== "object" || !("station" in value)) {
+    return { data: defaultAppData, lost: "all" };
   }
 
   const candidate = value as Partial<AppData>;
   const station = normalizeStationConfig(candidate.station, defaultStationConfig);
   const current = candidate.current ? normalizeLocationRecord(candidate.current) : null;
-  const recent = Array.isArray(candidate.recent)
-    ? candidate.recent
-        .map((entry) => normalizeLocationRecord(entry))
-        .filter((entry): entry is LocationRecord => entry !== null)
-        .slice(0, RECENT_LIMIT)
-    : [];
+  const storedRecent: unknown[] = Array.isArray(candidate.recent) ? candidate.recent : [];
+  const recent = storedRecent
+    .map((entry) => normalizeLocationRecord(entry))
+    .filter((entry): entry is LocationRecord => entry !== null);
+  const dropped =
+    (candidate.current && !current) ||
+    recent.length < storedRecent.length ||
+    (candidate.recent !== undefined && !Array.isArray(candidate.recent));
 
   // Each field degrades independently: a malformed `recent` becomes empty rather
   // than discarding a valid current spot or the station settings.
   return {
-    station,
-    current,
-    recent,
+    data: { station, current, recent: recent.slice(0, RECENT_LIMIT) },
+    lost: dropped ? "some" : null,
   };
 }
 

@@ -28,8 +28,10 @@ app reads and writes it:
 - **App data → `localStorage`**, as a single JSON blob under one key
   ([`lib/repository.ts`](../../src/lib/repository.ts)). The app checks each
   field when it loads, so a bad field falls back on its own instead of
-  throwing. A blob that is not valid JSON resets all app data to the
-  defaults.
+  throwing. When stored data cannot be read in full (not valid JSON, not the
+  app's shape, or a record dropped), the app keeps the raw text under a
+  backup key, keeps the photos it mentions, and tells the user. It never
+  saves over that data before the backup is written.
 - **Photos → IndexedDB**, keyed by an opaque `photoId`
   ([`lib/photos.ts`](../../src/lib/photos.ts)). A `LocationRecord` stores only
   the `photoId` string, and the app fetches the blob when it needs it. When
