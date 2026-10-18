@@ -92,7 +92,7 @@ export function getSummary(entry: LocationRecord | null): string {
   }
 
   if (entry.mode === "outside") {
-    return entry.outsideDescription ?? "";
+    return entry.notes ?? "";
   }
 
   const parts = [

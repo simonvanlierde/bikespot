@@ -172,7 +172,7 @@ describe("store handlers", () => {
       await saveOutsideSpot("by the tree");
       await saveOutsideSpot("by the lamp post");
 
-      expect(store.data.value.current).toMatchObject({ outsideDescription: "by the lamp post" });
+      expect(store.data.value.current).toMatchObject({ notes: "by the lamp post" });
       expect(persist).toHaveBeenCalledTimes(1);
     });
 

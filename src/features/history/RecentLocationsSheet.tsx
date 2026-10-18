@@ -80,7 +80,7 @@ export function RecentLocationsSheet({
 // meta line is the same labeled fact set (or the outside description).
 function getRecentMeta(entry: LocationRecord) {
   if (entry.mode === "outside") {
-    return entry.outsideDescription ?? "";
+    return entry.notes ?? "";
   }
 
   return getDetailFacts(entry).join(" · ");

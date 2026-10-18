@@ -130,7 +130,7 @@ describe("location storage", () => {
       createLocationRecord(
         {
           mode: "outside",
-          outsideDescription: "At the cafe rack",
+          notes: "At the cafe rack",
           stationName: "My station",
         },
         "2026-04-16T09:00:00.000Z",
@@ -327,7 +327,7 @@ describe("location storage", () => {
     const entry = createLocationRecord(
       {
         mode: "outside",
-        outsideDescription: "Locked to the signpost near the tram stop",
+        notes: "Locked to the signpost near the tram stop",
         stationName: "My station",
       },
       "2026-04-19T08:00:00.000Z",
@@ -335,7 +335,7 @@ describe("location storage", () => {
 
     expect(entry).toMatchObject({
       mode: "outside",
-      outsideDescription: "Locked to the signpost near the tram stop",
+      notes: "Locked to the signpost near the tram stop",
     });
     if (entry.mode === "outside") {
       expect(entry.photoId).toBeUndefined();
@@ -390,9 +390,37 @@ describe("location storage", () => {
 
     expect(loaded.current).toMatchObject({
       mode: "outside",
-      outsideDescription: undefined,
+      notes: undefined,
       coords: { lat: 52.08, lng: 4.32 },
     });
+  });
+
+  it("loads the text of an outside spot saved under its old field name", () => {
+    const old = {
+      id: "old-outside",
+      updatedAt: "2026-04-19T08:00:00.000Z",
+      mode: "outside",
+      stationName: "My station",
+      outsideDescription: " By the tram stop ",
+    };
+    window.localStorage.setItem(
+      APP_DATA_STORAGE_KEY,
+      JSON.stringify({ station: defaultStationConfig, current: old, recent: [old] }),
+    );
+
+    const loaded = loadAppData();
+
+    expect(loaded.lost).toBeNull();
+    expect(loaded.data.current).toEqual({
+      id: "old-outside",
+      updatedAt: "2026-04-19T08:00:00.000Z",
+      mode: "outside",
+      stationName: "My station",
+      notes: "By the tram stop",
+      photoId: undefined,
+      coords: undefined,
+    });
+    expect(loaded.data.recent[0]).toEqual(loaded.data.current);
   });
 
   it("resets malformed persisted state back to the default state", () => {

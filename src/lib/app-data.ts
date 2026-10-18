@@ -60,9 +60,10 @@ export type StationLocationRecord = RecordBase & {
   rackNumber?: string;
 };
 
+// An outside spot's free text lives in `notes`. Records saved before that
+// called it `outsideDescription`; repository.ts reads both.
 export type OutsideLocationRecord = RecordBase & {
   mode: "outside";
-  outsideDescription?: string;
 };
 
 export type LocationRecord = StationLocationRecord | OutsideLocationRecord;
@@ -82,7 +83,7 @@ export type StationLocationRecordInput = {
 
 export type OutsideLocationRecordInput = {
   mode: "outside";
-  outsideDescription?: string;
+  notes?: string;
   photoId?: string;
   coords?: Coords;
 };

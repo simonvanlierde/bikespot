@@ -75,7 +75,7 @@ describe("getSummary", () => {
         updatedAt: "2026-04-19T07:05:00.000Z",
         stationName: "My station",
         mode: "outside",
-        outsideDescription: "By the tram stop",
+        notes: "By the tram stop",
       }),
     ).toBe("By the tram stop");
   });

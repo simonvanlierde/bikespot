@@ -34,7 +34,7 @@ describe("location detail content", () => {
         entry={{
           id: "outside-1",
           mode: "outside",
-          outsideDescription: "At the fence by the exit",
+          notes: "At the fence by the exit",
           photoId,
           stationName: "My station",
           updatedAt: "2026-04-20T20:00:00.000Z",
@@ -56,7 +56,7 @@ describe("location detail content", () => {
         entry={{
           id: "outside-coords",
           mode: "outside",
-          outsideDescription: "By the canal",
+          notes: "By the canal",
           stationName: "My station",
           updatedAt: "2026-04-20T20:00:00.000Z",
           coords: { lat: 52.379189, lng: 4.899431, accuracy: 12 },
@@ -119,7 +119,7 @@ describe("location detail content", () => {
         entry={{
           id: "outside-no-coords",
           mode: "outside",
-          outsideDescription: "By the canal",
+          notes: "By the canal",
           stationName: "My station",
           updatedAt: "2026-04-20T20:00:00.000Z",
         }}
