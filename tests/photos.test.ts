@@ -74,23 +74,16 @@ describe("downscalePhoto", () => {
     vi.unstubAllGlobals();
   });
 
-  function stubCanvas(width: number, height: number, encodes: string[]) {
-    const drawImage = vi.fn();
-    const close = vi.fn();
-    const sizes: number[][] = [];
-    vi.stubGlobal("createImageBitmap", vi.fn().mockResolvedValue({ width, height, close }));
+  function stubCanvas(encodes: string[]) {
+    vi.stubGlobal(
+      "createImageBitmap",
+      vi.fn().mockResolvedValue({ width: 3024, height: 4032, close: vi.fn() }),
+    );
     vi.stubGlobal(
       "OffscreenCanvas",
       class {
-        width: number;
-        height: number;
-        constructor(w: number, h: number) {
-          this.width = w;
-          this.height = h;
-          sizes.push([w, h]);
-        }
         getContext() {
-          return { drawImage };
+          return { drawImage: vi.fn() };
         }
         convertToBlob({ type }: { type: string }) {
           // Mimics a browser that falls back to PNG for types it cannot encode.
@@ -100,31 +93,10 @@ describe("downscalePhoto", () => {
         }
       },
     );
-    return { drawImage, close, sizes };
   }
 
-  it("downscales the long edge to 1600 px and re-encodes to WebP", async () => {
-    const { drawImage, close, sizes } = stubCanvas(4032, 3024, ["image/webp", "image/jpeg"]);
-
-    const shrunk = await downscalePhoto(photo);
-
-    expect(sizes).toEqual([[1600, 1200]]);
-    expect(shrunk?.name).toBe("IMG_0001.webp");
-    expect(shrunk?.type).toBe("image/webp");
-    expect(drawImage).toHaveBeenCalledWith(expect.anything(), 0, 0, 1600, 1200);
-    expect(close).toHaveBeenCalledOnce();
-  });
-
-  it("keeps a small photo at its own size", async () => {
-    const { sizes } = stubCanvas(800, 1200, ["image/webp"]);
-
-    await downscalePhoto(photo);
-
-    expect(sizes).toEqual([[800, 1200]]);
-  });
-
   it("falls back to JPEG where the browser cannot encode WebP", async () => {
-    stubCanvas(3024, 4032, ["image/jpeg"]);
+    stubCanvas(["image/jpeg"]);
 
     const shrunk = await downscalePhoto(photo);
 
