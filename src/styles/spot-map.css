@@ -49,6 +49,12 @@
   stroke-width: 3;
 }
 
+/* Off the edge of the drawing: a ring instead of a dot. */
+.spot-map__you--off {
+  fill: var(--surface);
+  stroke: var(--ink);
+}
+
 .spot-map__heading {
   fill: var(--muted);
 }

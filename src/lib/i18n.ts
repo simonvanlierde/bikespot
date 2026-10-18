@@ -118,6 +118,7 @@ type Dict = {
   positionError: string;
   toYourBike: string;
   you: string;
+  youOffMap: string;
   atYourBike: string;
   // "120 m north-east": the way from you to the bike.
   towards: (distance: string, direction: Compass) => string;
@@ -285,6 +286,7 @@ const en: Dict = {
   positionError: "Could not get your location. Check that this site may use it.",
   toYourBike: "To your bike",
   you: "You",
+  youOffMap: "You, off the edge of the map",
   atYourBike: "You are at your bike",
   towards: (distance, direction) => `${distance} ${COMPASS_EN[direction]}`,
   fromCurrent: (label, distance, direction) =>
@@ -429,6 +431,7 @@ const nl: Dict = {
   positionError: "Je locatie is niet gevonden. Controleer of deze site hem mag gebruiken.",
   toYourBike: "Naar je fiets",
   you: "Jij",
+  youOffMap: "Jij, buiten de rand van de kaart",
   atYourBike: "Je bent bij je fiets",
   towards: (distance, direction) => `${distance} naar het ${COMPASS_NL[direction]}`,
   fromCurrent: (label, distance, direction) =>

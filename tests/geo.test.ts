@@ -115,6 +115,34 @@ describe("projection", () => {
     expect(fitPoints([], 320, 220, 20).positions).toEqual([]);
   });
 
+  it("frames only the first points and places later ones in that frame", () => {
+    const spots = [
+      { lat: 52, lng: 5 },
+      { lat: 52.001, lng: 5 },
+    ];
+    const far = { lat: 52.05, lng: 5.05 };
+    const framed = fitPoints([...spots, far], 320, 220, 20, 2);
+
+    expect(framed.positions.slice(0, 2)).toEqual(fitPoints(spots, 320, 220, 20).positions);
+    expect(framed.positions[2].x).toBeGreaterThan(320);
+    expect(framed.positions[2].y).toBeLessThan(0);
+  });
+
+  it("frames every point when the framing points sit in one place", () => {
+    const { positions, metersPerPx } = fitPoints(
+      [
+        { lat: 52, lng: 5 },
+        { lat: 52.001, lng: 5 },
+      ],
+      320,
+      220,
+      20,
+      1,
+    );
+    expect(metersPerPx).toBeGreaterThan(0);
+    expect(positions[1].y).toBeCloseTo(20, 6);
+  });
+
   it("keeps points near the antimeridian close together", () => {
     const { positions } = fitPoints(
       [

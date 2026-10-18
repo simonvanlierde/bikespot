@@ -48,15 +48,32 @@ export function toLocalMeters(origin: LatLng, point: LatLng): { x: number; y: nu
   };
 }
 
+type Box = { minX: number; maxX: number; minY: number; maxY: number };
+
+function boundsOf(points: { x: number; y: number }[]): Box {
+  const xs = points.map((p) => p.x);
+  const ys = points.map((p) => p.y);
+  return {
+    minX: Math.min(...xs),
+    maxX: Math.max(...xs),
+    minY: Math.min(...ys),
+    maxY: Math.max(...ys),
+  };
+}
+
 // Fit the points into a width x height box with `pad` on every side, north up,
 // one scale for both axes. Returns screen positions (y grows downward) and the
-// metres per pixel; a single point, or points all in one place, sits centred
-// with metresPerPx 0.
+// metres per pixel. Only the first `fitCount` points set the frame; later ones
+// are placed in it and may fall outside. When the framing points all sit in
+// one place, every point frames. A single point, or points all in one place,
+// sits centred with metresPerPx 0.
+// biome-ignore lint/complexity/useMaxParams: a box size and an optional count; an options object would only rename them
 export function fitPoints(
   points: LatLng[],
   width: number,
   height: number,
   pad: number,
+  fitCount = points.length,
 ): { positions: { x: number; y: number }[]; metersPerPx: number } {
   if (points.length === 0) {
     return { positions: [], metersPerPx: 0 };
@@ -64,19 +81,16 @@ export function fitPoints(
 
   const origin = points[0];
   const local = points.map((point) => toLocalMeters(origin, point));
-  const xs = local.map((p) => p.x);
-  const ys = local.map((p) => p.y);
-  const [minX, maxX, minY, maxY] = [
-    Math.min(...xs),
-    Math.max(...xs),
-    Math.min(...ys),
-    Math.max(...ys),
-  ];
-  const spanX = maxX - minX;
-  const spanY = maxY - minY;
-  const metersPerPx = Math.max(spanX / (width - 2 * pad), spanY / (height - 2 * pad));
-  const midX = (minX + maxX) / 2;
-  const midY = (minY + maxY) / 2;
+  let box = boundsOf(local.slice(0, Math.max(1, fitCount)));
+  if (box.minX === box.maxX && box.minY === box.maxY) {
+    box = boundsOf(local);
+  }
+  const metersPerPx = Math.max(
+    (box.maxX - box.minX) / (width - 2 * pad),
+    (box.maxY - box.minY) / (height - 2 * pad),
+  );
+  const midX = (box.minX + box.maxX) / 2;
+  const midY = (box.minY + box.maxY) / 2;
 
   return {
     positions: local.map((p) => ({

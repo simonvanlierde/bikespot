@@ -12,6 +12,8 @@ import { lang, t } from "@/lib/i18n";
 const WIDTH = 320;
 const HEIGHT = 220;
 const PAD = 28;
+// How close to the drawing's edge an out-of-frame marker sits.
+const EDGE = 12;
 // Closer than this, GPS cannot tell you from the bike.
 const AT_BIKE_M = 10;
 
@@ -114,10 +116,17 @@ export function SpotMapSheet({
     ...recentSpots.map((spot) => spot.coords),
     ...(position ? [position] : []),
   ];
-  const { positions, metersPerPx } = fitPoints(points, WIDTH, HEIGHT, PAD);
+  // The spots set the frame, so walking far off does not shrink them to one dot.
+  const { positions, metersPerPx } = fitPoints(points, WIDTH, HEIGHT, PAD, spotCount);
   const offset = currentCoords ? 1 : 0;
   const currentAt = currentCoords ? positions[0] : null;
-  const youAt = position ? positions[positions.length - 1] : null;
+  const youRaw = position ? positions[positions.length - 1] : null;
+  // Out of frame, your marker sits on the drawing's edge, on the side you are.
+  const youAt = youRaw && {
+    x: Math.min(Math.max(youRaw.x, EDGE), WIDTH - EDGE),
+    y: Math.min(Math.max(youRaw.y, EDGE), HEIGHT - EDGE),
+  };
+  const youOffMap = youRaw !== null && (youAt?.x !== youRaw.x || youAt?.y !== youRaw.y);
   const scale = scaleBar(metersPerPx, WIDTH / 3);
 
   let route: string | null = null;
@@ -198,7 +207,10 @@ export function SpotMapSheet({
                       transform={`rotate(${heading})`}
                     />
                   )}
-                  <circle className="spot-map__you" r="7" />
+                  <circle
+                    className={`spot-map__you${youOffMap ? " spot-map__you--off" : ""}`}
+                    r="7"
+                  />
                 </g>
               ) : null}
             </svg>
@@ -233,7 +245,7 @@ export function SpotMapSheet({
               {position ? (
                 <li>
                   <span aria-hidden="true" className="spot-map__key spot-map__key--you" />
-                  <span>{t.value.you}</span>
+                  <span>{youOffMap ? t.value.youOffMap : t.value.you}</span>
                 </li>
               ) : null}
             </ul>

@@ -111,13 +111,14 @@ describe("spot map", () => {
       within(dialog).getByText("120 m north-east", { selector: DISTANCE }),
     ).toBeInTheDocument();
     expect(within(dialog).getByRole("img", { name: "Map of 2 spots" })).toBeInTheDocument();
-    expect(within(dialog).getByText("You")).toBeInTheDocument();
+    expect(within(dialog).getByText("You, off the edge of the map")).toBeInTheDocument();
     expect((await axe(view.container)).violations).toEqual([]);
 
     geo.move({ ...bike, lat: bike.lat + 0.00002 });
     expect(
       within(dialog).getByText("You are at your bike", { selector: DISTANCE }),
     ).toBeInTheDocument();
+    expect(within(dialog).getByText("You")).toBeInTheDocument();
 
     await user.click(within(dialog).getByRole("button", { name: "Close" }));
     await vi.waitFor(() => expect(geo.clearWatch).toHaveBeenCalledWith(7));
@@ -186,6 +187,27 @@ describe("spot map", () => {
 
     geo.move({ ...bike, lat: bike.lat + 0.00002 });
     expect(announced()).toBe("You are at your bike");
+  });
+
+  it("keeps the spots in frame and puts you on the edge when you are far off", async () => {
+    seedStorage(withCoords);
+    const geo = mockGeolocation();
+    const { user, dialog } = await openMap();
+
+    await user.click(within(dialog).getByRole("button", { name: "Show where I am" }));
+    await vi.waitFor(() => expect(geo.watchPosition).toHaveBeenCalledTimes(1));
+    geo.move({ lat: bike.lat + 0.05, lng: bike.lng, accuracy: 5 });
+
+    expect(within(dialog).getByText("You, off the edge of the map")).toBeInTheDocument();
+    // The two spots, 40 m apart, still fill the drawing's height.
+    const spots = [...dialog.querySelectorAll("g[transform] > circle.spot-map__spot")].map(
+      (circle) => circle.parentElement?.getAttribute("transform"),
+    );
+    expect(spots).toEqual(["translate(160 192)", "translate(160 28)"]);
+    expect(dialog.querySelector(".spot-map__you--off")?.parentElement).toHaveAttribute(
+      "transform",
+      "translate(160 12)",
+    );
   });
 
   it("shows an error when location is refused, and lets you try again", async () => {
