@@ -33,7 +33,7 @@ Bikespot describes the spot the way the bike park does (lane, side, rack level, 
 
 ## Plans
 
-- Planned: a map of the spots that have a GPS fix. It must work offline and send no spot to a map server.
+- Built: a schematic map of the spots that have a GPS fix, with the distance and direction from you to the current spot. It is drawn on the device with no map tiles, so it works offline and sends no spot to a map server. "Open in Maps" stays the way out to a real map.
 - Not planned: sync between devices, because there is no server. Export and import move spots to a new phone.
 
 ## Brand Commitments

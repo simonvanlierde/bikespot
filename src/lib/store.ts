@@ -31,6 +31,7 @@ export type OverlayRequest =
   | { kind: "station-settings" }
   | { kind: "location-details" }
   | { kind: "recent-list" }
+  | { kind: "spot-map" }
   | { kind: "recent-preview"; id: string };
 
 // Everything the open location editor holds. It exists only while the editor

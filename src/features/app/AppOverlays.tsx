@@ -3,6 +3,7 @@ import { RecentLocationsSheet } from "@/features/history/RecentLocationsSheet";
 import { LocationDetailsSheet } from "@/features/location/LocationDetailsSheet";
 import { LocationEditorSheet } from "@/features/location/LocationEditorSheet";
 import { StationSettingsSheet } from "@/features/location/StationSettingsSheet";
+import { SpotMapSheet } from "@/features/map/SpotMapSheet";
 import { t } from "@/lib/i18n";
 import type { Store } from "@/lib/store";
 
@@ -61,6 +62,14 @@ export function AppOverlays({ store }: { store: Store }) {
           notice={store.notice.value}
           onClose={store.closeOverlay}
           onPreview={(id) => store.openOverlay({ kind: "recent-preview", id })}
+        />
+      );
+    case "spot-map":
+      return (
+        <SpotMapSheet
+          current={appData.current}
+          recent={appData.recent}
+          onClose={store.closeOverlay}
         />
       );
     case "recent-preview": {
