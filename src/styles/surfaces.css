@@ -222,14 +222,14 @@
   font-weight: 500;
 }
 
-.current-card .timestamp {
-  color: var(--sign-ink-soft);
-}
-
 .timestamp,
 .recent-time {
   font-family: var(--font-mono);
   font-size: 0.82rem;
+}
+
+.current-card .timestamp {
+  color: var(--sign-ink-soft);
 }
 
 /* Supporting details as one labeled, equal-weight set — floor is no longer
@@ -375,7 +375,7 @@
   justify-content: center;
   gap: 0.55rem;
   background: var(--sign);
-  border-color: var(--sign-edge);
+  border-color: var(--selected);
   color: var(--sign-ink);
   font-weight: 700;
 }
@@ -408,20 +408,20 @@
   min-width: min(100%, 12rem);
 }
 
-.ghost-button--danger {
-  border-color: var(--danger);
-  color: var(--danger);
-}
-
 .ghost-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
   background: transparent;
-  border-color: var(--line-strong);
+  border-color: var(--control-edge);
   color: var(--ink);
   font-weight: 600;
+}
+
+.ghost-button--danger {
+  border-color: var(--danger);
+  color: var(--danger);
 }
 
 .ghost-button--icon {
@@ -441,22 +441,22 @@
 .recent-item:hover,
 .utility-button:hover {
   background: var(--surface-sunken);
-  border-color: var(--line-strong);
 }
 
 /* The sign's secondary action. Filled like its sibling but tonal, so the solid
-   white plate stays primary; it's an anchor, so the underline has to go. Placed
-   after the ghost-button skin above so plain class specificity is enough to win
-   here and the wide-screen layout override still applies. */
+   white plate stays primary; it's an anchor, so the underline has to go. The
+   keyline colour gives its edge 3:1 against the sign, which the tonal fill alone
+   does not. Placed after the ghost-button skin above so plain class specificity
+   is enough to win here and the wide-screen layout override still applies. */
 .current-card__maps {
-  border-color: transparent;
+  border-color: var(--sign-keyline);
   background: rgba(255, 255, 255, 0.16);
   color: var(--sign-ink);
   text-decoration: none;
 }
 
 .current-card__maps:hover {
-  border-color: transparent;
+  border-color: var(--sign-keyline);
   background: rgba(255, 255, 255, 0.26);
 }
 
@@ -474,7 +474,7 @@
   justify-content: space-between;
   gap: 0.75rem;
   background: var(--surface);
-  border-color: var(--line);
+  border-color: var(--control-edge);
 }
 
 .utility-button__row {
@@ -645,7 +645,7 @@
   width: 2.75rem;
   height: 2.75rem;
   padding: 0;
-  border: 1px solid var(--line);
+  border: 1px solid var(--control-edge);
   border-radius: var(--radius-control);
   background: transparent;
   color: var(--muted);
@@ -694,7 +694,7 @@
   min-height: 2.75rem;
   padding: 0.25rem 0.65rem;
   border-radius: 999px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--control-edge);
   background: transparent;
   font-size: 0.85rem;
 }
@@ -783,7 +783,7 @@
 
 .segment {
   background: transparent;
-  border-color: var(--line-strong);
+  border-color: var(--control-edge);
   color: var(--ink);
   font-weight: 600;
   padding-inline: 0.7rem;
@@ -814,7 +814,7 @@
   justify-self: start;
   gap: 0.55rem;
   padding: 0.8rem 1.1rem;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--control-edge);
   border-radius: var(--radius-control);
   background: var(--surface);
   color: var(--ink);

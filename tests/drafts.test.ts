@@ -4,7 +4,7 @@ import { defaultStationConfig } from "../src/lib/defaults.ts";
 import { createLocationRecord } from "../src/lib/domain.ts";
 import { buildLocationRecordInput, createLocationDraft } from "../src/lib/drafts.ts";
 
-// "Change location" records a new parking event. In a Dutch station the same
+// "Change spot" records a new parking event. In a Dutch station the same
 // floor is likely but the same spot is not, so only the floor carries over;
 // every other locator and all evidence (notes, photo, GPS, rack) start fresh.
 describe("createLocationDraft", () => {

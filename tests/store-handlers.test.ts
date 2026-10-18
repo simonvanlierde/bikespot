@@ -258,7 +258,7 @@ describe("store handlers", () => {
       dropUnusedPhotos = vi.fn<SpotRepository["dropUnusedPhotos"]>(() => Promise.resolve());
       store = createStore({
         ...browserRepository,
-        loadAppData: () => ({ ...sampleAppData, recent: [other, withPhoto] }),
+        loadAppData: () => ({ data: { ...sampleAppData, recent: [other, withPhoto] }, lost: null }),
         reconcilePhotos: () => Promise.resolve(null),
         dropUnusedPhotos,
       });
@@ -323,7 +323,7 @@ describe("store handlers", () => {
       }));
       const importing = createStore({
         ...browserRepository,
-        loadAppData: () => ({ ...sampleAppData, recent: old }),
+        loadAppData: () => ({ data: { ...sampleAppData, recent: old }, lost: null }),
         reconcilePhotos: () => Promise.resolve(null),
         dropUnusedPhotos,
       });

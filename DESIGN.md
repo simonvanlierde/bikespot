@@ -13,7 +13,6 @@ colors:
   ink: "#16233f"
   muted: "#5c6880"
   line: "#e1e5ec"
-  line-strong: "#c9cfda"
   control-edge: "#7a8496"
   danger: "#b5372a"
   danger-plate: "#ffe1dc"
@@ -24,7 +23,6 @@ colors:
   night-ink: "#e9edf5"
   night-muted: "#9aa4bb"
   night-line: "#2b3450"
-  night-line-strong: "#3c4666"
   night-control-edge: "#6b7591"
   night-sign-blue: "#2450b4"
   night-sign-blue-edge: "#1d4098"
@@ -137,7 +135,7 @@ Blue and concrete, with one yellow signal and one red for errors.
 
 ### Primary
 
-- **Sign Blue** (`sign-blue`): the current-spot sign, primary buttons, the active segment and switches that are on. In dark mode a switch track and the active segment's edge use the lighter `night-selected`, because night sign blue is below 3:1 against the surface. `sign-blue-edge` is its border and hover colour. In dark mode it gets brighter: `night-sign-blue`.
+- **Sign Blue** (`sign-blue`): the current-spot sign, primary buttons, the active segment and switches that are on. In dark mode a switch track and the edges of the active segment and primary buttons use the lighter `night-selected`, because night sign blue is below 3:1 against the surface. `sign-blue-edge` is the primary hover colour. In dark mode it gets brighter: `night-sign-blue`.
 
 ### Secondary
 
@@ -148,7 +146,7 @@ Blue and concrete, with one yellow signal and one red for errors.
 - **Concrete** (`concrete`): the page background, and also the light `theme-color` and the manifest background.
 - **Surface** / **Surface Sunken**: cards and sheets; insets, notes, counts and hover fills.
 - **Ink** / **Muted**: body text; kickers, hints and timestamps.
-- **Line** / **Line Strong** / **Control Edge**: hairlines; borders of ghost buttons and segments; input borders and switch tracks (at least 3:1 against every surface).
+- **Line** / **Control Edge**: hairlines on cards, dividers and the detail list; the edge of every control (buttons, segments, inputs, the utility buttons, recent items, the footer link) and switch tracks, at least 3:1 against every surface.
 - **Danger** with **Danger Plate**: error text and destructive outlines; the error notice.
 
 ### Named Rules
@@ -209,8 +207,8 @@ The main component: a sign-blue panel with the keyline inside, the spot headline
 
 - **Shape:** control radius (0.75rem), at least 2.75rem tall.
 - **Primary:** sign blue with white text, weight 700.
-- **On the sign:** the colours swap to a white plate with sign-blue text. The Maps link next to it has a tonal white fill (16% opacity).
-- **Ghost:** transparent with a `line-strong` border; the danger version uses a danger border and danger text.
+- **On the sign:** the colours swap to a white plate with sign-blue text. The Maps link next to it has a tonal white fill (16% opacity) and a keyline-coloured edge, which keeps 3:1 against the sign.
+- **Ghost:** transparent with a `control-edge` border; the danger version uses a danger border and danger text.
 - **Hover / Active:** a sunken fill for ghost buttons, `sign-blue-edge` for primary; a 0.985 scale on press and 150ms colour transitions, both off under reduced motion.
 
 ### Segmented Controls
@@ -241,7 +239,7 @@ The save confirmation is a small signal-yellow tag. It goes away by itself after
 
 - **Do** keep the current-spot sign as the only filled sign-blue panel, with its keyline inside.
 - **Do** take every colour from the tokens, and change both dark-mode blocks together.
-- **Do** keep touch targets at 2.75rem (44px) or more, and input edges at 3:1 contrast against their background.
+- **Do** keep touch targets at 2.75rem (44px) or more, and control edges at 3:1 contrast against their background. A small link can keep its look and get the 44px height from an invisible hit area, as the footer version link does.
 - **Do** set kickers, timestamps and counts in Overpass Mono, and use uppercase only for kickers.
 - **Do** wrap motion in `prefers-reduced-motion: no-preference`.
 
