@@ -1,8 +1,8 @@
 import { effect, signal } from "@preact/signals";
 
 // 'system' follows the OS via prefers-color-scheme (the default); 'light'/'dark'
-// force the palette regardless. Stored separately from app data so it applies at
-// import time, before the async data load, avoiding a flash of the wrong theme.
+// force the palette regardless. Stored separately from app data and applied at
+// import time, before the first render, avoiding a flash of the wrong theme.
 export type Theme = "system" | "light" | "dark";
 export const THEMES: Theme[] = ["system", "light", "dark"];
 
