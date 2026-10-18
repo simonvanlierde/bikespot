@@ -54,8 +54,10 @@ function useTracking(attempt: number) {
     );
     const onOrientation = (event: Event) => {
       const next = headingOf(event as OrientationWithCompass);
+      // 5° steps: the sensor fires up to 60 times a second, and an unchanged
+      // value skips the re-render.
       if (next !== null) {
-        setHeading(next);
+        setHeading(Math.round(next / 5) * 5);
       }
     };
     // Chrome sends compass headings only on the "absolute" event; Safari puts
@@ -74,15 +76,12 @@ function useTracking(attempt: number) {
 }
 
 // Safari asks for motion access, and only from inside a tap. Elsewhere this is a no-op.
+// A refusal is fine: the map works without a heading.
 function requestOrientationAccess(): void {
-  const orientation = (globalThis as { DeviceOrientationEvent?: unknown }).DeviceOrientationEvent as
+  const orientation = globalThis.DeviceOrientationEvent as
     | { requestPermission?: () => Promise<unknown> }
     | undefined;
-  try {
-    orientation?.requestPermission?.().catch(() => undefined);
-  } catch {
-    // Refused outright: the map works without a heading.
-  }
+  orientation?.requestPermission?.().catch(() => undefined);
 }
 
 // biome-ignore lint/complexity/noExcessiveLinesPerFunction: JSX render fn; markup dominates the line count
