@@ -1,4 +1,8 @@
+import { render, screen, waitFor } from "@testing-library/preact";
+import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import App from "../src/App.tsx";
 
 import { defaultAppData } from "../src/lib/defaults.ts";
 import { t } from "../src/lib/i18n.ts";
@@ -114,6 +118,93 @@ describe("stored data that cannot be read", () => {
     await store.handleClearAllData();
 
     expect(window.localStorage.getItem(UNREADABLE_BACKUP_KEY)).toBeNull();
+    stop();
+  });
+
+  it("removes the backup when all data is cleared", async () => {
+    vi.stubGlobal("confirm", () => true);
+    window.localStorage.setItem(APP_DATA_STORAGE_KEY, corrupt);
+    const store = createStore();
+    const stop = store.start();
+
+    await store.handleClearAllData();
+
+    expect(store.unreadableBackup.value).toBeNull();
+    stop();
+  });
+});
+
+describe("getting the unreadable copy out", () => {
+  beforeEach(async () => {
+    window.localStorage.clear();
+    await clearPhotoBlobs();
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  async function openSettings() {
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: /^settings$/i }));
+    await waitFor(() => expect(screen.getByRole("dialog")).toHaveFocus());
+  }
+
+  it("offers export and clear in Settings while a copy is kept", async () => {
+    window.localStorage.setItem(APP_DATA_STORAGE_KEY, corrupt);
+    render(<App store={createStore()} />);
+
+    await openSettings();
+
+    expect(screen.getByRole("button", { name: t.value.exportUnreadable })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: t.value.clearUnreadable })).toBeInTheDocument();
+  });
+
+  it("offers neither when no copy is kept", async () => {
+    seedStorage();
+    render(<App store={createStore()} />);
+
+    await openSettings();
+
+    expect(screen.queryByRole("button", { name: t.value.exportUnreadable })).toBeNull();
+    expect(screen.queryByRole("button", { name: t.value.clearUnreadable })).toBeNull();
+  });
+
+  it("downloads exactly the stored text", async () => {
+    window.localStorage.setItem(APP_DATA_STORAGE_KEY, corrupt);
+    let saved: Blob | undefined;
+    vi.spyOn(URL, "createObjectURL").mockImplementation((blob) => {
+      saved = blob as Blob;
+      return "blob:unreadable";
+    });
+    vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => undefined);
+    const click = vi
+      .spyOn(HTMLAnchorElement.prototype, "click")
+      .mockImplementation(() => undefined);
+    const store = createStore();
+
+    store.handleExportUnreadable();
+
+    expect(click).toHaveBeenCalledOnce();
+    expect(await saved?.text()).toBe(corrupt);
+  });
+
+  it("clears the copy after a confirm, then sweeps the photos it kept", async () => {
+    const photoId = await savePhotoBlob(new File(["bike"], "bike.png", { type: "image/png" }));
+    window.localStorage.setItem(APP_DATA_STORAGE_KEY, `{"current":{"photoId":"${photoId}"`);
+    const store = createStore();
+    const stop = store.start();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(await listPhotoIds()).toEqual([photoId]);
+
+    vi.stubGlobal("confirm", () => false);
+    await store.handleClearUnreadable();
+    expect(window.localStorage.getItem(UNREADABLE_BACKUP_KEY)).not.toBeNull();
+
+    vi.stubGlobal("confirm", () => true);
+    await store.handleClearUnreadable();
+
+    expect(window.localStorage.getItem(UNREADABLE_BACKUP_KEY)).toBeNull();
+    expect(store.unreadableBackup.value).toBeNull();
+    expect(await listPhotoIds()).toEqual([]);
     stop();
   });
 });
