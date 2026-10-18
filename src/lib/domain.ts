@@ -184,7 +184,7 @@ export function normalizeStationConfig(
   }
 
   return {
-    name: value?.name?.trim() || fallback.name,
+    name: (typeof value?.name === "string" && value.name.trim()) || fallback.name,
     laneInputMode: normalizeMode(value?.laneInputMode, fallback.laneInputMode),
     laneLabels: normalizeLabels(value?.laneLabels, fallback.laneLabels),
     floorInputMode: normalizeMode(value?.floorInputMode, fallback.floorInputMode),

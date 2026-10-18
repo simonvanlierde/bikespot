@@ -112,6 +112,17 @@ describe("app data repository", () => {
     expect(hydrated.recent).toEqual([]);
   });
 
+  it("keeps current and recent when the stored station name is not a string", () => {
+    window.localStorage.setItem(
+      APP_DATA_STORAGE_KEY,
+      JSON.stringify({ ...sampleAppData, station: { ...sampleAppData.station, name: 42 } }),
+    );
+    const { data: hydrated, lost } = loadAppData();
+    expect(lost).toBeNull();
+    expect(hydrated.station.name).toBe(defaultAppData.station.name);
+    expect(hydrated.current).toMatchObject({ id: sampleAppData.current?.id });
+    expect(hydrated.recent).toHaveLength(sampleAppData.recent.length);
+  });
   it("keeps the station settings when no spot has been saved yet", () => {
     const station = { ...defaultAppData.station, name: "Utrecht Centraal", laneInputMode: "quick" };
     window.localStorage.setItem(
