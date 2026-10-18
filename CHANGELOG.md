@@ -19,6 +19,13 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - When saved data could not be read, Settings lets you export the copy the app kept as a
   text file, and clear it once you no longer need it. Clearing it also deletes the photos
   only that copy used.
+- Undo after removing a spot from Recent, for 10 seconds. The spot comes back in its old
+  place, with its photo.
+
+### Changed
+
+- Button labels and notices use one verb per action, in English and Dutch: "Save spot",
+  "Change spot", "Restore this spot", and "imported" for spots from a file.
 
 ### Fixed
 
@@ -36,6 +43,11 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   editor.
 - Saved spots that can no longer be read are no longer wiped without a word. The app says
   so, keeps a copy of the stored data on the device, and keeps the photos it refers to.
+- Photos of spots pushed out of Recent by an import are deleted right away instead of on
+  the next start.
+- Buttons, segments and list items have an outline with at least 3:1 contrast in light and
+  dark mode.
+- "Clear all data" shows its red outline again.
 
 ### Security
 
