@@ -2,7 +2,7 @@ import { effect, signal } from "@preact/signals";
 import type { TargetedEvent } from "preact";
 import type { SetStateAction } from "preact/compat";
 
-import type { AppData, StationConfig } from "./app-data";
+import type { AppData, LocationRecord, StationConfig } from "./app-data";
 import { defaultAppData } from "./defaults";
 import {
   clearCurrentLocation,
@@ -56,7 +56,13 @@ export type OverlayState =
   | EditorState
   | { kind: "station-settings"; draft: StationSettingsDraft };
 
-type Notice = { text: string; tone?: "error" };
+// A notice with `undo` offers to reverse the action it reports. The store
+// dismisses it when the undo window ends, so the UI's auto-dismiss skips it.
+export type Notice = { text: string; tone?: "error"; undo?: () => void };
+
+// Long enough to read the notice and reach Undo by keyboard or switch access,
+// short enough that the removed photo does not linger.
+export const UNDO_WINDOW_MS = 10_000;
 
 export type Store = ReturnType<typeof createStore>;
 
@@ -80,6 +86,11 @@ export function createStore(repo: SpotRepository = browserRepository) {
   // Whether the last write of app data reached storage. When it did not, the
   // disk still holds the records the in-memory change dropped, photos included.
   let lastSaveOk = true;
+  let pendingRemoval: {
+    record: LocationRecord;
+    notice: Notice;
+    timer: ReturnType<typeof setTimeout>;
+  } | null = null;
 
   function start(): () => void {
     let active = true;
@@ -364,11 +375,65 @@ export function createStore(repo: SpotRepository = browserRepository) {
     await commitData(next);
   }
 
-  async function handleRemoveRecent(id: string): Promise<void> {
-    const next = removeRecentLocation(data.value, id);
+  // Removing a recent spot can be undone for UNDO_WINDOW_MS. Its photo stays
+  // stored until then, so undo brings it back whole. A reload in the window
+  // leaves the photo to the load-time sweep.
+  function handleRemoveRecent(id: string): void {
+    const record = data.value.recent.find((entry) => entry.id === id);
+
+    if (!record) {
+      return;
+    }
+
+    settleRemoval();
+    const before = data.value;
+    const after = removeRecentLocation(before, id);
+    const posted: Notice = {
+      text: t.value.noticeRecentRemoved,
+      undo: () => {
+        if (pendingRemoval?.notice !== posted) {
+          return;
+        }
+
+        // Anything else that changed the data since ends the window.
+        if (data.value !== after) {
+          settleRemoval();
+          return;
+        }
+
+        clearTimeout(pendingRemoval.timer);
+        pendingRemoval = null;
+        notice.value = { text: t.value.noticeRecentRestored };
+        data.value = before;
+      },
+    };
+
     openOverlay({ kind: "recent-list" });
-    notice.value = { text: t.value.noticeRecentRemoved };
-    await commitData(next);
+    // Notice before data, so a failed save in the persistence effect replaces it.
+    notice.value = posted;
+    data.value = after;
+    pendingRemoval = { record, notice: posted, timer: setTimeout(settleRemoval, UNDO_WINDOW_MS) };
+  }
+
+  // Ends the undo window: hides the undo and deletes the removed spot's photo.
+  function settleRemoval(): void {
+    if (!pendingRemoval) {
+      return;
+    }
+
+    const { record, notice: posted, timer } = pendingRemoval;
+    pendingRemoval = null;
+    clearTimeout(timer);
+
+    if (notice.value === posted) {
+      notice.value = null;
+    }
+
+    // A failed save leaves the record on disk; keep its photo with it.
+    if (lastSaveOk) {
+      // biome-ignore lint/complexity/noVoid: best-effort cleanup, never rejects
+      void repo.dropUnusedPhotos({ ...data.value, current: null, recent: [record] }, data.value);
+    }
   }
 
   async function handleUseRecent(id: string): Promise<void> {
@@ -446,8 +511,9 @@ export function createStore(repo: SpotRepository = browserRepository) {
 
     const result = mergeSpots(data.value, spots);
     // Notice before data, so a failed save in the persistence effect replaces it.
+    // commitData also drops the photos of spots the import pushed out of Recent.
     notice.value = { text: t.value.noticeImported(result.added) };
-    data.value = result.data;
+    await commitData(result.data);
   }
 
   return {

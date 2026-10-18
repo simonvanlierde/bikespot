@@ -276,6 +276,30 @@ describe("bike storage tracker app", () => {
     expect(screen.getByRole("heading", { name: /lane 4/i })).toBeInTheDocument();
   });
 
+  it("offers a keyboard-reachable undo after removing a spot from recent", async () => {
+    const user = userEvent.setup();
+
+    await renderApp();
+    await openSheet(user, /recent locations/i);
+    await user.click(screen.getByRole("button", { name: /^view lane 5$/i }));
+    await user.click(screen.getByRole("button", { name: /remove from recent/i }));
+
+    const list = screen.getByRole("dialog", { name: /recent locations/i });
+    expect(within(list).queryByRole("button", { name: /^view lane 5$/i })).toBeNull();
+    expect(screen.getByRole("status")).toHaveTextContent(/removed from recent/i);
+
+    // Tab from the sheet: the close button first, then undo.
+    await waitFor(() => expect(list).toHaveFocus());
+    await user.tab();
+    await user.tab();
+    expect(within(list).getByRole("button", { name: /^undo$/i })).toHaveFocus();
+    await user.keyboard("{Enter}");
+
+    expect(within(list).getByRole("button", { name: /^view lane 5$/i })).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent(/back in recent/i);
+    expect(within(list).queryByRole("button", { name: /^undo$/i })).toBeNull();
+  });
+
   it("keeps the saved visible fields on recent entries after station settings change", async () => {
     const user = userEvent.setup();
 

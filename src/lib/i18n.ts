@@ -146,6 +146,8 @@ type Dict = {
   noticeLocationReplaced: string;
   noticeCollected: string;
   noticeRecentRemoved: string;
+  noticeRecentRestored: string;
+  undo: string;
   noticeLocationFromRecent: string;
   noticeDataCleared: string;
   clearAllData: string;
@@ -270,6 +272,8 @@ const en: Dict = {
   noticeLocationReplaced: "Spot saved — the previous one is in Recent",
   noticeCollected: "Spot cleared — kept in Recent",
   noticeRecentRemoved: "Removed from Recent",
+  noticeRecentRestored: "Back in Recent",
+  undo: "Undo",
   noticeLocationFromRecent: "Earlier spot restored",
   noticeDataCleared: "All data cleared",
   clearAllData: "Clear all data",
@@ -395,6 +399,8 @@ const nl: Dict = {
   noticeLocationReplaced: "Plek opgeslagen — de vorige staat bij Recent",
   noticeCollected: "Plek gewist — bewaard bij Recent",
   noticeRecentRemoved: "Uit Recent verwijderd",
+  noticeRecentRestored: "Terug bij Recent",
+  undo: "Ongedaan maken",
   noticeLocationFromRecent: "Eerdere plek hersteld",
   noticeDataCleared: "Alle gegevens gewist",
   clearAllData: "Alle gegevens wissen",

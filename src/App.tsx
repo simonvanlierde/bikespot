@@ -16,9 +16,10 @@ export default function App({ store }: { store: Store }) {
 
   // Auto-dismiss a success notice a few seconds after it appears; an error
   // stays until the next action replaces it. Keyed on the notice object, so
-  // repeating the same text still re-arms the timer.
+  // repeating the same text still re-arms the timer. A notice with undo is
+  // dismissed by the store when its undo window ends.
   useEffect(() => {
-    if (!currentNotice || currentNotice.tone === "error") {
+    if (!currentNotice || currentNotice.tone === "error" || currentNotice.undo) {
       return;
     }
 

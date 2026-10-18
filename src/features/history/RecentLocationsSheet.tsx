@@ -1,16 +1,19 @@
-import { History, MapPin } from "lucide-preact";
+import { History, MapPin, Undo2 } from "lucide-preact";
 
 import { SheetDialog } from "@/components/SheetDialog";
 import { formatTimestamp, getDetailFacts, getPrimaryLabel } from "@/features/location/display";
 import type { LocationRecord } from "@/lib/app-data";
 import { t } from "@/lib/i18n";
+import type { Notice } from "@/lib/store";
 
 export function RecentLocationsSheet({
   recent,
+  notice,
   onClose,
   onPreview,
 }: {
   recent: LocationRecord[];
+  notice?: Notice | null;
   onClose: () => void;
   onPreview: (id: string) => void;
 }) {
@@ -21,6 +24,26 @@ export function RecentLocationsSheet({
       titleIcon={<History aria-hidden="true" className="button-icon" />}
       onClose={onClose}
     >
+      {/* The main card's status region announces the notice; this copy only
+          puts Undo inside the sheet, where focus is trapped. */}
+      {notice?.undo ? (
+        <div className="notice-row notice-row--sheet">
+          <p className="sheet-description">{notice.text}</p>
+          <button
+            className="ghost-button"
+            type="button"
+            onClick={(event) => {
+              // Undo unmounts this button; keep focus in the sheet.
+              const sheet = event.currentTarget.closest<HTMLElement>("[aria-modal]");
+              notice.undo?.();
+              sheet?.focus();
+            }}
+          >
+            <Undo2 aria-hidden="true" className="button-icon" />
+            {t.value.undo}
+          </button>
+        </div>
+      ) : null}
       <div className="recent-list recent-list--sheet">
         {recent.length === 0 ? <p className="sheet-description">{t.value.noRecentYet}</p> : null}
         {recent.map((entry) => {
