@@ -169,7 +169,7 @@ const en: Dict = {
   currentSpot: "Current spot",
   hasGps: "Has GPS location",
   viewDetails: "View details",
-  changeLocation: "Change location",
+  changeLocation: "Change spot",
   updated: (time) => `Updated ${time}`,
   saved: (time) => `Saved ${time}`,
   currentBikeRef: "Current bike reference",
@@ -177,10 +177,10 @@ const en: Dict = {
   noSpotYet: "No bike parked",
   emptyIntro:
     "Save where you leave your bike, and find it again later. Everything stays on this phone.",
-  saveSpot: "Save my spot",
+  saveSpot: "Save spot",
   justNow: "just now",
   bikeCollected: "Bike collected",
-  removeFromRecent: "Remove from recent",
+  removeFromRecent: "Remove from Recent",
   noRecentYet: "Earlier spots show up here once you save a new one.",
   recentLocations: "Recent locations",
   settings: "Settings",
@@ -189,7 +189,7 @@ const en: Dict = {
   back: "Back",
   whereParked: "Parked",
   whereOpts: { station: "In the station", outside: "Outside" },
-  saveLocation: "Save location",
+  saveLocation: "Save",
   errorLaneRequired: "Enter the lane so you can find the bike again.",
   errorNothingToFindBy: "Add a note, photo or GPS fix so you can find the bike again.",
   moreDetails: "More details",
@@ -222,20 +222,20 @@ const en: Dict = {
 
   photoPreviewAlt: "Bike reference preview",
   replacePhoto: "Replace photo",
-  addPhoto: "Add a photo",
+  addPhoto: "Add photo",
   removePhoto: "Remove photo",
   photoMetadataKept:
     "This browser could not remove the photo's location data. The photo stays on this device.",
 
   close: "Close",
 
-  locationDetails: "Location details",
+  locationDetails: "Spot details",
   savedBikeRef: "Saved bike reference",
   recentBikeRef: "Recent bike reference",
   recentPreview: "Recent location preview",
   openInMaps: "Open in Maps",
   stationFloor: "Station floor",
-  useThisLocation: "Use this location",
+  useThisLocation: "Restore this spot",
   viewRecent: (title) => `View ${title}`,
 
   station: "Station",
@@ -282,10 +282,10 @@ const en: Dict = {
   exportUnreadable: "Export unreadable data",
   clearUnreadable: "Clear unreadable data",
   clearUnreadableConfirm:
-    "Delete the copy of the unreadable data from this device, with the photos only it refers to? Export it first to keep it.",
-  noticeImported: (count) => (count === 1 ? "1 spot added" : `${count} spots added`),
+    "Clear the copy of the unreadable data from this device, with the photos only it refers to? Export it first to keep it.",
+  noticeImported: (count) => (count === 1 ? "1 spot imported" : `${count} spots imported`),
   noticeImportInvalid: "Not a Bikespot export file — nothing imported",
-  clearAllDataConfirm: "Delete all saved locations, photos and settings from this device?",
+  clearAllDataConfirm: "Clear all saved spots, photos and settings from this device?",
   viewSourceVersion: (version) => `View source code, version ${version}`,
 
   language: "Language",
@@ -296,7 +296,7 @@ const nl: Dict = {
   currentSpot: "Huidige plek",
   hasGps: "Heeft GPS-locatie",
   viewDetails: "Details bekijken",
-  changeLocation: "Locatie wijzigen",
+  changeLocation: "Plek wijzigen",
   updated: (time) => `Bijgewerkt ${time}`,
   saved: (time) => `Opgeslagen ${time}`,
   currentBikeRef: "Huidige fietsreferentie",
@@ -307,7 +307,7 @@ const nl: Dict = {
   saveSpot: "Plek opslaan",
   justNow: "zojuist",
   bikeCollected: "Fiets opgehaald",
-  removeFromRecent: "Uit recent verwijderen",
+  removeFromRecent: "Uit Recent verwijderen",
   noRecentYet: "Eerdere plekken verschijnen hier zodra je een nieuwe opslaat.",
   recentLocations: "Recente locaties",
   settings: "Instellingen",
@@ -316,7 +316,7 @@ const nl: Dict = {
   back: "Terug",
   whereParked: "Gestald",
   whereOpts: { station: "In de stalling", outside: "Buiten" },
-  saveLocation: "Locatie opslaan",
+  saveLocation: "Opslaan",
   errorLaneRequired: "Vul de rij in, zodat je de fiets terugvindt.",
   errorNothingToFindBy: "Voeg een notitie, foto of GPS-locatie toe, zodat je de fiets terugvindt.",
   moreDetails: "Meer details",
@@ -356,13 +356,13 @@ const nl: Dict = {
 
   close: "Sluiten",
 
-  locationDetails: "Locatiedetails",
+  locationDetails: "Plekdetails",
   savedBikeRef: "Opgeslagen fietsreferentie",
   recentBikeRef: "Recente fietsreferentie",
   recentPreview: "Voorbeeld recente locatie",
   openInMaps: "Openen in Maps",
   stationFloor: "Verdieping stalling",
-  useThisLocation: "Deze locatie gebruiken",
+  useThisLocation: "Deze plek herstellen",
   viewRecent: (title) => `${title} bekijken`,
 
   station: "Stalling",
@@ -409,11 +409,11 @@ const nl: Dict = {
   exportUnreadable: "Onleesbare gegevens exporteren",
   clearUnreadable: "Onleesbare gegevens wissen",
   clearUnreadableConfirm:
-    "De kopie van de onleesbare gegevens van dit apparaat verwijderen, met de foto's waar alleen die kopie naar verwijst? Exporteer hem eerst als je hem wilt bewaren.",
-  noticeImported: (count) => (count === 1 ? "1 plek toegevoegd" : `${count} plekken toegevoegd`),
+    "De kopie van de onleesbare gegevens van dit apparaat wissen, met de foto's waar alleen die kopie naar verwijst? Exporteer hem eerst als je hem wilt bewaren.",
+  noticeImported: (count) =>
+    count === 1 ? "1 plek geïmporteerd" : `${count} plekken geïmporteerd`,
   noticeImportInvalid: "Geen Bikespot-exportbestand — niets geïmporteerd",
-  clearAllDataConfirm:
-    "Alle opgeslagen locaties, foto's en instellingen van dit apparaat verwijderen?",
+  clearAllDataConfirm: "Alle opgeslagen plekken, foto's en instellingen van dit apparaat wissen?",
   viewSourceVersion: (version) => `Broncode bekijken, versie ${version}`,
 
   language: "Taal",

@@ -97,7 +97,7 @@ describe("handleImportSpots", () => {
     await store.handleImportSpots(fileEvent(JSON.stringify({ version: 1, spots: [fresh] })));
 
     expect(store.data.value.recent[0]?.id).toBe(fresh.id);
-    expect(store.notice.value).toEqual({ text: "1 spot added" });
+    expect(store.notice.value).toEqual({ text: "1 spot imported" });
   });
 
   it("shows an error and changes nothing for a bad file", async () => {
