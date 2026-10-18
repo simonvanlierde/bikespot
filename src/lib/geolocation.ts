@@ -50,10 +50,12 @@ export function watchCoords(onCoords: (coords: Coords) => void, onError: () => v
     return () => undefined;
   }
 
-  const id = navigator.geolocation.watchPosition(
+  // Keep the object the watch started on, so stopping clears that same watch.
+  const { geolocation } = navigator;
+  const id = geolocation.watchPosition(
     (position) => onCoords(toCoords(position)),
     () => onError(),
     { ...GEOLOCATION_OPTIONS, timeout: 30_000 },
   );
-  return () => navigator.geolocation.clearWatch(id);
+  return () => geolocation.clearWatch(id);
 }
