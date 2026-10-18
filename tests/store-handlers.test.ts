@@ -1,5 +1,6 @@
 import type { TargetedEvent } from "preact";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { RECENT_LIMIT } from "../src/lib/app-data.ts";
 import { createOutsideLocationDraft } from "../src/lib/drafts.ts";
 import { t } from "../src/lib/i18n.ts";
 import { browserRepository } from "../src/lib/repository.ts";
@@ -242,6 +243,38 @@ describe("store handlers", () => {
 
       expect(dropUnusedPhotos).not.toHaveBeenCalled();
       expect(clearPhotos).not.toHaveBeenCalled();
+      stop();
+    });
+  });
+
+  describe("handleImportSpots", () => {
+    it("drops the photos of spots the import pushes out of Recent", async () => {
+      const dropUnusedPhotos = vi.fn(() => Promise.resolve());
+      const old = Array.from({ length: RECENT_LIMIT }, (_, index) => ({
+        ...sampleAppData.recent[0],
+        id: `old-${index}`,
+        photoId: `photo-${index}`,
+        updatedAt: `2026-01-0${index + 1}T08:00:00.000Z`,
+      }));
+      const importing = createStore({
+        ...browserRepository,
+        loadAppData: () => ({ ...sampleAppData, recent: old }),
+        reconcilePhotos: () => Promise.resolve(null),
+        dropUnusedPhotos,
+      });
+      const stop = importing.start();
+      const fresh = { ...sampleAppData.recent[0], id: "fresh" };
+      const file = new File([JSON.stringify({ version: 1, spots: [fresh] })], "spots.json");
+
+      await importing.handleImportSpots({
+        currentTarget: { files: [file], value: "" },
+      } as unknown as TargetedEvent<HTMLInputElement>);
+
+      expect(importing.data.value.recent.map((entry) => entry.id)).not.toContain("old-0");
+      expect(dropUnusedPhotos).toHaveBeenCalledWith(
+        expect.objectContaining({ recent: old }),
+        importing.data.value,
+      );
       stop();
     });
   });
