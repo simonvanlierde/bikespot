@@ -86,7 +86,7 @@ export async function savePhotoBlob(blob: Blob): Promise<string> {
   const photoId = createId();
 
   if (!hasIndexedDb()) {
-    // Session-only fallback; reconcilePhotoBlobs drops the dangling id on the
+    // Session-only fallback; reconcilePhotos (repository.ts) drops the dangling id on the
     // next load so records never keep pointing at a blob that is gone.
     memoryPhotoStore.set(photoId, blob);
     return photoId;
