@@ -1,12 +1,12 @@
 import { LocateFixed, MapPin } from "lucide-preact";
-import { useEffect, useState } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
 
 import { SheetDialog } from "@/components/SheetDialog";
 import { formatDistance, getPrimaryLabel, mapsLink } from "@/features/location/display";
 import type { Coords, LocationRecord } from "@/lib/app-data";
 import { bearingDegrees, compassPoint, distanceMeters, fitPoints, scaleBar } from "@/lib/geo";
 import { watchCoords } from "@/lib/geolocation";
-import { t } from "@/lib/i18n";
+import { lang, t } from "@/lib/i18n";
 
 // The drawing's own units; the SVG scales to the sheet's width.
 const WIDTH = 320;
@@ -122,15 +122,24 @@ export function SpotMapSheet({
   const scale = scaleBar(metersPerPx, WIDTH / 3);
 
   let route: string | null = null;
+  let way = "";
   if (position && currentCoords) {
     const meters = distanceMeters(position, currentCoords);
+    const direction = compassPoint(bearingDegrees(position, currentCoords));
+    way = meters < AT_BIKE_M ? "here" : direction;
     route =
-      meters < AT_BIKE_M
-        ? t.value.atYourBike
-        : t.value.towards(
-            formatDistance(meters),
-            compassPoint(bearingDegrees(position, currentCoords)),
-          );
+      meters < AT_BIKE_M ? t.value.atYourBike : t.value.towards(formatDistance(meters), direction);
+  }
+  const status =
+    route ?? (attempt > 0 && !failed ? (noSignal ? t.value.noSignal : t.value.locatingYou) : "");
+
+  // A screen reader hears the route again only when the way to the bike
+  // changes (another compass point, or arrived), not on every few metres of
+  // walking or GPS jitter.
+  const spoken = useRef({ key: "", text: "" });
+  const spokenKey = route === null ? status : `${lang.value}:${way}`;
+  if (spoken.current.key !== spokenKey) {
+    spoken.current = { key: spokenKey, text: status };
   }
 
   return (
@@ -239,9 +248,9 @@ export function SpotMapSheet({
         {currentCoords ? (
           <div className="spot-map__route">
             <p className="section-kicker">{t.value.toYourBike}</p>
-            <p aria-live="polite" className="spot-map__distance">
-              {route ??
-                (attempt > 0 && !failed ? (noSignal ? t.value.noSignal : t.value.locatingYou) : "")}
+            <p className="spot-map__distance">{status}</p>
+            <p aria-live="polite" className="sr-only">
+              {spoken.current.text}
             </p>
             {failed ? (
               <p className="spot-map__error" role="alert">

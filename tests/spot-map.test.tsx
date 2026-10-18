@@ -9,6 +9,9 @@ import { lang } from "../src/lib/i18n.ts";
 import { createStore } from "../src/lib/store.ts";
 import { sampleAppData, seedStorage } from "./fixtures.ts";
 
+// The visible distance line; a hidden copy for screen readers holds the same text.
+const DISTANCE = ".spot-map__distance";
+
 const bike = { lat: 52.0894, lng: 5.1101, accuracy: 6 };
 
 // The current spot and the earlier one both have a fix; the earlier one is
@@ -99,16 +102,22 @@ describe("spot map", () => {
     await user.click(within(dialog).getByRole("button", { name: "Show where I am" }));
     // Effects run after paint, so the watch starts a moment after the tap.
     await vi.waitFor(() => expect(geo.watchPosition).toHaveBeenCalledTimes(1));
-    expect(within(dialog).getByText("Finding your location…")).toBeInTheDocument();
+    expect(
+      within(dialog).getByText("Finding your location…", { selector: DISTANCE }),
+    ).toBeInTheDocument();
 
     geo.move({ ...youSouthWest, accuracy: 5 });
-    expect(within(dialog).getByText("120 m north-east")).toBeInTheDocument();
+    expect(
+      within(dialog).getByText("120 m north-east", { selector: DISTANCE }),
+    ).toBeInTheDocument();
     expect(within(dialog).getByRole("img", { name: "Map of 2 spots" })).toBeInTheDocument();
     expect(within(dialog).getByText("You")).toBeInTheDocument();
     expect((await axe(view.container)).violations).toEqual([]);
 
     geo.move({ ...bike, lat: bike.lat + 0.00002 });
-    expect(within(dialog).getByText("You are at your bike")).toBeInTheDocument();
+    expect(
+      within(dialog).getByText("You are at your bike", { selector: DISTANCE }),
+    ).toBeInTheDocument();
 
     await user.click(within(dialog).getByRole("button", { name: "Close" }));
     await vi.waitFor(() => expect(geo.clearWatch).toHaveBeenCalledWith(7));
@@ -125,7 +134,9 @@ describe("spot map", () => {
     await vi.waitFor(() => expect(geo.watchPosition).toHaveBeenCalled());
     geo.move({ ...youSouthWest, accuracy: 5 });
 
-    expect(screen.getByText("120 m naar het noordoosten")).toBeInTheDocument();
+    expect(
+      screen.getByText("120 m naar het noordoosten", { selector: DISTANCE }),
+    ).toBeInTheDocument();
     expect(screen.getByText("Rij 5: 40 m ten zuiden van de huidige plek")).toBeInTheDocument();
   });
 
@@ -137,13 +148,38 @@ describe("spot map", () => {
     await user.click(within(dialog).getByRole("button", { name: "Show where I am" }));
     await vi.waitFor(() => expect(geo.watchPosition).toHaveBeenCalledTimes(1));
     geo.fail(3);
-    expect(within(dialog).getByText(/No GPS signal yet/)).toBeInTheDocument();
+    expect(
+      within(dialog).getByText(/No GPS signal yet/, { selector: DISTANCE }),
+    ).toBeInTheDocument();
     expect(within(dialog).queryByRole("alert")).toBeNull();
 
     geo.move({ ...youSouthWest, accuracy: 5 });
     geo.fail(3);
-    expect(within(dialog).getByText("120 m north-east")).toBeInTheDocument();
+    expect(
+      within(dialog).getByText("120 m north-east", { selector: DISTANCE }),
+    ).toBeInTheDocument();
     expect(within(dialog).queryByRole("alert")).toBeNull();
+  });
+
+  it("announces the way to the bike only when it changes", async () => {
+    seedStorage(withCoords);
+    const geo = mockGeolocation();
+    const { user, dialog } = await openMap();
+    const announced = () => dialog.querySelector('[aria-live="polite"]')?.textContent;
+
+    await user.click(within(dialog).getByRole("button", { name: "Show where I am" }));
+    await vi.waitFor(() => expect(geo.watchPosition).toHaveBeenCalledTimes(1));
+    expect(announced()).toBe("Finding your location…");
+
+    geo.move({ ...youSouthWest, accuracy: 5 });
+    expect(announced()).toBe("120 m north-east");
+    // About 30 m closer, still north-east: the screen shows it, the reader stays quiet.
+    geo.move({ lat: youSouthWest.lat + 0.0002, lng: youSouthWest.lng + 0.0003, accuracy: 5 });
+    expect(within(dialog).queryByText("120 m north-east", { selector: DISTANCE })).toBeNull();
+    expect(announced()).toBe("120 m north-east");
+
+    geo.move({ ...bike, lat: bike.lat + 0.00002 });
+    expect(announced()).toBe("You are at your bike");
   });
 
   it("shows an error when location is refused, and lets you try again", async () => {
