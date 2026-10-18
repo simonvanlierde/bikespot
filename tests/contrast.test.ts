@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 const css = readFileSync("src/styles/base.css", "utf8");
 const surfaces = readFileSync("src/styles/surfaces.css", "utf8");
+const features = readFileSync("src/styles/features.css", "utf8");
 
 // The token blocks in order: light (:root), dark (media query), forced dark.
 const blocks = [...css.matchAll(/:root(?:[^{]*)\{([^}]*)\}/g)].map((m) => m[1]);
@@ -21,6 +22,23 @@ function luminance(hex: string): number {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
+// An rgba() colour laid over an opaque hex background, as hex.
+function over(color: string, bg: string): string {
+  const m = color.match(/^rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)$/);
+  if (!m) {
+    return color;
+  }
+  const alpha = Number(m[4]);
+  return `#${[1, 2, 3]
+    .map((i) => {
+      const under = Number.parseInt(bg.slice(2 * i - 1, 2 * i + 1), 16);
+      return Math.round(Number(m[i]) * alpha + under * (1 - alpha))
+        .toString(16)
+        .padStart(2, "0");
+    })
+    .join("")}`;
+}
+
 function ratio(a: string, b: string): number {
   const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
   return (hi + 0.05) / (lo + 0.05);
@@ -35,6 +53,26 @@ describe("palette contrast", () => {
   it("draws selected-state indicators with the --selected token", () => {
     expect(surfaces).toMatch(/\.toggle-row__input:checked \{\s*background: var\(--selected\);/);
     expect(surfaces).toMatch(/\.segment\.is-active \{[^}]*border-color: var\(--selected\);/);
+    expect(surfaces).toMatch(/\n\.primary-button \{[^}]*border-color: var\(--selected\);/);
+  });
+
+  // A control's outline is what shows it is a control, so it needs 3:1 too; the
+  // paler --line hairline is for cards and dividers only.
+  it.each([
+    ".ghost-button",
+    ".segment",
+    ".file-trigger",
+    ".labels-editor__remove",
+    ".text-button--switch",
+    ".utility-button",
+    ".recent-item",
+    ".app-footer__version",
+  ])("outlines %s with the --control-edge token", (selector) => {
+    const escaped = selector.replace(/[.]/g, "\\.");
+    const rule = new RegExp(
+      `\\n${escaped} \\{[^}]*border(?:-color)?:[^;]*var\\(--control-edge\\);`,
+    );
+    expect(`\n${surfaces}\n${features}`).toMatch(rule);
   });
 
   const light = tokens(blocks[0]);
@@ -50,12 +88,18 @@ describe("palette contrast", () => {
       return ref ? resolve(palette[ref[1]]) : value;
     };
 
-    it(`gives selected controls 3:1 against every ${name} background`, () => {
-      for (const bg of ["--bg", "--surface", "--surface-sunken"]) {
-        expect(ratio(resolve(palette["--selected"]), resolve(palette[bg]))).toBeGreaterThanOrEqual(
-          3,
-        );
-      }
+    it.each(["--selected", "--control-edge"])(
+      `gives %s 3:1 against every ${name} background`,
+      (token) => {
+        for (const bg of ["--bg", "--surface", "--surface-sunken"]) {
+          expect(ratio(resolve(palette[token]), resolve(palette[bg]))).toBeGreaterThanOrEqual(3);
+        }
+      },
+    );
+
+    it(`gives the keyline-edged Maps button 3:1 against the ${name} sign`, () => {
+      const sign = resolve(palette["--sign"]);
+      expect(ratio(over(resolve(palette["--sign-keyline"]), sign), sign)).toBeGreaterThanOrEqual(3);
     });
   }
 });

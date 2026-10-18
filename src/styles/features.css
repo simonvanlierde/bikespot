@@ -102,7 +102,7 @@
   justify-content: space-between;
   gap: 1rem;
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: 1px solid var(--control-edge);
   padding: 1rem;
 }
 
@@ -155,17 +155,25 @@
 /* The version is the source-code link: a quiet outlined chip, clearly
    tappable, that warms to sign blue on hover (borrowing the .maps-link cue). */
 .app-footer__version {
+  position: relative;
   margin-left: auto;
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
   padding: 0.3rem 0.6rem;
-  border: 1px solid var(--line);
+  border: 1px solid var(--control-edge);
   border-radius: var(--radius-control);
   font-family: var(--font-mono);
   letter-spacing: 0.02em;
   color: var(--muted);
   text-decoration: none;
+}
+
+/* The chip stays small, but its tap area grows to the 2.75rem target height. */
+.app-footer__version::before {
+  content: "";
+  position: absolute;
+  inset: calc(50% - 1.375rem) 0;
 }
 
 .app-footer__version:hover {
