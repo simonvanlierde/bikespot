@@ -58,7 +58,9 @@ export type OverlayState =
 
 // A notice with `undo` offers to reverse the action it reports. The store
 // dismisses it when the undo window ends, so the UI's auto-dismiss skips it.
-export type Notice = { text: string; tone?: "error"; undo?: () => void };
+// `saved` marks the confirmation of a save from the editor; the sign flips its
+// values in once for it.
+export type Notice = { text: string; tone?: "error"; undo?: () => void; saved?: true };
 
 // Long enough to read the notice and reach Undo by keyboard or switch access,
 // short enough that the removed photo does not linger.
@@ -257,6 +259,7 @@ export function createStore(repo: SpotRepository = browserRepository) {
     closeOverlay();
     notice.value = {
       text: replaced ? t.value.noticeLocationReplaced : t.value.noticeLocationUpdated,
+      saved: true,
     };
     await commitData(next);
     requestPersistentStorage();

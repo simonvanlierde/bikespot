@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/preact";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -129,6 +131,31 @@ describe("bike storage tracker app", () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+
+  it("flips the sign's values in after a save, and only then", async () => {
+    const user = userEvent.setup();
+
+    await renderApp();
+    const card = screen.getByRole("region", { name: /current spot/i });
+    expect(card).not.toHaveClass("current-card--flip");
+
+    await openSheet(user, /change spot/i);
+    await user.type(screen.getByLabelText(/^lane$/i), "7");
+    await user.click(screen.getByRole("button", { name: /^save$/i }));
+
+    // The notice is announced at once; the flip runs beside it, not before it.
+    expect(screen.getByRole("status")).toHaveTextContent(/saved|replaced/i);
+    expect(card).toHaveClass("current-card--flip");
+
+    // The motion lives only under no-preference, so reduced motion gets none.
+    const css = readFileSync("src/styles/surfaces.css", "utf8");
+    const motionFree = css.replace(
+      /@media \(prefers-reduced-motion: no-preference\) \{[\s\S]*?\n\}\n/g,
+      "",
+    );
+    expect(css).toContain(".current-card--flip");
+    expect(motionFree).not.toContain("current-card--flip");
   });
 
   it("uses station settings to drive the location editor fields", async () => {

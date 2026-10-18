@@ -274,9 +274,9 @@
 
 .current-card .notice-undo {
   padding-block: 0.5rem;
-  background: rgba(255, 255, 255, 0.16);
+  background: var(--sign-tonal);
 }
 
 .current-card .notice-undo:hover {
-  background: rgba(255, 255, 255, 0.26);
+  background: var(--sign-tonal-hover);
 }

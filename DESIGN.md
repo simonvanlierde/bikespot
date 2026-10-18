@@ -5,6 +5,10 @@ colors:
   sign-blue: "#1d3d91"
   sign-blue-edge: "#16307a"
   sign-ink: "#ffffff"
+  sign-ink-soft: "rgba(255, 255, 255, 0.78)"
+  sign-keyline: "rgba(255, 255, 255, 0.55)"
+  sign-tonal: "rgba(255, 255, 255, 0.16)"
+  sign-tonal-hover: "rgba(255, 255, 255, 0.26)"
   signal-yellow: "#ffc917"
   signal-ink: "#231d02"
   concrete: "#f2f4f7"
@@ -120,7 +124,9 @@ The interface borrows the signs of Dutch stations and their bike parks: deep sig
 
 Everything else stays quiet. Secondary cards, sheets and forms sit on pale concrete surfaces with hairline borders, so the sign is the only loud thing on screen. There is little on each screen, and targets are large, because people use it with one hand outdoors.
 
-The tokens are CSS custom properties in `src/styles/base.css`. The front matter lists the light palette plus the dark (`night-`) overrides. Four names differ in CSS: `sign-blue` is `--sign`, `sign-blue-edge` is `--sign-edge`, `signal-yellow` is `--signal` and `concrete` is `--bg`.
+The tokens are CSS custom properties in one `:root` block in `src/styles/base.css`. A colour that changes with the theme is written once as `light-dark(light, dark)`, so each value exists once per theme. The OS picks the theme through `color-scheme: light dark`; a theme forced in Settings sets `color-scheme` on `<html data-theme>`, and nothing else. The build turns `light-dark()` into a fallback that older browsers understand.
+
+The front matter lists the light palette plus the dark (`night-`) values. Four names differ in CSS: `sign-blue` is `--sign`, `sign-blue-edge` is `--sign-edge`, `signal-yellow` is `--signal` and `concrete` is `--bg`. Three role tokens point at the palette: `--selected` (`sign-blue`, `night-selected` in dark mode), `--link` (`sign-blue`, `night-link`) and `--focus-ring` (`sign-blue`, `signal-yellow`).
 
 **Key Characteristics:**
 
@@ -135,7 +141,7 @@ Blue and concrete, with one yellow signal and one red for errors.
 
 ### Primary
 
-- **Sign Blue** (`sign-blue`): the current-spot sign, primary buttons, the active segment and switches that are on. In dark mode a switch track and the edges of the active segment and primary buttons use the lighter `night-selected`, because night sign blue is below 3:1 against the surface. `sign-blue-edge` is the primary hover colour. In dark mode it gets brighter: `night-sign-blue`.
+- **Sign Blue** (`sign-blue`): the current-spot sign, primary buttons, the active segment and switches that are on. In dark mode a switch track and the edges of the active segment and primary buttons use the lighter `night-selected`, because night sign blue is below 3:1 against the surface. `sign-blue-edge` is the primary hover colour (`night-sign-blue-edge` in dark mode). Night sign blue itself is brighter than the day one, so the sign still reads as blue on the dark page.
 
 ### Secondary
 
@@ -147,7 +153,13 @@ Blue and concrete, with one yellow signal and one red for errors.
 - **Surface** / **Surface Sunken**: cards and sheets; insets, notes, counts and hover fills.
 - **Ink** / **Muted**: body text; kickers, hints and timestamps.
 - **Line** / **Control Edge**: hairlines on cards, dividers and the detail list; the edge of every control (buttons, segments, inputs, the utility buttons, recent items, the footer link) and switch tracks, at least 3:1 against every surface.
-- **Danger** with **Danger Plate**: error text and destructive outlines; the error notice.
+- **Danger** with **Danger Plate**: error text and destructive outlines; the error notice. The plate keeps its light colours in dark mode.
+
+### On the sign
+
+- **Sign Ink** / **Sign Ink Soft**: the headline and facts; the timestamp, the note, the GPS pin and the chevron.
+- **Sign Keyline**: the keyline inside the sign, the photo border and the edge of the Maps link.
+- **Sign Tonal** / **Sign Tonal Hover**: the translucent white fill of the secondary controls on the sign (Maps, Undo), and its hover.
 
 ### Named Rules
 
@@ -188,8 +200,8 @@ At 640px and wider, the sign's timestamp and actions share one row, and the sign
 
 Flat by default. Depth comes from tone (concrete, surface, sunken) and 1px hairlines. `base.css` has two shadow tokens:
 
-- **Sign shadow** (`0 12px 28px rgba(29, 61, 145, 0.22)`; darker and neutral in dark mode): lifts the current-spot sign off the page.
-- **Sheet shadow** (`0 -8px 32px rgba(14, 21, 34, 0.18)`): separates a sheet from the backdrop.
+- **Sign shadow** (`0 12px 28px rgba(29, 61, 145, 0.22)`; `rgba(0, 0, 0, 0.35)` in dark mode): lifts the current-spot sign off the page.
+- **Sheet shadow** (`0 -8px 32px rgba(14, 21, 34, 0.18)`; `rgba(0, 0, 0, 0.5)` in dark mode): separates a sheet from the backdrop.
 
 **The Two Shadows Rule.** Only the sign and sheets cast shadows, apart from a 1px drop under the switch knob. Cards, buttons and inputs stay flat.
 
@@ -207,7 +219,7 @@ The main component: a sign-blue panel with the keyline inside, the spot headline
 
 - **Shape:** control radius (0.75rem), at least 2.75rem tall.
 - **Primary:** sign blue with white text, weight 700.
-- **On the sign:** the colours swap to a white plate with sign-blue text. The Maps link next to it has a tonal white fill (16% opacity) and a keyline-coloured edge, which keeps 3:1 against the sign.
+- **On the sign:** the colours swap to a white plate with sign-blue text. The Maps link next to it has the `sign-tonal` fill and a `sign-keyline` edge, which keeps 3:1 against the sign.
 - **Ghost:** transparent with a `control-edge` border; the danger version uses a danger border and danger text.
 - **Hover / Active:** a sunken fill for ghost buttons, `sign-blue-edge` for primary; a 0.985 scale on press and 150ms colour transitions, both off under reduced motion.
 
@@ -233,15 +245,25 @@ Like a departures board: the label on the left in mono uppercase, the value on t
 
 The save confirmation is a small signal-yellow tag. It goes away by itself after a few seconds. Errors use the danger plate and stay until the next action replaces them.
 
+## Motion
+
+Motion is short and only confirms something that just happened. All of it sits inside `prefers-reduced-motion: no-preference`, so reduced motion gets none.
+
+- Controls: 150ms colour transitions and a 0.985 scale on press (100ms). The switch knob slides in 150ms.
+- Sheets: the backdrop fades in over 180ms and the sheet rises 2.5rem over 220ms.
+- The sign after a save: its values flip in like a split-flap departure board (see below).
+
+**The Split-Flap Rule.** When you save a spot from the editor, the sign's values flip in once, top to bottom, like the flaps on a station departure board: the headline first, then the facts one after another, the note and the timestamp, each a 320ms turn about its horizontal axis, staggered so the last one lands by 540ms. It plays once per save and never on load, on undo or when a recent spot comes back. It only moves things (a transform), so nothing reflows, the save is already stored, and the live region announces it at once. No other screen element flips, and nothing else on the sign moves.
+
 ## Do's and Don'ts
 
 ### Do
 
 - **Do** keep the current-spot sign as the only filled sign-blue panel, with its keyline inside.
-- **Do** take every colour from the tokens, and change both dark-mode blocks together.
+- **Do** take every colour from the tokens, and give a colour that changes with the theme both values in one `light-dark()`.
 - **Do** keep touch targets at 2.75rem (44px) or more, and control edges at 3:1 contrast against their background. A small link can keep its look and get the 44px height from an invisible hit area, as the footer version link does.
 - **Do** set kickers, timestamps and counts in Overpass Mono, and use uppercase only for kickers.
-- **Do** wrap motion in `prefers-reduced-motion: no-preference`.
+- **Do** wrap motion in `prefers-reduced-motion: no-preference`, keep it under 600ms, and never make a save or an announcement wait for it.
 
 ### Don't
 

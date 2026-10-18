@@ -21,6 +21,12 @@ export function CurrentSpotCard({
 }) {
   const facts = current ? getDetailFacts(current) : [];
   const photoUrl = usePhotoUrl(current?.photoId);
+  // Keyed on the save time, so the flip-in plays once per save, also when a
+  // second save follows while the first notice is still up.
+  const flipKey = current?.updatedAt;
+  const cardClass = current
+    ? `current-card current-card--tappable${notice?.saved ? " current-card--flip" : ""}`
+    : "current-card";
 
   // The whole sign is a tap target for the details sheet, but its text stays
   // selectable: a click that ends a text selection is not a tap.
@@ -33,11 +39,7 @@ export function CurrentSpotCard({
   return (
     // biome-ignore lint/a11y/noNoninteractiveElementInteractions: the hit button below is the accessible control; the section click is the pointer convenience
     // biome-ignore lint/a11y/useKeyWithClickEvents: keyboard users reach the hit button directly
-    <section
-      className={current ? "current-card current-card--tappable" : "current-card"}
-      aria-label={t.value.currentSpot}
-      onClick={handleCardClick}
-    >
+    <section className={cardClass} aria-label={t.value.currentSpot} onClick={handleCardClick}>
       <div className="current-card__content">
         {current ? (
           <span className="current-card__topline-end">
@@ -72,6 +74,7 @@ export function CurrentSpotCard({
               </figure>
             ) : null}
             <h1
+              key={flipKey}
               className={
                 !current || current.mode === "outside" ? "headline headline--outside" : "headline"
               }
@@ -79,7 +82,7 @@ export function CurrentSpotCard({
               {current ? getPrimaryLabel(current) : t.value.noSpotYet}
             </h1>
           </div>
-          <div className="current-card__body">
+          <div className="current-card__body" key={flipKey}>
             {!current ? <p className="spot-summary">{t.value.emptyIntro}</p> : null}
             {current?.mode === "outside" && current.outsideDescription ? (
               <p className="spot-summary">{current.outsideDescription}</p>
@@ -97,7 +100,7 @@ export function CurrentSpotCard({
           </div>
           <div className="current-card__footer">
             {current ? (
-              <p className="timestamp">
+              <p className="timestamp" key={flipKey}>
                 {t.value.updated(formatRelativeTimestamp(current.updatedAt))}
               </p>
             ) : null}

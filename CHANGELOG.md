@@ -21,6 +21,8 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   only that copy used.
 - Undo after removing a spot from Recent, for 10 seconds. The spot comes back in its old
   place, with its photo.
+- When you save a spot, the sign's values flip in once, like a station departure board.
+  It takes about half a second and does not run when your device asks for reduced motion.
 
 ### Changed
 
