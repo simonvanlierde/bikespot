@@ -257,19 +257,18 @@ export function SpotMapSheet({
                 {t.value.positionError}
               </p>
             ) : null}
-            {attempt === 0 || failed ? (
-              <button
-                className="ghost-button ghost-button--wide"
-                type="button"
-                onClick={() => {
-                  requestOrientationAccess();
-                  setAttempt((value) => value + 1);
-                }}
-              >
-                <LocateFixed aria-hidden="true" className="button-icon" />
-                <span>{t.value.showMyPosition}</span>
-              </button>
-            ) : null}
+            {/* Stays after the tap, so focus is not lost; a second tap restarts the watch. */}
+            <button
+              className="ghost-button ghost-button--wide"
+              type="button"
+              onClick={() => {
+                requestOrientationAccess();
+                setAttempt((value) => value + 1);
+              }}
+            >
+              <LocateFixed aria-hidden="true" className="button-icon" />
+              <span>{t.value.showMyPosition}</span>
+            </button>
             <a
               className="maps-link"
               href={mapsLink(currentCoords)}

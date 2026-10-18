@@ -167,9 +167,15 @@ describe("spot map", () => {
     const { user, dialog } = await openMap();
     const announced = () => dialog.querySelector('[aria-live="polite"]')?.textContent;
 
-    await user.click(within(dialog).getByRole("button", { name: "Show where I am" }));
+    const locate = within(dialog).getByRole("button", { name: "Show where I am" });
+    // The sheet takes focus in an effect after paint; wait so it does not steal it back.
+    await vi.waitFor(() => expect(document.activeElement).toBe(dialog));
+    locate.focus();
+    await user.keyboard("{Enter}");
     await vi.waitFor(() => expect(geo.watchPosition).toHaveBeenCalledTimes(1));
     expect(announced()).toBe("Finding your location…");
+    // The button stays, so keyboard and screen-reader focus is not dropped.
+    expect(document.activeElement).toBe(locate);
 
     geo.move({ ...youSouthWest, accuracy: 5 });
     expect(announced()).toBe("120 m north-east");
