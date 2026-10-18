@@ -19,6 +19,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:setup": "playwright install chromium --only-shell",
     "deploy": "pnpm run build && wrangler pages deploy"
   },
   "dependencies": {

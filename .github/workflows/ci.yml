@@ -36,7 +36,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Install Chromium for browser tests
-        run: pnpm exec playwright install --with-deps --only-shell chromium
+        run: pnpm test:setup --with-deps
 
       - name: Lint
         run: pnpm lint
