@@ -42,11 +42,16 @@ export function captureCoords(): Promise<Coords | null> {
   });
 }
 
-// Follows the device's position until the returned function is called. Calls
-// onError once, straight away, when the browser has no Geolocation API.
-export function watchCoords(onCoords: (coords: Coords) => void, onError: () => void): () => void {
+// Follows the device's position until the returned function is called.
+// onError(true) means no position will come: the browser has no Geolocation
+// API (called straight away) or the user refused. onError(false) is a timeout
+// or lost signal; the watch keeps trying.
+export function watchCoords(
+  onCoords: (coords: Coords) => void,
+  onError: (final: boolean) => void,
+): () => void {
   if (!hasGeolocation()) {
-    onError();
+    onError(true);
     return () => undefined;
   }
 
@@ -54,7 +59,8 @@ export function watchCoords(onCoords: (coords: Coords) => void, onError: () => v
   const { geolocation } = navigator;
   const id = geolocation.watchPosition(
     (position) => onCoords(toCoords(position)),
-    () => onError(),
+    // 1 is PERMISSION_DENIED; the constant is missing on plain error objects.
+    (error) => onError(error.code === 1),
     { ...GEOLOCATION_OPTIONS, timeout: 30_000 },
   );
   return () => geolocation.clearWatch(id);

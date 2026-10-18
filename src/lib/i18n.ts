@@ -114,6 +114,7 @@ type Dict = {
   mapLabel: (count: number) => string;
   showMyPosition: string;
   locatingYou: string;
+  noSignal: string;
   positionError: string;
   toYourBike: string;
   you: string;
@@ -280,6 +281,7 @@ const en: Dict = {
   mapLabel: (count) => (count === 1 ? "Map of 1 spot" : `Map of ${count} spots`),
   showMyPosition: "Show where I am",
   locatingYou: "Finding your location…",
+  noSignal: "No GPS signal yet. Still looking; it works better outside.",
   positionError: "Could not get your location. Check that this site may use it.",
   toYourBike: "To your bike",
   you: "You",
@@ -423,6 +425,7 @@ const nl: Dict = {
   mapLabel: (count) => (count === 1 ? "Kaart van 1 plek" : `Kaart van ${count} plekken`),
   showMyPosition: "Laat zien waar ik ben",
   locatingYou: "Je locatie zoeken…",
+  noSignal: "Nog geen GPS-signaal. We blijven zoeken; buiten lukt het beter.",
   positionError: "Je locatie is niet gevonden. Controleer of deze site hem mag gebruiken.",
   toYourBike: "Naar je fiets",
   you: "Jij",

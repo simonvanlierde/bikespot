@@ -33,6 +33,8 @@ function headingOf(event: OrientationWithCompass): number | null {
 function useTracking(attempt: number) {
   const [position, setPosition] = useState<Coords | null>(null);
   const [failed, setFailed] = useState(false);
+  // A timeout or lost signal before the first fix: the watch keeps trying.
+  const [noSignal, setNoSignal] = useState(false);
   const [heading, setHeading] = useState<number | null>(null);
 
   useEffect(() => {
@@ -41,12 +43,14 @@ function useTracking(attempt: number) {
     }
 
     setFailed(false);
+    setNoSignal(false);
     const stopWatching = watchCoords(
       (coords) => {
         setPosition(coords);
         setFailed(false);
+        setNoSignal(false);
       },
-      () => setFailed(true),
+      (final) => (final ? setFailed(true) : setNoSignal(true)),
     );
     const onOrientation = (event: Event) => {
       const next = headingOf(event as OrientationWithCompass);
@@ -66,7 +70,7 @@ function useTracking(attempt: number) {
     };
   }, [attempt]);
 
-  return { position, failed, heading };
+  return { position, failed, noSignal, heading };
 }
 
 // Safari asks for motion access, and only from inside a tap. Elsewhere this is a no-op.
@@ -93,7 +97,7 @@ export function SpotMapSheet({
   onClose: () => void;
 }) {
   const [attempt, setAttempt] = useState(0);
-  const { position, failed, heading } = useTracking(attempt);
+  const { position, failed, noSignal, heading } = useTracking(attempt);
 
   const currentCoords = current?.coords;
   const recentSpots: PlacedSpot[] = recent
@@ -236,7 +240,8 @@ export function SpotMapSheet({
           <div className="spot-map__route">
             <p className="section-kicker">{t.value.toYourBike}</p>
             <p aria-live="polite" className="spot-map__distance">
-              {route ?? (attempt > 0 && !failed ? t.value.locatingYou : "")}
+              {route ??
+                (attempt > 0 && !failed ? (noSignal ? t.value.noSignal : t.value.locatingYou) : "")}
             </p>
             {failed ? (
               <p className="spot-map__error" role="alert">

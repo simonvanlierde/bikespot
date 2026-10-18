@@ -33,8 +33,10 @@ function position(coords: { lat: number; lng: number }): GeolocationPosition {
 
 function mockGeolocation() {
   let report: PositionCallback = () => undefined;
-  const watchPosition = vi.fn((success: PositionCallback) => {
+  let fail: PositionErrorCallback = () => undefined;
+  const watchPosition = vi.fn((success: PositionCallback, error: PositionErrorCallback) => {
     report = success;
+    fail = error;
     return 7;
   });
   const clearWatch = vi.fn();
@@ -46,6 +48,7 @@ function mockGeolocation() {
     watchPosition,
     clearWatch,
     move: (coords: typeof bike) => act(() => report(position(coords))),
+    fail: (code: number) => act(() => fail({ code } as GeolocationPositionError)),
   };
 }
 
@@ -124,6 +127,23 @@ describe("spot map", () => {
 
     expect(screen.getByText("120 m naar het noordoosten")).toBeInTheDocument();
     expect(screen.getByText("Rij 5: 40 m ten zuiden van de huidige plek")).toBeInTheDocument();
+  });
+
+  it("treats a timeout as a weak signal, not a refusal", async () => {
+    seedStorage(withCoords);
+    const geo = mockGeolocation();
+    const { user, dialog } = await openMap();
+
+    await user.click(within(dialog).getByRole("button", { name: "Show where I am" }));
+    await vi.waitFor(() => expect(geo.watchPosition).toHaveBeenCalledTimes(1));
+    geo.fail(3);
+    expect(within(dialog).getByText(/No GPS signal yet/)).toBeInTheDocument();
+    expect(within(dialog).queryByRole("alert")).toBeNull();
+
+    geo.move({ ...youSouthWest, accuracy: 5 });
+    geo.fail(3);
+    expect(within(dialog).getByText("120 m north-east")).toBeInTheDocument();
+    expect(within(dialog).queryByRole("alert")).toBeNull();
   });
 
   it("shows an error when location is refused, and lets you try again", async () => {

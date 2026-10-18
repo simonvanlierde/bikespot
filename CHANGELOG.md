@@ -24,7 +24,8 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - A spot map that shows your current and recent spots with a GPS location, placed against
   each other with a scale bar. Tap "Show where I am" to see how far your bike is and in
   which direction, such as "120 m north-east". It updates as you walk, and shows which way
-  your phone points where the phone can tell. The map is drawn on the phone: it works
+  your phone points where the phone can tell. Without a GPS signal yet, such as
+  underground, it says so and keeps looking. The map is drawn on the phone: it works
   offline and sends no spot anywhere.
 
 ### Changed

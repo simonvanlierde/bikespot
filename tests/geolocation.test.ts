@@ -69,12 +69,28 @@ describe("watchCoords", () => {
     expect(clearWatch).toHaveBeenCalledWith(3);
   });
 
-  it("reports an error when geolocation is unavailable", () => {
+  it("reports a final error when geolocation is unavailable", () => {
     vi.stubGlobal("navigator", {});
     const onError = vi.fn();
 
     watchCoords(() => undefined, onError)();
 
-    expect(onError).toHaveBeenCalledTimes(1);
+    expect(onError).toHaveBeenCalledExactlyOnceWith(true);
+  });
+
+  it("tells a refusal apart from a timeout", () => {
+    let fail: PositionErrorCallback = () => undefined;
+    const watchPosition = vi.fn((_success: PositionCallback, error: PositionErrorCallback) => {
+      fail = error;
+      return 3;
+    });
+    vi.stubGlobal("navigator", { geolocation: { watchPosition, clearWatch: vi.fn() } });
+    const onError = vi.fn();
+
+    watchCoords(() => undefined, onError);
+    fail({ code: 3 } as GeolocationPositionError);
+    fail({ code: 1 } as GeolocationPositionError);
+
+    expect(onError.mock.calls).toEqual([[false], [true]]);
   });
 });
