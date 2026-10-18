@@ -21,7 +21,7 @@ import {
 import { captureCoords } from "./geolocation";
 import { t } from "./i18n";
 import { stripPhotoMetadata } from "./photos";
-import { browserRepository, type SpotRepository } from "./repository";
+import { browserRepository, type LoadLoss, type SpotRepository } from "./repository";
 import { exportSpots, mergeSpots, parseSpotsFile } from "./spotsTransfer";
 
 // What a caller asks to open. The store builds any draft the overlay needs.
@@ -64,11 +64,12 @@ export type Store = ReturnType<typeof createStore>;
 // storage synchronously; start() wires persistence and runs the photo sweep.
 // biome-ignore lint/complexity/noExcessiveLinesPerFunction: the handlers share the store's closure
 export function createStore(repo: SpotRepository = browserRepository) {
-  const data = signal<AppData>(repo.loadAppData());
+  const loaded = repo.loadAppData();
+  const data = signal<AppData>(loaded.data);
   const overlay = signal<OverlayState>({ kind: "closed" });
   // A fresh object per notice so posting the same text twice still re-arms the
   // auto-dismiss timer keyed on it. Errors stay until dismissed or replaced.
-  const notice = signal<Notice | null>(null);
+  const notice = signal<Notice | null>(lostDataNotice(loaded.lost));
 
   // A draft left behind by a refresh mid-edit, handed to the next editor open.
   let restoredDraft = repo.loadDraft();
@@ -387,6 +388,7 @@ export function createStore(repo: SpotRepository = browserRepository) {
 
     // A failed save leaves the old records on disk; keep their photos with them.
     if (lastSaveOk) {
+      ignoreFailure(() => repo.clearUnreadableBackup());
       await repo.clearPhotos().catch(() => undefined);
     }
   }
@@ -443,6 +445,17 @@ export function createStore(repo: SpotRepository = browserRepository) {
     handleClearAllData,
     handleExportSpots,
     handleImportSpots,
+  };
+}
+
+function lostDataNotice(lost: LoadLoss): Notice | null {
+  if (!lost) {
+    return null;
+  }
+
+  return {
+    text: lost === "all" ? t.value.noticeDataUnreadable : t.value.noticeSomeDataUnreadable,
+    tone: "error",
   };
 }
 

@@ -226,7 +226,7 @@ describe("store handlers", () => {
       const saveAppData = vi.fn();
       const failing = createStore({
         ...browserRepository,
-        loadAppData: () => ({ ...sampleAppData, recent: [withPhoto] }),
+        loadAppData: () => ({ data: { ...sampleAppData, recent: [withPhoto] }, lost: null }),
         saveAppData,
         reconcilePhotos: () => Promise.resolve(null),
         dropUnusedPhotos,

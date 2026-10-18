@@ -140,6 +140,8 @@ type Dict = {
   notSaved: string;
 
   noticeSaveFailed: string;
+  noticeDataUnreadable: string;
+  noticeSomeDataUnreadable: string;
   noticeLocationUpdated: string;
   noticeLocationReplaced: string;
   noticeCollected: string;
@@ -257,6 +259,9 @@ const en: Dict = {
   notSaved: "not saved yet",
 
   noticeSaveFailed: "Could not save — storage is full or blocked",
+  noticeDataUnreadable:
+    "Your saved spots and settings could not be read — a copy is kept on this device",
+  noticeSomeDataUnreadable: "Some saved spots could not be read — a copy is kept on this device",
   noticeLocationUpdated: "Spot saved",
   noticeLocationReplaced: "Spot saved — the previous one is in Recent",
   noticeCollected: "Spot cleared — kept in Recent",
@@ -374,6 +379,10 @@ const nl: Dict = {
   notSaved: "nog niet opgeslagen",
 
   noticeSaveFailed: "Kon niet opslaan — opslag vol of geblokkeerd",
+  noticeDataUnreadable:
+    "Je opgeslagen plekken en instellingen konden niet worden gelezen — er staat een kopie op dit apparaat",
+  noticeSomeDataUnreadable:
+    "Sommige opgeslagen plekken konden niet worden gelezen — er staat een kopie op dit apparaat",
   noticeLocationUpdated: "Plek opgeslagen",
   noticeLocationReplaced: "Plek opgeslagen — de vorige staat bij Recent",
   noticeCollected: "Plek gewist — bewaard bij Recent",

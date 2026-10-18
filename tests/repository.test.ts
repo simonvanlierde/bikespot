@@ -17,7 +17,7 @@ describe("app data repository", () => {
   });
 
   it("hydrates the default app data when nothing has been stored yet", () => {
-    expect(loadAppData()).toEqual(defaultAppData);
+    expect(loadAppData().data).toEqual(defaultAppData);
   });
 
   it("stores photo blobs outside localStorage and can read them back by photo id", async () => {
@@ -48,7 +48,7 @@ describe("app data repository", () => {
       },
     });
 
-    const hydrated = loadAppData();
+    const hydrated = loadAppData().data;
 
     expect(hydrated.current).toMatchObject({
       photoId,
@@ -86,7 +86,7 @@ describe("app data repository", () => {
       }),
     );
 
-    const hydrated = loadAppData();
+    const hydrated = loadAppData().data;
 
     expect(hydrated.current?.coords).toEqual({ lat: 52.379189, lng: 4.899431, accuracy: 12 });
     // Out-of-range latitude is rejected, and records without coords still load.
@@ -106,7 +106,7 @@ describe("app data repository", () => {
       JSON.stringify({ ...sampleAppData, recent: "not-an-array" }),
     );
 
-    const hydrated = loadAppData();
+    const hydrated = loadAppData().data;
 
     expect(hydrated.current).toMatchObject({ id: base.id, lane: base.lane });
     expect(hydrated.recent).toEqual([]);
@@ -119,7 +119,7 @@ describe("app data repository", () => {
       JSON.stringify({ station, current: null, recent: [] }),
     );
 
-    expect(loadAppData()).toEqual({ station, current: null, recent: [] });
+    expect(loadAppData().data).toEqual({ station, current: null, recent: [] });
   });
 
   it("starts fresh when legacy versioned state is found", () => {
@@ -137,14 +137,14 @@ describe("app data repository", () => {
       }),
     );
 
-    expect(loadAppData()).toEqual(defaultAppData);
+    expect(loadAppData().data).toEqual(defaultAppData);
   });
 
   it("falls back to defaults when storage access throws", () => {
     const spy = vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
       throw new Error("blocked");
     });
-    expect(loadAppData()).toEqual(defaultAppData);
+    expect(loadAppData().data).toEqual(defaultAppData);
     spy.mockRestore();
   });
 });
