@@ -62,6 +62,14 @@ export function saveAppData(data: AppData): void {
   window.localStorage.setItem(APP_DATA_STORAGE_KEY, JSON.stringify(data));
 }
 
+export function loadUnreadableBackup(): string | null {
+  try {
+    return window.localStorage.getItem(UNREADABLE_BACKUP_KEY);
+  } catch {
+    return null;
+  }
+}
+
 export function clearUnreadableBackup(): void {
   window.localStorage.removeItem(UNREADABLE_BACKUP_KEY);
 }
@@ -108,6 +116,7 @@ export function clearDraft(): void {
 export type SpotRepository = {
   loadAppData(): LoadedAppData;
   saveAppData(data: AppData): void;
+  loadUnreadableBackup(): string | null;
   clearUnreadableBackup(): void;
   loadDraft(): StoredDraft | null;
   saveDraft(draft: LocationDraft, showDetails: boolean): void;
@@ -127,6 +136,7 @@ export type SpotRepository = {
 export const browserRepository: SpotRepository = {
   loadAppData,
   saveAppData,
+  loadUnreadableBackup,
   clearUnreadableBackup,
   loadDraft,
   saveDraft,

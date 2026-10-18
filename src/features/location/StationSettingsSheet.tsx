@@ -22,6 +22,8 @@ export function StationSettingsSheet({
   setStationForm,
   onClose,
   onExportSpots,
+  onExportUnreadable,
+  onClearUnreadable,
   onImportSpots,
   onClearAllData,
 }: {
@@ -29,6 +31,9 @@ export function StationSettingsSheet({
   setStationForm: Dispatch<SetStateAction<StationSettingsDraft>>;
   onClose: () => void;
   onExportSpots: () => void;
+  // Set only while a copy of unreadable data is kept on the device.
+  onExportUnreadable?: () => void;
+  onClearUnreadable: () => void;
   onImportSpots: (event: TargetedEvent<HTMLInputElement>) => void;
   onClearAllData: () => void;
 }) {
@@ -132,6 +137,25 @@ export function StationSettingsSheet({
               type="file"
             />
           </label>
+          {onExportUnreadable ? (
+            <>
+              <button
+                className="ghost-button ghost-button--wide"
+                type="button"
+                onClick={onExportUnreadable}
+              >
+                <Download aria-hidden="true" className="button-icon" />
+                <span>{t.value.exportUnreadable}</span>
+              </button>
+              <button
+                className="ghost-button ghost-button--wide ghost-button--danger"
+                type="button"
+                onClick={onClearUnreadable}
+              >
+                {t.value.clearUnreadable}
+              </button>
+            </>
+          ) : null}
           <button
             className="ghost-button ghost-button--wide ghost-button--danger"
             type="button"

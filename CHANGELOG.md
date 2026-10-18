@@ -16,6 +16,9 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   not cleared when the device runs low on space.
 - A note under a photo when the app could not remove its location data. The photo never
   leaves your device either way.
+- When saved data could not be read, Settings lets you export the copy the app kept as a
+  text file, and clear it once you no longer need it. Clearing it also deletes the photos
+  only that copy used.
 
 ### Fixed
 

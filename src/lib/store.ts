@@ -70,6 +70,8 @@ export function createStore(repo: SpotRepository = browserRepository) {
   // A fresh object per notice so posting the same text twice still re-arms the
   // auto-dismiss timer keyed on it. Errors stay until dismissed or replaced.
   const notice = signal<Notice | null>(lostDataNotice(loaded.lost));
+  // The raw text of unreadable data kept on the device, until the user clears it.
+  const unreadableBackup = signal<string | null>(repo.loadUnreadableBackup());
 
   // A draft left behind by a refresh mid-edit, handed to the next editor open.
   let restoredDraft = repo.loadDraft();
@@ -106,20 +108,26 @@ export function createStore(repo: SpotRepository = browserRepository) {
       }
     });
 
-    const snapshot = data.value;
-    const isCurrent = () => active && data.value === snapshot;
     // biome-ignore lint/complexity/noVoid: deliberate fire-and-forget cleanup
-    void repo.reconcilePhotos(snapshot, isCurrent).then((cleaned) => {
-      if (cleaned && isCurrent()) {
-        data.value = cleaned;
-      }
-    });
+    void sweepPhotos(() => active);
 
     return () => {
       active = false;
       stopSaving();
       stopDraftSaving();
     };
+  }
+
+  // Deletes photos nothing refers to any more, and drops references to photos
+  // that are gone, unless the data changed while the sweep ran.
+  async function sweepPhotos(isActive: () => boolean = () => true): Promise<void> {
+    const snapshot = data.value;
+    const isCurrent = () => isActive() && data.value === snapshot;
+    const cleaned = await repo.reconcilePhotos(snapshot, isCurrent);
+
+    if (cleaned && isCurrent()) {
+      data.value = cleaned;
+    }
   }
 
   // The open editor, or null. Given a session, only that same opening counts.
@@ -389,18 +397,35 @@ export function createStore(repo: SpotRepository = browserRepository) {
     // A failed save leaves the old records on disk; keep their photos with them.
     if (lastSaveOk) {
       ignoreFailure(() => repo.clearUnreadableBackup());
+      unreadableBackup.value = repo.loadUnreadableBackup();
       await repo.clearPhotos().catch(() => undefined);
     }
   }
 
   function handleExportSpots(): void {
-    const blob = new Blob([exportSpots(data.value)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `bikespot-${new Date().toISOString().slice(0, 10)}.json`;
-    link.click();
-    URL.revokeObjectURL(url);
+    downloadFile(exportSpots(data.value), "application/json", `bikespot-${today()}.json`);
+  }
+
+  // Plain text: the copy is whatever was stored, often not valid JSON.
+  function handleExportUnreadable(): void {
+    if (unreadableBackup.value !== null) {
+      downloadFile(unreadableBackup.value, "text/plain", `bikespot-unreadable-${today()}.txt`);
+    }
+  }
+
+  async function handleClearUnreadable(): Promise<void> {
+    // biome-ignore lint/suspicious/noAlert: a native confirm is the honest guard for a one-off destructive action
+    if (!window.confirm(t.value.clearUnreadableConfirm)) {
+      return;
+    }
+
+    ignoreFailure(() => repo.clearUnreadableBackup());
+    unreadableBackup.value = repo.loadUnreadableBackup();
+
+    // The photos only the copy referred to are unused now.
+    if (unreadableBackup.value === null) {
+      await sweepPhotos();
+    }
   }
 
   async function handleImportSpots(event: TargetedEvent<HTMLInputElement>): Promise<void> {
@@ -429,6 +454,7 @@ export function createStore(repo: SpotRepository = browserRepository) {
     data,
     overlay,
     notice,
+    unreadableBackup,
     start,
     openOverlay,
     closeOverlay,
@@ -444,6 +470,8 @@ export function createStore(repo: SpotRepository = browserRepository) {
     handleUseRecent,
     handleClearAllData,
     handleExportSpots,
+    handleExportUnreadable,
+    handleClearUnreadable,
     handleImportSpots,
   };
 }
@@ -457,6 +485,19 @@ function lostDataNotice(lost: LoadLoss): Notice | null {
     text: lost === "all" ? t.value.noticeDataUnreadable : t.value.noticeSomeDataUnreadable,
     tone: "error",
   };
+}
+
+function downloadFile(text: string, type: string, name: string): void {
+  const url = URL.createObjectURL(new Blob([text], { type }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = name;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function today(): string {
+  return new Date().toISOString().slice(0, 10);
 }
 
 function whyNotSavable(draft: LocationDraft, station: StationConfig): string {

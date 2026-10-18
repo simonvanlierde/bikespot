@@ -151,6 +151,9 @@ type Dict = {
   clearAllData: string;
   exportSpots: string;
   importSpots: string;
+  exportUnreadable: string;
+  clearUnreadable: string;
+  clearUnreadableConfirm: string;
   noticeImported: (count: number) => string;
   noticeImportInvalid: string;
   clearAllDataConfirm: string;
@@ -260,8 +263,9 @@ const en: Dict = {
 
   noticeSaveFailed: "Could not save — storage is full or blocked",
   noticeDataUnreadable:
-    "Your saved spots and settings could not be read — a copy is kept on this device",
-  noticeSomeDataUnreadable: "Some saved spots could not be read — a copy is kept on this device",
+    "Your saved spots and settings could not be read — a copy is kept on this device; export it from Settings",
+  noticeSomeDataUnreadable:
+    "Some saved spots could not be read — a copy is kept on this device; export it from Settings",
   noticeLocationUpdated: "Spot saved",
   noticeLocationReplaced: "Spot saved — the previous one is in Recent",
   noticeCollected: "Spot cleared — kept in Recent",
@@ -271,6 +275,10 @@ const en: Dict = {
   clearAllData: "Clear all data",
   exportSpots: "Export spots",
   importSpots: "Import spots",
+  exportUnreadable: "Export unreadable data",
+  clearUnreadable: "Clear unreadable data",
+  clearUnreadableConfirm:
+    "Delete the copy of the unreadable data from this device, with the photos only it refers to? Export it first to keep it.",
   noticeImported: (count) => (count === 1 ? "1 spot added" : `${count} spots added`),
   noticeImportInvalid: "Not a Bikespot export file — nothing imported",
   clearAllDataConfirm: "Delete all saved locations, photos and settings from this device?",
@@ -380,9 +388,9 @@ const nl: Dict = {
 
   noticeSaveFailed: "Kon niet opslaan — opslag vol of geblokkeerd",
   noticeDataUnreadable:
-    "Je opgeslagen plekken en instellingen konden niet worden gelezen — er staat een kopie op dit apparaat",
+    "Je opgeslagen plekken en instellingen konden niet worden gelezen — er staat een kopie op dit apparaat; exporteer die via Instellingen",
   noticeSomeDataUnreadable:
-    "Sommige opgeslagen plekken konden niet worden gelezen — er staat een kopie op dit apparaat",
+    "Sommige opgeslagen plekken konden niet worden gelezen — er staat een kopie op dit apparaat; exporteer die via Instellingen",
   noticeLocationUpdated: "Plek opgeslagen",
   noticeLocationReplaced: "Plek opgeslagen — de vorige staat bij Recent",
   noticeCollected: "Plek gewist — bewaard bij Recent",
@@ -392,6 +400,10 @@ const nl: Dict = {
   clearAllData: "Alle gegevens wissen",
   exportSpots: "Plekken exporteren",
   importSpots: "Plekken importeren",
+  exportUnreadable: "Onleesbare gegevens exporteren",
+  clearUnreadable: "Onleesbare gegevens wissen",
+  clearUnreadableConfirm:
+    "De kopie van de onleesbare gegevens van dit apparaat verwijderen, met de foto's waar alleen die kopie naar verwijst? Exporteer hem eerst als je hem wilt bewaren.",
   noticeImported: (count) => (count === 1 ? "1 plek toegevoegd" : `${count} plekken toegevoegd`),
   noticeImportInvalid: "Geen Bikespot-exportbestand — niets geïmporteerd",
   clearAllDataConfirm:

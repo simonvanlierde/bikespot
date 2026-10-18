@@ -6,6 +6,7 @@ import { StationSettingsSheet } from "@/features/location/StationSettingsSheet";
 import { t } from "@/lib/i18n";
 import type { Store } from "@/lib/store";
 
+// biome-ignore lint/complexity/noExcessiveLinesPerFunction: one case per overlay; markup dominates the line count
 export function AppOverlays({ store }: { store: Store }) {
   const appData = store.data.value;
   const current = store.overlay.value;
@@ -37,6 +38,10 @@ export function AppOverlays({ store }: { store: Store }) {
           setStationForm={store.handleStationChange}
           onClose={store.closeOverlay}
           onExportSpots={store.handleExportSpots}
+          onExportUnreadable={
+            store.unreadableBackup.value === null ? undefined : store.handleExportUnreadable
+          }
+          onClearUnreadable={store.handleClearUnreadable}
           onImportSpots={store.handleImportSpots}
           onClearAllData={store.handleClearAllData}
         />
