@@ -68,7 +68,7 @@ describe("palette contrast", () => {
     ".recent-item",
     ".app-footer__version",
   ])("outlines %s with the --control-edge token", (selector) => {
-    const escaped = selector.replace(/[.]/g, "\\.");
+    const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const rule = new RegExp(
       `\\n${escaped} \\{[^}]*border(?:-color)?:[^;]*var\\(--control-edge\\);`,
     );
