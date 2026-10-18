@@ -31,6 +31,8 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- On wider screens, "Change spot" no longer runs past the right edge of the sign when the
+  spot has a GPS location.
 - Station settings are kept on reload, even when no spot is saved yet.
 - Switching between a station and an outside spot keeps your notes, GPS and photo.
 - Text uses the app's own font when offline.

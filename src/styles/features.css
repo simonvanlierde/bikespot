@@ -209,6 +209,12 @@
     flex: 0 0 auto;
   }
 
+  /* A fixed minimum here: the narrow min(100%, 12rem) counts as 0 when the row
+     sizes the actions to their content, so the button then ran past the sign. */
+  .current-card__action {
+    min-width: 12rem;
+  }
+
   .utility-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
