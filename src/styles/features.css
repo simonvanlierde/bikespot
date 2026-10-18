@@ -234,3 +234,41 @@
     text-align: left;
   }
 }
+
+/* A notice and its Undo share a row; the row hides with the empty live region. */
+.notice-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin: 0 0 1.1rem;
+}
+
+.notice-row > .notice {
+  margin: 0;
+}
+
+.notice-row:has(> .notice:empty) {
+  display: none;
+}
+
+.notice-row--sheet {
+  justify-content: space-between;
+  margin: 0;
+}
+
+/* On the sign, Undo is tonal like the maps link so the notice stays the focus. */
+.current-card .notice-undo,
+.current-card .notice-undo:hover {
+  border-color: transparent;
+  color: var(--sign-ink);
+}
+
+.current-card .notice-undo {
+  padding-block: 0.5rem;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.current-card .notice-undo:hover {
+  background: rgba(255, 255, 255, 0.26);
+}

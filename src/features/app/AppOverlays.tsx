@@ -53,6 +53,7 @@ export function AppOverlays({ store }: { store: Store }) {
       return (
         <RecentLocationsSheet
           recent={appData.recent}
+          notice={store.notice.value}
           onClose={store.closeOverlay}
           onPreview={(id) => store.openOverlay({ kind: "recent-preview", id })}
         />

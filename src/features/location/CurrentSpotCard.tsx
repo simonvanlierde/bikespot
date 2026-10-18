@@ -3,6 +3,7 @@ import { ChevronRight, MapPin, Pencil, Plus } from "lucide-preact";
 import { usePhotoUrl } from "@/components/usePhotoUrl";
 import type { LocationRecord } from "@/lib/app-data";
 import { t } from "@/lib/i18n";
+import type { Notice } from "@/lib/store";
 import { formatRelativeTimestamp, getDetailFacts, getPrimaryLabel, mapsLink } from "./display";
 
 // biome-ignore lint/complexity/noExcessiveLinesPerFunction: JSX render fn; markup dominates the line count
@@ -14,7 +15,7 @@ export function CurrentSpotCard({
   onOpenDetails,
 }: {
   current: LocationRecord | null;
-  notice: { text: string; tone?: "error" } | null;
+  notice: Notice | null;
   onEdit: () => void;
   onOpenDetails: () => void;
 }) {
@@ -46,9 +47,23 @@ export function CurrentSpotCard({
             <ChevronRight aria-hidden="true" className="button-icon current-card__chevron" />
           </span>
         ) : null}
-        <p className={notice?.tone === "error" ? "notice notice--error" : "notice"} role="status">
-          {notice?.text}
-        </p>
+        <div className="notice-row">
+          <p className={notice?.tone === "error" ? "notice notice--error" : "notice"} role="status">
+            {notice?.text}
+          </p>
+          {notice?.undo ? (
+            <button
+              className="ghost-button notice-undo"
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                notice.undo?.();
+              }}
+            >
+              {t.value.undo}
+            </button>
+          ) : null}
+        </div>
         <div className="current-card__header">
           <div className="current-card__lead">
             {photoUrl ? (

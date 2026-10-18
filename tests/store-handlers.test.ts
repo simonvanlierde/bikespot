@@ -1,11 +1,11 @@
 import type { TargetedEvent } from "preact";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 import { RECENT_LIMIT } from "../src/lib/app-data.ts";
 import { createOutsideLocationDraft } from "../src/lib/drafts.ts";
 import { t } from "../src/lib/i18n.ts";
-import { browserRepository } from "../src/lib/repository.ts";
+import { browserRepository, type SpotRepository } from "../src/lib/repository.ts";
 import { exportSpots } from "../src/lib/spotsTransfer.ts";
-import { createStore, type Store } from "../src/lib/store.ts";
+import { createStore, type Store, UNDO_WINDOW_MS } from "../src/lib/store.ts";
 import { editorOf, sampleAppData } from "./fixtures.ts";
 
 function stubGeolocation(impl: Parameters<typeof vi.fn>[0]) {
@@ -244,6 +244,71 @@ describe("store handlers", () => {
       expect(dropUnusedPhotos).not.toHaveBeenCalled();
       expect(clearPhotos).not.toHaveBeenCalled();
       stop();
+    });
+  });
+
+  describe("handleRemoveRecent", () => {
+    const withPhoto = { ...sampleAppData.recent[0], photoId: "photo-1" };
+    const other = { ...sampleAppData.recent[0], id: "other", photoId: "photo-2" };
+    let dropUnusedPhotos: Mock<SpotRepository["dropUnusedPhotos"]>;
+    let stop: () => void;
+
+    beforeEach(() => {
+      vi.useFakeTimers();
+      dropUnusedPhotos = vi.fn<SpotRepository["dropUnusedPhotos"]>(() => Promise.resolve());
+      store = createStore({
+        ...browserRepository,
+        loadAppData: () => ({ ...sampleAppData, recent: [other, withPhoto] }),
+        reconcilePhotos: () => Promise.resolve(null),
+        dropUnusedPhotos,
+      });
+      stop = store.start();
+      store.openOverlay({ kind: "recent-preview", id: withPhoto.id });
+    });
+
+    afterEach(() => {
+      stop();
+      vi.useRealTimers();
+    });
+
+    it("keeps the photo until the undo window ends, then drops it", () => {
+      store.handleRemoveRecent(withPhoto.id);
+
+      expect(store.data.value.recent).toEqual([other]);
+      expect(store.notice.value?.text).toBe(t.value.noticeRecentRemoved);
+      expect(store.notice.value?.undo).toBeTypeOf("function");
+      expect(dropUnusedPhotos).not.toHaveBeenCalled();
+
+      vi.advanceTimersByTime(UNDO_WINDOW_MS);
+
+      expect(dropUnusedPhotos).toHaveBeenCalledTimes(1);
+      const [previous, next] = dropUnusedPhotos.mock.calls[0];
+      expect(previous.recent).toEqual([withPhoto]);
+      expect(next).toBe(store.data.value);
+      expect(store.notice.value).toBeNull();
+    });
+
+    it("puts the spot back in its place, photo and all, on undo", () => {
+      store.handleRemoveRecent(withPhoto.id);
+      store.notice.value?.undo?.();
+
+      expect(store.data.value.recent).toEqual([other, withPhoto]);
+      expect(store.notice.value).toEqual({ text: t.value.noticeRecentRestored });
+      vi.advanceTimersByTime(UNDO_WINDOW_MS);
+      expect(dropUnusedPhotos).not.toHaveBeenCalled();
+    });
+
+    it("ends the first undo window when a second spot is removed", () => {
+      store.handleRemoveRecent(withPhoto.id);
+      const firstUndo = store.notice.value?.undo;
+      store.handleRemoveRecent(other.id);
+
+      expect(dropUnusedPhotos).toHaveBeenCalledTimes(1);
+      firstUndo?.();
+      expect(store.data.value.recent).toEqual([]);
+
+      store.notice.value?.undo?.();
+      expect(store.data.value.recent).toEqual([other]);
     });
   });
 
