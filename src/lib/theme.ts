@@ -20,8 +20,8 @@ function readStoredTheme(): Theme {
 
 export const theme = signal<Theme>(readStoredTheme());
 
-// Reflect the choice onto <html data-theme> (base.css keys the forced palettes off
-// it) and persist. 'system' clears both so the media query takes over again. Runs
+// Reflect the choice onto <html data-theme> (base.css sets color-scheme from it)
+// and persist. 'system' clears both, so color-scheme: light dark lets the OS pick. Runs
 // once on import, so the DOM is set before the first render.
 effect(() => {
   const value = theme.value;

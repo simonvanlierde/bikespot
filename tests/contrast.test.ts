@@ -14,18 +14,6 @@ function tokens(block: string): Record<string, string> {
   );
 }
 
-// The two arguments of light-dark(), which may themselves hold commas.
-function splitArgs(args: string): [string, string] {
-  let depth = 0;
-  for (let i = 0; i < args.length; i++) {
-    depth += args[i] === "(" ? 1 : args[i] === ")" ? -1 : 0;
-    if (args[i] === "," && depth === 0) {
-      return [args.slice(0, i).trim(), args.slice(i + 1).trim()];
-    }
-  }
-  throw new Error(`light-dark() needs two arguments: ${args}`);
-}
-
 function luminance(hex: string): number {
   const [r, g, b] = [1, 3, 5].map((i) => {
     const c = Number.parseInt(hex.slice(i, i + 2), 16) / 255;
@@ -62,7 +50,6 @@ describe("palette contrast", () => {
   // needs its own palette below.
   it("defines the tokens in one block and forces themes through color-scheme", () => {
     expect(blocks).toHaveLength(3);
-    expect(tokens(blocks[1])).toEqual({});
     expect(blocks[1]).toMatch(/^\s*color-scheme: light;\s*$/);
     expect(blocks[2]).toMatch(/^\s*color-scheme: dark;\s*$/);
   });
@@ -103,8 +90,9 @@ describe("palette contrast", () => {
       if (ref) {
         return resolve(palette[ref[1]]);
       }
-      const pair = value.match(/^light-dark\((.+)\)$/);
-      return pair ? resolve(splitArgs(pair[1])[scheme]) : value;
+      // light-dark(light, dark); an argument may hold one level of parentheses.
+      const pair = value.match(/^light-dark\(((?:[^,()]|\([^()]*\))+),\s*(.+)\)$/);
+      return pair ? resolve(pair[scheme + 1].trim()) : value;
     };
 
     it.each(["--selected", "--control-edge"])(

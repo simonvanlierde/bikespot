@@ -301,6 +301,10 @@ describe("bike storage tracker app", () => {
     await user.click(screen.getByRole("button", { name: /restore this spot/i }));
 
     expect(screen.getByRole("heading", { name: /lane 4/i })).toBeInTheDocument();
+    // A restored spot comes back without the split-flap; only a save flips.
+    expect(screen.getByRole("region", { name: /current spot/i })).not.toHaveClass(
+      "current-card--flip",
+    );
   });
 
   it("offers a keyboard-reachable undo after removing a spot from recent", async () => {
@@ -325,6 +329,9 @@ describe("bike storage tracker app", () => {
     expect(within(list).getByRole("button", { name: /^view lane 5$/i })).toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent(/back in recent/i);
     expect(within(list).queryByRole("button", { name: /^undo$/i })).toBeNull();
+    expect(screen.getByRole("region", { name: /current spot/i })).not.toHaveClass(
+      "current-card--flip",
+    );
   });
 
   it("keeps the saved visible fields on recent entries after station settings change", async () => {
