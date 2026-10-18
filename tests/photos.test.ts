@@ -6,10 +6,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   clearPhotoBlobs,
   deletePhotoBlob,
+  downscalePhoto,
   listPhotoIds,
   loadPhotoBlob,
   savePhotoBlob,
-  stripPhotoMetadata,
 } from "../src/lib/photos.ts";
 
 // Structurally identical to the DOM Blob our code expects; cast once so call sites type-check.
@@ -67,48 +67,82 @@ describe("photo blob store (IndexedDB)", () => {
   });
 });
 
-describe("stripPhotoMetadata", () => {
+describe("downscalePhoto", () => {
   const photo = new File(["exif-laden"], "IMG_0001.HEIC", { type: "image/heic" });
 
   afterEach(() => {
     vi.unstubAllGlobals();
   });
 
-  it("re-encodes the photo to a JPEG through a canvas", async () => {
+  function stubCanvas(width: number, height: number, encodes: string[]) {
     const drawImage = vi.fn();
     const close = vi.fn();
-    vi.stubGlobal("createImageBitmap", vi.fn().mockResolvedValue({ width: 4, height: 3, close }));
+    const sizes: number[][] = [];
+    vi.stubGlobal("createImageBitmap", vi.fn().mockResolvedValue({ width, height, close }));
     vi.stubGlobal(
       "OffscreenCanvas",
       class {
+        width: number;
+        height: number;
+        constructor(w: number, h: number) {
+          this.width = w;
+          this.height = h;
+          sizes.push([w, h]);
+        }
         getContext() {
           return { drawImage };
         }
-        convertToBlob() {
-          return Promise.resolve(new Blob(["clean"], { type: "image/jpeg" }));
+        convertToBlob({ type }: { type: string }) {
+          // Mimics a browser that falls back to PNG for types it cannot encode.
+          return Promise.resolve(
+            new Blob(["clean"], { type: encodes.includes(type) ? type : "image/png" }),
+          );
         }
       },
     );
+    return { drawImage, close, sizes };
+  }
 
-    const stripped = await stripPhotoMetadata(photo);
+  it("downscales the long edge to 1600 px and re-encodes to WebP", async () => {
+    const { drawImage, close, sizes } = stubCanvas(4032, 3024, ["image/webp", "image/jpeg"]);
 
-    expect(stripped?.name).toBe("IMG_0001.jpg");
-    expect(stripped?.type).toBe("image/jpeg");
-    expect(drawImage).toHaveBeenCalledOnce();
+    const shrunk = await downscalePhoto(photo);
+
+    expect(sizes).toEqual([[1600, 1200]]);
+    expect(shrunk?.name).toBe("IMG_0001.webp");
+    expect(shrunk?.type).toBe("image/webp");
+    expect(drawImage).toHaveBeenCalledWith(expect.anything(), 0, 0, 1600, 1200);
     expect(close).toHaveBeenCalledOnce();
+  });
+
+  it("keeps a small photo at its own size", async () => {
+    const { sizes } = stubCanvas(800, 1200, ["image/webp"]);
+
+    await downscalePhoto(photo);
+
+    expect(sizes).toEqual([[800, 1200]]);
+  });
+
+  it("falls back to JPEG where the browser cannot encode WebP", async () => {
+    stubCanvas(3024, 4032, ["image/jpeg"]);
+
+    const shrunk = await downscalePhoto(photo);
+
+    expect(shrunk?.name).toBe("IMG_0001.jpg");
+    expect(shrunk?.type).toBe("image/jpeg");
   });
 
   it("returns null when the browser lacks OffscreenCanvas", async () => {
     vi.stubGlobal("createImageBitmap", vi.fn());
     vi.stubGlobal("OffscreenCanvas", undefined);
 
-    expect(await stripPhotoMetadata(photo)).toBeNull();
+    expect(await downscalePhoto(photo)).toBeNull();
   });
 
   it("returns null when the photo cannot be decoded", async () => {
     vi.stubGlobal("createImageBitmap", vi.fn().mockRejectedValue(new Error("bad image")));
     vi.stubGlobal("OffscreenCanvas", class {});
 
-    expect(await stripPhotoMetadata(photo)).toBeNull();
+    expect(await downscalePhoto(photo)).toBeNull();
   });
 });

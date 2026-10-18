@@ -20,7 +20,7 @@ import {
 } from "./drafts";
 import { captureCoords } from "./geolocation";
 import { t } from "./i18n";
-import { stripPhotoMetadata } from "./photos";
+import { downscalePhoto } from "./photos";
 import { browserRepository, type LoadLoss, type SpotRepository } from "./repository";
 import { exportSpots, mergeSpots, parseSpotsFile } from "./spotsTransfer";
 
@@ -302,15 +302,15 @@ export function createStore(repo: SpotRepository = browserRepository) {
       return;
     }
 
-    const stripped = picked ? await stripPhotoMetadata(picked) : null;
+    const shrunk = picked ? await downscalePhoto(picked) : null;
     const current = openEditor(editor.session);
 
     if (current) {
       patchEditor(current.session, {
-        draft: { ...current.draft, photoFile: stripped ?? picked },
+        draft: { ...current.draft, photoFile: shrunk ?? picked },
         // The photo never leaves the device, so keep it rather than lose the
         // reference, but say its location metadata is still in it.
-        photoMetadataKept: picked !== null && stripped === null,
+        photoMetadataKept: picked !== null && shrunk === null,
       });
     }
   }
