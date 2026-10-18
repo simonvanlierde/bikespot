@@ -149,6 +149,33 @@ describe("store handlers", () => {
       expect(editorOf(store).photoMetadataKept).toBe(false);
     });
 
+    it("saves a photo that is still being shrunk when Save is pressed", async () => {
+      let failDecode: (reason: Error) => void = () => undefined;
+      vi.stubGlobal(
+        "createImageBitmap",
+        vi.fn(
+          () =>
+            new Promise((_resolve, reject) => {
+              failDecode = reject;
+            }),
+        ),
+      );
+      vi.stubGlobal("OffscreenCanvas", class {});
+      store.openOverlay({ kind: "edit-location" });
+      store.setLocationDraft({ ...createOutsideLocationDraft(), notes: "by the tree" });
+      const file = new File(["x"], "spot.jpg", { type: "image/jpeg" });
+
+      const picking = store.handlePhotoChange({
+        currentTarget: { files: [file], value: "" },
+      } as unknown as TargetedEvent<HTMLInputElement>);
+      const saving = store.handleLocationSubmit(submitEvent());
+      failDecode(new Error("slow decode, then fallback"));
+      await Promise.all([picking, saving]);
+
+      expect(store.overlay.value).toEqual({ kind: "closed" });
+      expect(store.data.value.current?.photoId).toEqual(expect.any(String));
+    });
+
     it("ignores photo change and remove without an open editor", async () => {
       await store.handlePhotoChange({
         currentTarget: { files: [], value: "" },

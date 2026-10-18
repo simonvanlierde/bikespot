@@ -38,6 +38,8 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Saving the same spot again with other notes updates it instead of adding a duplicate to
   Recent.
 - A photo that fails to load shows nothing instead of a broken image.
+- Saving right after picking a photo keeps the photo. Before, a spot saved while the
+  photo was still being prepared was stored without it.
 - Input borders, switches, selected options and focus rings have enough contrast in light
   and dark mode, and the switch and selected option stay visible in high-contrast mode.
 - Small buttons have a 44 px touch target.

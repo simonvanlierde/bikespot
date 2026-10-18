@@ -83,6 +83,8 @@ export function createStore(repo: SpotRepository = browserRepository) {
   let restoredDraft = repo.loadDraft();
   let editorSessions = 0;
   let persistRequested = false;
+  // The last photo pick's downscale and draft update; never rejects.
+  let photoInFlight: Promise<void> = Promise.resolve();
   // Whether the last write of app data reached storage. When it did not, the
   // disk still holds the records the in-memory change dropped, photos included.
   let lastSaveOk = true;
@@ -218,6 +220,8 @@ export function createStore(repo: SpotRepository = browserRepository) {
 
   async function handleLocationSubmit(event: TargetedEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
+    // A photo picked just before Save is still being shrunk; wait so it is saved.
+    await photoInFlight;
 
     const editor = openEditor();
 
@@ -302,17 +306,20 @@ export function createStore(repo: SpotRepository = browserRepository) {
       return;
     }
 
-    const shrunk = picked ? await downscalePhoto(picked) : null;
-    const current = openEditor(editor.session);
+    photoInFlight = (async () => {
+      const shrunk = picked ? await downscalePhoto(picked) : null;
+      const current = openEditor(editor.session);
 
-    if (current) {
-      patchEditor(current.session, {
-        draft: { ...current.draft, photoFile: shrunk ?? picked },
-        // The photo never leaves the device, so keep it rather than lose the
-        // reference, but say its location metadata is still in it.
-        photoMetadataKept: picked !== null && shrunk === null,
-      });
-    }
+      if (current) {
+        patchEditor(current.session, {
+          draft: { ...current.draft, photoFile: shrunk ?? picked },
+          // The photo never leaves the device, so keep it rather than lose the
+          // reference, but say its location metadata is still in it.
+          photoMetadataKept: picked !== null && shrunk === null,
+        });
+      }
+    })();
+    await photoInFlight;
   }
 
   function handlePhotoRemove(): void {
