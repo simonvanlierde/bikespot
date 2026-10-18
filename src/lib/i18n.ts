@@ -1,5 +1,7 @@
 import { computed, effect, signal } from "@preact/signals";
 
+import type { Distance, RackLevel, Side } from "./app-data";
+
 // Lean i18n: no framework. A `lang` signal (persisted, auto-detected) plus a
 // `t` computed that swaps the whole string table. Mirrors theme.ts. Reading
 // `t.value.x` in render subscribes the component, so a language switch
@@ -10,7 +12,7 @@ export const LANGS: Lang[] = ["en", "nl"];
 
 // Segmented-control option values, kept as key unions so a missing translation
 // in either language is a type error rather than a silent `undefined` at render.
-export type OptKey = "close" | "middle" | "far" | "left" | "right" | "top" | "bottom";
+export type OptKey = Distance | Side | RackLevel;
 type ThemeKey = "system" | "light" | "dark";
 
 const STORAGE_KEY = "bikespot-lang";
@@ -135,8 +137,8 @@ type Dict = {
   factDistance: (value: string) => string;
   // Take the raw key, not the display word: Dutch needs per-value adjectival
   // forms (linkerkant, onderste rek) that a shared prefix can't produce.
-  factSide: (side: "left" | "right") => string;
-  factRack: (level: "top" | "bottom") => string;
+  factSide: (side: Side) => string;
+  factRack: (level: RackLevel) => string;
   notSaved: string;
 
   noticeSaveFailed: string;
