@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { captureCoords } from "../src/lib/geolocation.ts";
+import { captureCoords, watchCoords } from "../src/lib/geolocation.ts";
 
 describe("captureCoords", () => {
   afterEach(() => {
@@ -43,5 +43,54 @@ describe("captureCoords", () => {
     vi.stubGlobal("navigator", {});
 
     await expect(captureCoords()).resolves.toBeNull();
+  });
+});
+
+describe("watchCoords", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("reports each position and stops when asked", () => {
+    let report: PositionCallback = () => undefined;
+    const watchPosition = vi.fn((success: PositionCallback) => {
+      report = success;
+      return 3;
+    });
+    const clearWatch = vi.fn();
+    vi.stubGlobal("navigator", { geolocation: { watchPosition, clearWatch } });
+    const onCoords = vi.fn();
+
+    const stop = watchCoords(onCoords, () => undefined);
+    report({ coords: { latitude: 52.1, longitude: 5.1, accuracy: 4.4 } } as GeolocationPosition);
+    stop();
+
+    expect(onCoords).toHaveBeenCalledWith({ lat: 52.1, lng: 5.1, accuracy: 4 });
+    expect(clearWatch).toHaveBeenCalledWith(3);
+  });
+
+  it("reports a final error when geolocation is unavailable", () => {
+    vi.stubGlobal("navigator", {});
+    const onError = vi.fn();
+
+    watchCoords(() => undefined, onError)();
+
+    expect(onError).toHaveBeenCalledExactlyOnceWith(true);
+  });
+
+  it("tells a refusal apart from a timeout", () => {
+    let fail: PositionErrorCallback = () => undefined;
+    const watchPosition = vi.fn((_success: PositionCallback, error: PositionErrorCallback) => {
+      fail = error;
+      return 3;
+    });
+    vi.stubGlobal("navigator", { geolocation: { watchPosition, clearWatch: vi.fn() } });
+    const onError = vi.fn();
+
+    watchCoords(() => undefined, onError);
+    fail({ code: 3 } as GeolocationPositionError);
+    fail({ code: 1 } as GeolocationPositionError);
+
+    expect(onError.mock.calls).toEqual([[false], [true]]);
   });
 });

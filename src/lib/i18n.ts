@@ -1,4 +1,7 @@
 import { computed, effect, signal } from "@preact/signals";
+import type { Compass } from "./geo";
+
+import type { Distance, RackLevel, Side } from "./app-data";
 
 // Lean i18n: no framework. A `lang` signal (persisted, auto-detected) plus a
 // `t` computed that swaps the whole string table. Mirrors theme.ts. Reading
@@ -10,7 +13,7 @@ export const LANGS: Lang[] = ["en", "nl"];
 
 // Segmented-control option values, kept as key unions so a missing translation
 // in either language is a type error rather than a silent `undefined` at render.
-export type OptKey = "close" | "middle" | "far" | "left" | "right" | "top" | "bottom";
+export type OptKey = Distance | Side | RackLevel;
 type ThemeKey = "system" | "light" | "dark";
 
 const STORAGE_KEY = "bikespot-lang";
@@ -106,6 +109,23 @@ type Dict = {
   recentBikeRef: string;
   recentPreview: string;
   openInMaps: string;
+  spotMap: string;
+  mapIntro: string;
+  mapNoGps: string;
+  mapCurrentNoGps: string;
+  mapLabel: (count: number) => string;
+  showMyPosition: string;
+  locatingYou: string;
+  noSignal: string;
+  positionError: string;
+  toYourBike: string;
+  you: string;
+  youOffMap: string;
+  atYourBike: string;
+  // "120 m north-east": the way from you to the bike.
+  towards: (distance: string, direction: Compass) => string;
+  // "Lane 5: 40 m south-west of the current spot".
+  fromCurrent: (label: string, distance: string, direction: Compass) => string;
   stationFloor: string;
   useThisLocation: string;
   viewRecent: (title: string) => string;
@@ -135,8 +155,8 @@ type Dict = {
   factDistance: (value: string) => string;
   // Take the raw key, not the display word: Dutch needs per-value adjectival
   // forms (linkerkant, onderste rek) that a shared prefix can't produce.
-  factSide: (side: "left" | "right") => string;
-  factRack: (level: "top" | "bottom") => string;
+  factSide: (side: Side) => string;
+  factRack: (level: RackLevel) => string;
   notSaved: string;
 
   noticeSaveFailed: string;
@@ -163,6 +183,29 @@ type Dict = {
 
   language: string;
   langOpts: Record<Lang, string>;
+};
+
+const COMPASS_EN: Record<Compass, string> = {
+  n: "north",
+  ne: "north-east",
+  e: "east",
+  se: "south-east",
+  s: "south",
+  sw: "south-west",
+  w: "west",
+  nw: "north-west",
+};
+
+// The -en forms, for "naar het noordoosten" and "ten noordoosten van".
+const COMPASS_NL: Record<Compass, string> = {
+  n: "noorden",
+  ne: "noordoosten",
+  e: "oosten",
+  se: "zuidoosten",
+  s: "zuiden",
+  sw: "zuidwesten",
+  w: "westen",
+  nw: "noordwesten",
 };
 
 const en: Dict = {
@@ -234,6 +277,22 @@ const en: Dict = {
   recentBikeRef: "Recent bike reference",
   recentPreview: "Recent location preview",
   openInMaps: "Open in Maps",
+  spotMap: "Spot map",
+  mapIntro: "Drawn on this phone from your spots' GPS. No map is loaded. North is up.",
+  mapNoGps: "None of your spots has a GPS location yet. Add one when you save a spot.",
+  mapCurrentNoGps: "The current spot has no GPS location.",
+  mapLabel: (count) => (count === 1 ? "Map of 1 spot" : `Map of ${count} spots`),
+  showMyPosition: "Show where I am",
+  locatingYou: "Finding your location…",
+  noSignal: "No GPS signal yet. Still looking; it works better outside.",
+  positionError: "Could not get your location. Check that this site may use it.",
+  toYourBike: "To your bike",
+  you: "You",
+  youOffMap: "You, off the edge of the map",
+  atYourBike: "You are at your bike",
+  towards: (distance, direction) => `${distance} ${COMPASS_EN[direction]}`,
+  fromCurrent: (label, distance, direction) =>
+    `${label}: ${distance} ${COMPASS_EN[direction]} of the current spot`,
   stationFloor: "Station floor",
   useThisLocation: "Restore this spot",
   viewRecent: (title) => `View ${title}`,
@@ -361,6 +420,24 @@ const nl: Dict = {
   recentBikeRef: "Recente fietsreferentie",
   recentPreview: "Voorbeeld recente locatie",
   openInMaps: "Openen in Maps",
+  spotMap: "Plekkenkaart",
+  mapIntro:
+    "Op deze telefoon getekend uit de GPS van je plekken. Er wordt geen kaart geladen. Het noorden is boven.",
+  mapNoGps:
+    "Geen van je plekken heeft al een GPS-locatie. Voeg er een toe als je een plek opslaat.",
+  mapCurrentNoGps: "De huidige plek heeft geen GPS-locatie.",
+  mapLabel: (count) => (count === 1 ? "Kaart van 1 plek" : `Kaart van ${count} plekken`),
+  showMyPosition: "Laat zien waar ik ben",
+  locatingYou: "Je locatie zoeken…",
+  noSignal: "Nog geen GPS-signaal. We blijven zoeken; buiten lukt het beter.",
+  positionError: "Je locatie is niet gevonden. Controleer of deze site hem mag gebruiken.",
+  toYourBike: "Naar je fiets",
+  you: "Jij",
+  youOffMap: "Jij, buiten de rand van de kaart",
+  atYourBike: "Je bent bij je fiets",
+  towards: (distance, direction) => `${distance} naar het ${COMPASS_NL[direction]}`,
+  fromCurrent: (label, distance, direction) =>
+    `${label}: ${distance} ten ${COMPASS_NL[direction]} van de huidige plek`,
   stationFloor: "Verdieping stalling",
   useThisLocation: "Deze plek herstellen",
   viewRecent: (title) => `${title} bekijken`,

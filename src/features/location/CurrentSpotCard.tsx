@@ -84,8 +84,8 @@ export function CurrentSpotCard({
           </div>
           <div className="current-card__body" key={flipKey}>
             {!current ? <p className="spot-summary">{t.value.emptyIntro}</p> : null}
-            {current?.mode === "outside" && current.outsideDescription ? (
-              <p className="spot-summary">{current.outsideDescription}</p>
+            {current?.mode === "outside" && current.notes ? (
+              <p className="spot-summary">{current.notes}</p>
             ) : null}
             {facts.length ? (
               <p className="spot-facts">
@@ -96,7 +96,9 @@ export function CurrentSpotCard({
                 ))}
               </p>
             ) : null}
-            {current?.notes?.trim() ? <p className="spot-note">{current.notes}</p> : null}
+            {current?.mode === "station" && current.notes?.trim() ? (
+              <p className="spot-note">{current.notes}</p>
+            ) : null}
           </div>
           <div className="current-card__footer">
             {current ? (

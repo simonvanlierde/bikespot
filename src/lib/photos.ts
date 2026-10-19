@@ -61,22 +61,45 @@ async function withStore<T>(
 }
 
 const FILE_EXTENSION = /\.[^.]+$/;
+// Long edge in px: enough to read a rack number on a phone screen, about a
+// tenth of the bytes of a 12 MP original.
+export const PHOTO_MAX_EDGE = 1600;
+const PHOTO_QUALITY = 0.8;
 
-// Re-encodes through a canvas so EXIF (GPS, device, timestamp) never reaches
-// storage. Resolves to null where the APIs are missing or decoding fails, so the
-// caller can keep the original file and tell the user its metadata stayed.
-export async function stripPhotoMetadata(file: File): Promise<File | null> {
+// Downscales and re-encodes through a canvas, which also keeps EXIF (GPS,
+// device, timestamp) out of storage. Resolves to null where the APIs are missing
+// or decoding fails (HEIC in most browsers), so the caller can keep the original
+// file and tell the user its metadata stayed.
+export async function downscalePhoto(file: File): Promise<File | null> {
   if (typeof createImageBitmap !== "function" || typeof OffscreenCanvas !== "function") {
     return null;
   }
 
   try {
     const bitmap = await createImageBitmap(file);
-    const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
-    canvas.getContext("2d")?.drawImage(bitmap, 0, 0);
+    const scale = Math.min(1, PHOTO_MAX_EDGE / Math.max(bitmap.width, bitmap.height));
+    const canvas = new OffscreenCanvas(
+      Math.max(1, Math.round(bitmap.width * scale)),
+      Math.max(1, Math.round(bitmap.height * scale)),
+    );
+    const context = canvas.getContext("2d");
+    if (!context) {
+      bitmap.close();
+      return null;
+    }
+    context.imageSmoothingQuality = "high";
+    context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
     bitmap.close();
-    const blob = await canvas.convertToBlob({ type: "image/jpeg", quality: 0.9 });
-    return new File([blob], `${file.name.replace(FILE_EXTENSION, "")}.jpg`, { type: blob.type });
+
+    let blob = await canvas.convertToBlob({ type: "image/webp", quality: PHOTO_QUALITY });
+    // A browser without a WebP encoder hands back a PNG instead.
+    if (blob.type !== "image/webp") {
+      blob = await canvas.convertToBlob({ type: "image/jpeg", quality: PHOTO_QUALITY });
+    }
+    const extension = blob.type === "image/webp" ? "webp" : "jpg";
+    return new File([blob], `${file.name.replace(FILE_EXTENSION, "")}.${extension}`, {
+      type: blob.type,
+    });
   } catch {
     return null;
   }
@@ -86,7 +109,7 @@ export async function savePhotoBlob(blob: Blob): Promise<string> {
   const photoId = createId();
 
   if (!hasIndexedDb()) {
-    // Session-only fallback; reconcilePhotoBlobs drops the dangling id on the
+    // Session-only fallback; reconcilePhotos (repository.ts) drops the dangling id on the
     // next load so records never keep pointing at a blob that is gone.
     memoryPhotoStore.set(photoId, blob);
     return photoId;

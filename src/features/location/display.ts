@@ -92,7 +92,7 @@ export function getSummary(entry: LocationRecord | null): string {
   }
 
   if (entry.mode === "outside") {
-    return entry.outsideDescription ?? "";
+    return entry.notes ?? "";
   }
 
   const parts = [
@@ -191,4 +191,25 @@ export function getDetailFacts(entry: LocationRecord): string[] {
   }
 
   return facts;
+}
+
+const distanceFormat = computed(() => ({
+  m: new Intl.NumberFormat(lang.value, { style: "unit", unit: "meter", maximumFractionDigits: 0 }),
+  km: new Intl.NumberFormat(lang.value, {
+    style: "unit",
+    unit: "kilometer",
+    maximumFractionDigits: 1,
+  }),
+}));
+
+// GPS is good to a few metres at best, so round to what a reader can use:
+// whole metres below 20 m (scale bars go that small), 5 m steps to 100 m,
+// 10 m steps further out, kilometres past 1 km.
+export function formatDistance(meters: number): string {
+  if (meters >= 995) {
+    return distanceFormat.value.km.format(meters / 1000);
+  }
+
+  const step = meters < 20 ? 1 : meters < 100 ? 5 : 10;
+  return distanceFormat.value.m.format(Math.round(meters / step) * step);
 }

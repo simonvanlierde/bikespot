@@ -13,6 +13,7 @@ const overlays: Record<OverlayRequest["kind"], (store: Store) => OverlayRequest>
   "station-settings": () => ({ kind: "station-settings" }),
   "location-details": () => ({ kind: "location-details" }),
   "recent-list": () => ({ kind: "recent-list" }),
+  "spot-map": () => ({ kind: "spot-map" }),
   "recent-preview": (store) => ({ kind: "recent-preview", id: store.data.value.recent[0].id }),
 };
 

@@ -318,16 +318,15 @@ export function normalizeLocationRecord(value: unknown): LocationRecord | null {
   }
 
   if (entry.mode === "outside") {
-    const outsideDescription =
-      typeof entry.outsideDescription === "string" ? entry.outsideDescription.trim() : "";
+    // Older records keep the text in `outsideDescription`, the one they showed.
+    const legacy = (value as { outsideDescription?: unknown }).outsideDescription;
 
     return {
       id,
       updatedAt,
       mode: "outside",
       stationName,
-      outsideDescription: outsideDescription || undefined,
-      notes: normalizeOptionalString(entry.notes),
+      notes: normalizeOptionalString(legacy) ?? normalizeOptionalString(entry.notes),
       photoId: normalizeOptionalString(entry.photoId),
       coords: normalizeCoords(entry.coords),
     };

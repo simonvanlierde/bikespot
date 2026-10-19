@@ -85,17 +85,17 @@ export function buildLocationRecordInput(
   station: StationConfig,
 ): LocationRecordInput | null {
   if (draft.kind === "outside") {
-    const outsideDescription = draft.notes.trim();
+    const notes = draft.notes.trim();
 
     // Savable as long as the spot carries something to find it by: a note, a
     // photo, or a GPS fix.
-    if (!(outsideDescription || draft.photoFile || draft.coords)) {
+    if (!(notes || draft.photoFile || draft.coords)) {
       return null;
     }
 
     return {
       mode: "outside",
-      outsideDescription: outsideDescription || undefined,
+      notes: notes || undefined,
       coords: draft.coords ?? undefined,
     };
   }

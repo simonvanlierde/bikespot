@@ -83,11 +83,7 @@ export function saveLocation(
 // and timestamps are evidence about the spot, not its identity.
 function isSameSpot(a: LocationRecord, b: LocationRecord): boolean {
   if (a.mode === "outside" || b.mode === "outside") {
-    return (
-      a.mode === "outside" &&
-      b.mode === "outside" &&
-      (a.outsideDescription ?? "") === (b.outsideDescription ?? "")
-    );
+    return a.mode === "outside" && b.mode === "outside" && (a.notes ?? "") === (b.notes ?? "");
   }
 
   return (
@@ -184,7 +180,7 @@ export function normalizeStationConfig(
   }
 
   return {
-    name: value?.name?.trim() || fallback.name,
+    name: (typeof value?.name === "string" && value.name.trim()) || fallback.name,
     laneInputMode: normalizeMode(value?.laneInputMode, fallback.laneInputMode),
     laneLabels: normalizeLabels(value?.laneLabels, fallback.laneLabels),
     floorInputMode: normalizeMode(value?.floorInputMode, fallback.floorInputMode),
@@ -207,7 +203,7 @@ function buildRecord(
       {
         mode: "outside",
         stationName: station.name,
-        outsideDescription: input.outsideDescription?.trim(),
+        notes: input.notes?.trim(),
         photoId: input.photoId,
         coords: input.coords,
       },
