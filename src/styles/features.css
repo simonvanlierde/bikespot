@@ -209,6 +209,12 @@
     flex: 0 0 auto;
   }
 
+  /* A fixed minimum here: the narrow min(100%, 12rem) counts as 0 when the row
+     sizes the actions to their content, so the button then ran past the sign. */
+  .current-card__action {
+    min-width: 12rem;
+  }
+
   .utility-actions {
     grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr);
   }
@@ -274,9 +280,9 @@
 
 .current-card .notice-undo {
   padding-block: 0.5rem;
-  background: rgba(255, 255, 255, 0.16);
+  background: var(--sign-tonal);
 }
 
 .current-card .notice-undo:hover {
-  background: rgba(255, 255, 255, 0.26);
+  background: var(--sign-tonal-hover);
 }

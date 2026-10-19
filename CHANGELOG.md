@@ -21,6 +21,8 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   only that copy used.
 - Undo after removing a spot from Recent, for 10 seconds. The spot comes back in its old
   place, with its photo.
+- When you save a spot, the sign's values flip in once, like a station departure board.
+  It takes about half a second and does not run when your device asks for reduced motion.
 - A spot map that shows your current and recent spots with a GPS location, placed against
   each other with a scale bar. Tap "Show where I am" to see how far your bike is and in
   which direction, such as "120 m north-east". It updates as you walk, and shows which way
@@ -38,6 +40,8 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- On wider screens, "Change spot" no longer runs past the right edge of the sign when the
+  spot has a GPS location.
 - Station settings are kept on reload, even when no spot is saved yet.
 - Switching between a station and an outside spot keeps your notes, GPS and photo.
 - Text uses the app's own font when offline.

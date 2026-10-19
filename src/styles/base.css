@@ -10,93 +10,61 @@
 
   --font-mono: "Overpass Mono Variable", ui-monospace, monospace;
 
-  --bg: #f2f4f7;
-  --surface: #ffffff;
-  --surface-sunken: #eceff4;
-  --ink: #16233f;
-  --muted: #5c6880;
-  --line: #e1e5ec;
+  /* Each colour is light-dark(light, dark). The dark value applies when the OS
+     asks for it, or when Settings forces dark; see color-scheme below. */
+  --bg: light-dark(#f2f4f7, #0f1522);
+  --surface: light-dark(#ffffff, #1a2135);
+  --surface-sunken: light-dark(#eceff4, #141a2b);
+  --ink: light-dark(#16233f, #e9edf5);
+  --muted: light-dark(#5c6880, #9aa4bb);
+  --line: light-dark(#e1e5ec, #2b3450);
   /* Edge of every control (button, segment, input, switch track): at least 3:1
      against surface, sunken and bg. */
-  --control-edge: #7a8496;
+  --control-edge: light-dark(#7a8496, #6b7591);
 
-  --sign: #1d3d91;
-  --sign-edge: #16307a;
+  --sign: light-dark(#1d3d91, #2450b4);
+  --sign-edge: light-dark(#16307a, #1d4098);
   --sign-ink: #ffffff;
   --sign-ink-soft: rgba(255, 255, 255, 0.78);
   --sign-keyline: rgba(255, 255, 255, 0.55);
+  /* Tonal white fill for secondary controls on the sign (Maps, Undo). */
+  --sign-tonal: rgba(255, 255, 255, 0.16);
+  --sign-tonal-hover: rgba(255, 255, 255, 0.26);
   /* State colour of a selected control (switch track, active segment edge):
-     at least 3:1 against surface, sunken and bg. */
-  --selected: var(--sign);
+     at least 3:1 against surface, sunken and bg. Night sign blue is not. */
+  --selected: light-dark(var(--sign), #5b80e0);
 
   --signal: #ffc917;
   --signal-ink: #231d02;
-  --danger: #b5372a;
+  --danger: light-dark(#b5372a, #f08d7e);
   --danger-plate: #ffe1dc;
   --danger-plate-ink: #5a1a10;
 
   /* Interactive accents: the sign blue reads as a link on light surfaces but
      not on dark ones, and a focus ring must contrast with the blue buttons it
      often sits on — hence separate tokens. */
-  --link: var(--sign);
-  --focus-ring: var(--sign);
+  --link: light-dark(var(--sign), #9db4f0);
+  --focus-ring: light-dark(var(--sign), var(--signal));
 
   --radius-control: 0.75rem;
   --radius-card: 1rem;
   --radius-sheet: 1.25rem;
 
-  --shadow-sheet: 0 -8px 32px rgba(14, 21, 34, 0.18);
-  --shadow-sign: 0 12px 28px rgba(29, 61, 145, 0.22);
+  --shadow-sheet: 0 -8px 32px light-dark(rgba(14, 21, 34, 0.18), rgba(0, 0, 0, 0.5));
+  --shadow-sign: 0 12px 28px light-dark(rgba(29, 61, 145, 0.22), rgba(0, 0, 0, 0.35));
 
   color: var(--ink);
   background: var(--bg);
 }
 
-/* Dark palette. Applied when the OS asks for it (unless the user forced light),
-   or whenever the user forces dark from Settings. Keep both selectors' tokens in
-   sync — CSS can't share one block across the media-query boundary. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0f1522;
-    --surface: #1a2135;
-    --surface-sunken: #141a2b;
-    --ink: #e9edf5;
-    --muted: #9aa4bb;
-    --line: #2b3450;
-    --control-edge: #6b7591;
-
-    --sign: #2450b4;
-    --sign-edge: #1d4098;
-    --selected: #5b80e0;
-
-    --danger: #f08d7e;
-    --link: #9db4f0;
-    --focus-ring: var(--signal);
-
-    --shadow-sheet: 0 -8px 32px rgba(0, 0, 0, 0.5);
-    --shadow-sign: 0 12px 28px rgba(0, 0, 0, 0.35);
-  }
+/* A theme forced in Settings overrides the OS; "system" leaves both
+   schemes on and the OS picks. */
+:root[data-theme="light"] {
+  color-scheme: light;
 }
 
 :root[data-theme="dark"] {
-  --bg: #0f1522;
-  --surface: #1a2135;
-  --surface-sunken: #141a2b;
-  --ink: #e9edf5;
-  --muted: #9aa4bb;
-  --line: #2b3450;
-  --control-edge: #6b7591;
-
-  --sign: #2450b4;
-  --sign-edge: #1d4098;
-  --selected: #5b80e0;
-
-  --danger: #f08d7e;
-  --link: #9db4f0;
-  --focus-ring: var(--signal);
-
-  --shadow-sheet: 0 -8px 32px rgba(0, 0, 0, 0.5);
-  --shadow-sign: 0 12px 28px rgba(0, 0, 0, 0.35);
+  color-scheme: dark;
 }
 
 * {

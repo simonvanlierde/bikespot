@@ -5,7 +5,7 @@ const css = readFileSync("src/styles/base.css", "utf8");
 const surfaces = readFileSync("src/styles/surfaces.css", "utf8");
 const features = readFileSync("src/styles/features.css", "utf8");
 
-// The token blocks in order: light (:root), dark (media query), forced dark.
+// The token block, and the blocks that force a theme from Settings.
 const blocks = [...css.matchAll(/:root(?:[^{]*)\{([^}]*)\}/g)].map((m) => m[1]);
 
 function tokens(block: string): Record<string, string> {
@@ -45,9 +45,13 @@ function ratio(a: string, b: string): number {
 }
 
 describe("palette contrast", () => {
-  // A new :root block (say a prefers-contrast palette) needs its own entry below.
-  it("finds exactly the light, dark and forced-dark token blocks", () => {
+  // Every colour is defined once, as light-dark(light, dark); a forced theme only
+  // switches color-scheme. A new :root block (say a prefers-contrast palette)
+  // needs its own palette below.
+  it("defines the tokens in one block and forces themes through color-scheme", () => {
     expect(blocks).toHaveLength(3);
+    expect(blocks[1]).toMatch(/^\s*color-scheme: light;\s*$/);
+    expect(blocks[2]).toMatch(/^\s*color-scheme: dark;\s*$/);
   });
 
   it("draws selected-state indicators with the --selected token", () => {
@@ -75,17 +79,20 @@ describe("palette contrast", () => {
     expect(`\n${surfaces}\n${features}`).toMatch(rule);
   });
 
-  const light = tokens(blocks[0]);
-  const palettes = {
-    light,
-    dark: { ...light, ...tokens(blocks[1]) },
-    "forced dark": { ...light, ...tokens(blocks[2]) },
-  };
+  const palette = tokens(blocks[0]);
 
-  for (const [name, palette] of Object.entries(palettes)) {
+  for (const [name, scheme] of [
+    ["light", 0],
+    ["dark", 1],
+  ] as const) {
     const resolve = (value: string): string => {
       const ref = value.match(/^var\((--[\w-]+)\)$/);
-      return ref ? resolve(palette[ref[1]]) : value;
+      if (ref) {
+        return resolve(palette[ref[1]]);
+      }
+      // light-dark(light, dark); an argument may hold one level of parentheses.
+      const pair = value.match(/^light-dark\(((?:[^,()]|\([^()]*\))+),\s*(.+)\)$/);
+      return pair ? resolve(pair[scheme + 1].trim()) : value;
     };
 
     it.each(["--selected", "--control-edge"])(

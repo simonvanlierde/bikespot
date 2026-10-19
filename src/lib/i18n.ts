@@ -1,7 +1,6 @@
 import { computed, effect, signal } from "@preact/signals";
-import type { Compass } from "./geo";
-
 import type { Distance, RackLevel, Side } from "./app-data";
+import type { Compass } from "./geo";
 
 // Lean i18n: no framework. A `lang` signal (persisted, auto-detected) plus a
 // `t` computed that swaps the whole string table. Mirrors theme.ts. Reading
