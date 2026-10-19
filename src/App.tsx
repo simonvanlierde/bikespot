@@ -45,6 +45,7 @@ export default function App({ store }: { store: Store }) {
         recentCount={data.value.recent.length}
         onOpenRecent={() => openOverlay({ kind: "recent-list" })}
         onOpenStationSettings={() => openOverlay({ kind: "station-settings" })}
+        onOpenMap={() => openOverlay({ kind: "spot-map" })}
       />
 
       <AppFooter />

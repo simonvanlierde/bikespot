@@ -210,7 +210,7 @@
   }
 
   .utility-actions {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr);
   }
 
   /* Wide screens: the sheet becomes a centered top-anchored dialog. */

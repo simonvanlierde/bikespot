@@ -1,6 +1,7 @@
 @import "./styles/base.css";
 @import "./styles/surfaces.css";
 @import "./styles/features.css";
+@import "./styles/spot-map.css";
 
 /* Latin subset only: the UI is English and Dutch, and every font file is precached for offline use. */
 @font-face {
