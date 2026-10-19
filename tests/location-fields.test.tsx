@@ -102,7 +102,7 @@ describe("RecentLocationsSheet", () => {
             id: "o1",
             mode: "outside",
             stationName: "My station",
-            outsideDescription: "By the tram stop",
+            notes: "By the tram stop",
             updatedAt: "2026-04-20T20:00:00.000Z",
           },
         ]}

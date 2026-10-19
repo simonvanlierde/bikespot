@@ -52,7 +52,7 @@ describe("createLocationDraft", () => {
     const current = createLocationRecord({
       mode: "outside",
       stationName: "My station",
-      outsideDescription: "At the fence near the exit",
+      notes: "At the fence near the exit",
       photoId: "photo-2",
       coords: { lat: 52.08, lng: 4.32 },
     });
@@ -81,7 +81,7 @@ describe("buildLocationRecordInput (outside)", () => {
 
     expect(buildLocationRecordInput({ ...base, photoFile }, defaultStationConfig)).toMatchObject({
       mode: "outside",
-      outsideDescription: undefined,
+      notes: undefined,
     });
     expect(
       buildLocationRecordInput({ ...base, coords: { lat: 1, lng: 2 } }, defaultStationConfig),

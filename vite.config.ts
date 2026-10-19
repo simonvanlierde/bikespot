@@ -1,5 +1,6 @@
 import process from "node:process";
 import { fileURLToPath, URL } from "node:url";
+import { playwright } from "@vitest/browser-playwright";
 import { VitePWA } from "vite-plugin-pwa";
 import { defineConfig } from "vitest/config";
 import pkg from "./package.json" with { type: "json" };
@@ -67,10 +68,34 @@ export default defineConfig({
     }),
   ],
   test: {
-    environment: "jsdom",
     globals: true,
-    setupFiles: "./tests/setup.ts",
     testTimeout: 30000,
+    projects: [
+      {
+        extends: true,
+        test: {
+          name: "unit",
+          environment: "jsdom",
+          setupFiles: "./tests/setup.ts",
+          include: ["tests/**/*.test.{ts,tsx}"],
+          exclude: ["tests/**/*.browser.test.ts"],
+        },
+      },
+      {
+        // Real Chromium, for code that needs a real canvas and image decoder.
+        extends: true,
+        test: {
+          name: "browser",
+          include: ["tests/**/*.browser.test.ts"],
+          browser: {
+            enabled: true,
+            headless: true,
+            provider: playwright(),
+            instances: [{ browser: "chromium" }],
+          },
+        },
+      },
+    ],
     coverage: {
       provider: "v8",
       reporter: ["text", "html", "lcov"],

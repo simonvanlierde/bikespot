@@ -24,6 +24,9 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Photos are saved at 1600 px on the long side instead of full size, so a phone photo
+  of 2 MB now takes about 80 KB. Photos the browser cannot open, such as HEIC on most
+  browsers, are kept as they are, with the note that their location data stayed.
 - Button labels and notices use one verb per action, in English and Dutch: "Save spot",
   "Change spot", "Restore this spot", and "imported" for spots from a file.
 
@@ -35,6 +38,8 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Saving the same spot again with other notes updates it instead of adding a duplicate to
   Recent.
 - A photo that fails to load shows nothing instead of a broken image.
+- Saving right after picking a photo keeps the photo. Before, a spot saved while the
+  photo was still being prepared was stored without it.
 - Input borders, switches, selected options and focus rings have enough contrast in light
   and dark mode, and the switch and selected option stay visible in high-contrast mode.
 - Small buttons have a 44 px touch target.

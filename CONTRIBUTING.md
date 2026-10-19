@@ -11,8 +11,9 @@ Thanks for your interest in Bikespot. Issues and pull requests are welcome.
 
 ```bash
 pnpm install
-pnpm dev      # start the dev server
-pnpm check    # lint, test and build; must pass before opening a PR
+pnpm test:setup  # once: the headless Chromium the photo tests run in
+pnpm dev         # start the dev server
+pnpm check       # lint, test and build; must pass before opening a PR
 ```
 
 - Commits follow [Conventional Commits](https://www.conventionalcommits.org/) (e.g. `feat:`, `fix:`, `docs:`).
