@@ -175,7 +175,7 @@ export function getDetailFacts(entry: LocationRecord): string[] {
   }
 
   if (shouldShowEntryField(entry, "distance") && entry.distance) {
-    facts.push(t.value.factDistance(t.value.opts[entry.distance]));
+    facts.push(t.value.factDistance(entry.distance));
   }
 
   if (shouldShowEntryField(entry, "side") && entry.side) {

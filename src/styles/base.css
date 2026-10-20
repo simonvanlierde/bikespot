@@ -87,6 +87,7 @@ body {
 
 button,
 input,
+select,
 textarea {
   font: inherit;
   -webkit-tap-highlight-color: transparent;
@@ -99,6 +100,7 @@ button {
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
+select:focus-visible,
 textarea:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
@@ -118,6 +120,7 @@ textarea {
 }
 
 input,
+select,
 textarea {
   min-height: 3rem;
 }
