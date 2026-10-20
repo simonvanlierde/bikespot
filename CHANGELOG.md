@@ -43,7 +43,7 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
-- Translation fixes from a professional review in Dutch, French, German, Danish and
+- Translation fixes after a review in Dutch, French, German, Danish and
   Swedish. In French, the "Close" distance option is now "Proche".
 - On wider screens, "Change spot" no longer runs past the right edge of the sign when the
   spot has a GPS location.
