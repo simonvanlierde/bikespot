@@ -393,4 +393,19 @@ describe("bike storage tracker app", () => {
     clickBackdrop(/spot details/i);
     expect(screen.queryByRole("heading", { name: /spot details/i })).not.toBeInTheDocument();
   });
+
+  it("switches language from the Settings select", async () => {
+    const user = userEvent.setup();
+    await renderApp();
+    await openSheet(user, /^settings$/i);
+
+    const picker = screen.getByRole("combobox", { name: /language/i });
+    expect(within(picker).getByRole("option", { name: "日本語" })).toHaveAttribute("lang", "ja");
+
+    await user.selectOptions(picker, "de");
+
+    expect(document.documentElement.lang).toBe("de");
+    expect(screen.getByRole("combobox", { name: /sprache/i })).toHaveValue("de");
+    await user.selectOptions(screen.getByRole("combobox", { name: /sprache/i }), "en");
+  });
 });

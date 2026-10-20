@@ -3,7 +3,8 @@
 @import "./styles/features.css";
 @import "./styles/spot-map.css";
 
-/* Latin subset only: the UI is English and Dutch, and every font file is precached for offline use. */
+/* Latin subset only: it covers every Latin-script UI language, and every font file is
+   precached for offline use. Japanese uses system fonts (see the stacks in base.css). */
 @font-face {
   font-family: "Overpass Variable";
   font-style: normal;

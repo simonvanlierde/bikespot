@@ -59,6 +59,16 @@
       }
     },
     {
+      "includes": ["src/lib/i18n.ts"],
+      "linter": {
+        "rules": {
+          "security": {
+            "noSecrets": "off"
+          }
+        }
+      }
+    },
+    {
       "includes": ["*.config.ts"],
       "linter": {
         "rules": {

@@ -27,7 +27,7 @@ Bikespot describes the spot the way the bike park does (lane, side, rack level, 
 
 - A PWA that runs only in the browser. You can install it, it works offline, and it lives on one device on purpose. [docs/architecture.md](docs/architecture.md) covers storage, export and hosting.
 - The app strips location data from photos where the browser allows it, and tells you when it could not.
-- English and Dutch. The app picks one from the browser, and you can switch in Settings. Dutch uses its own adjective forms, not translated templates.
+- English, Dutch, German, French, Danish, Swedish and Japanese. The app picks the first of your browser languages it has, and you can switch in Settings. Each language words the spot details as a whole phrase (Dutch adjective forms, "nah am Eingang"), not a translated template. Japanese uses the system's Japanese font, since Overpass covers Latin only.
 - Light, dark and system themes. Dark mode is for reading the spot outside at night, so it keeps the same contrast rules as light mode.
 - Terms: *spot*, *current spot*, *recent locations*, *station*, *lane*, *side*, *rack level*, *rack number*, *bike collected*.
 

@@ -9,6 +9,9 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- German, French, Danish, Swedish and Japanese, next to English and Dutch. The app picks
+  the first of your browser languages it knows, and Settings now has a language list
+  instead of two buttons. Dates, times and distances follow the language you choose.
 - Export your spots to a file and import them again from Settings, so a cleared browser or
   a new phone no longer loses them. Import adds the spots from the file to Recent and
   says how many it added. Photos stay on the device and are not exported.

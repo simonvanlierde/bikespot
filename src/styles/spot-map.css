@@ -38,7 +38,7 @@
 
 .spot-map__spot-text--current {
   fill: var(--sign-ink);
-  font-family: "Overpass Variable", "Segoe UI", sans-serif;
+  font-family: var(--font-sans);
   font-size: 15px;
   font-weight: 800;
 }

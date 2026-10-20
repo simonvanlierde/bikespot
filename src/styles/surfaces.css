@@ -774,7 +774,8 @@
 }
 
 .field input,
-.field textarea {
+.field textarea,
+.field select {
   width: 100%;
   border: 1px solid var(--control-edge);
   border-radius: var(--radius-control);
@@ -809,6 +810,8 @@
   color: var(--ink);
   font-weight: 600;
   padding-inline: 0.7rem;
+  /* Long compounds (Dutch, German, Nordic) break with a hyphen, not past the edge. */
+  hyphens: auto;
 }
 
 .segment--dense {

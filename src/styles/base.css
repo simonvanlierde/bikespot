@@ -2,13 +2,19 @@
    wayfinding: sign blue, concrete white, signal yellow, road-sign type. */
 :root {
   color-scheme: light dark;
-  font-family: "Overpass Variable", "Segoe UI", sans-serif;
+  font-family: var(--font-sans);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --font-mono: "Overpass Mono Variable", ui-monospace, monospace;
+  /* Overpass is Latin only; Japanese falls through to the system's CJK fonts. */
+  --font-sans:
+    "Overpass Variable", "Segoe UI", "Hiragino Sans", "Yu Gothic UI", "Noto Sans CJK JP",
+    "Noto Sans JP", Meiryo, sans-serif;
+  --font-mono:
+    "Overpass Mono Variable", ui-monospace, "Hiragino Sans", "Yu Gothic UI", "Noto Sans CJK JP",
+    "Noto Sans JP", Meiryo, monospace;
 
   /* Each colour is light-dark(light, dark). The dark value applies when the OS
      asks for it, or when Settings forces dark; see color-scheme below. */
@@ -87,6 +93,7 @@ body {
 
 button,
 input,
+select,
 textarea {
   font: inherit;
   -webkit-tap-highlight-color: transparent;
@@ -99,6 +106,7 @@ button {
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
+select:focus-visible,
 textarea:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
@@ -118,6 +126,7 @@ textarea {
 }
 
 input,
+select,
 textarea {
   min-height: 3rem;
 }

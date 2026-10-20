@@ -6,7 +6,7 @@ import { SegmentedControl } from "@/components/SegmentedControl";
 import { SheetDialog } from "@/components/SheetDialog";
 import { ToggleField } from "@/components/ToggleField";
 import type { StationSettingsDraft } from "@/lib/drafts";
-import { LANGS, lang, setLang, t } from "@/lib/i18n";
+import { LANG_NAMES, LANGS, type Lang, lang, setLang, t } from "@/lib/i18n";
 import { setTheme, THEMES, theme } from "@/lib/theme";
 import { FieldInputSettings } from "./FieldInputSettings";
 
@@ -108,13 +108,20 @@ export function StationSettingsSheet({
         <hr className="settings-divider" />
 
         <section className="settings-section" aria-label={t.value.general}>
-          <SegmentedControl
-            label={t.value.language}
-            options={LANGS}
-            value={lang.value}
-            onChange={setLang}
-            titleCase={(option) => t.value.langOpts[option]}
-          />
+          {/* A native select: seven languages don't fit a segmented row at 320 px. */}
+          <label className="field">
+            <span>{t.value.language}</span>
+            <select
+              value={lang.value}
+              onChange={(event) => setLang(event.currentTarget.value as Lang)}
+            >
+              {LANGS.map((code) => (
+                <option key={code} lang={code} value={code}>
+                  {LANG_NAMES[code]}
+                </option>
+              ))}
+            </select>
+          </label>
           <SegmentedControl
             label={t.value.theme}
             options={THEMES}
