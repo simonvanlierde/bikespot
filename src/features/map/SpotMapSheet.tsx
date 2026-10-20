@@ -4,7 +4,14 @@ import { useEffect, useRef, useState } from "preact/hooks";
 import { SheetDialog } from "@/components/SheetDialog";
 import { formatDistance, getPrimaryLabel, mapsLink } from "@/features/location/display";
 import type { Coords, LocationRecord } from "@/lib/app-data";
-import { bearingDegrees, compassPoint, distanceMeters, fitPoints, scaleBar } from "@/lib/geo";
+import {
+  bearingDegrees,
+  compassPoint,
+  distanceMeters,
+  fitPoints,
+  scaleBar,
+  screenHeading,
+} from "@/lib/geo";
 import { watchCoords } from "@/lib/geolocation";
 import { lang, t } from "@/lib/i18n";
 
@@ -21,14 +28,18 @@ type PlacedSpot = { id: string; marker: string; label: string; coords: Coords };
 
 type OrientationWithCompass = DeviceOrientationEvent & { webkitCompassHeading?: number };
 
-// Compass heading in degrees from north, or null when the event has none.
-// shortcut: ignores screen rotation, so the arrow is off in landscape; add
-// screen.orientation.angle if people use the map sideways.
+// Compass heading of the screen's top edge in degrees from north, or null when
+// the event has none. Both sources measure from the device's top edge (Safari's
+// comes from Core Location, which assumes portrait), so both need the screen's
+// rotation. Reading it per event is enough: turning the phone moves the sensor.
 function headingOf(event: OrientationWithCompass): number | null {
+  const angle = globalThis.screen?.orientation?.angle ?? 0;
   if (typeof event.webkitCompassHeading === "number") {
-    return event.webkitCompassHeading;
+    return screenHeading(event.webkitCompassHeading, angle);
   }
-  return event.absolute && typeof event.alpha === "number" ? (360 - event.alpha) % 360 : null;
+  return event.absolute && typeof event.alpha === "number"
+    ? screenHeading(360 - event.alpha, angle)
+    : null;
 }
 
 // Follows the device's position and heading from the first tap until the sheet closes.

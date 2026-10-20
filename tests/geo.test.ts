@@ -7,6 +7,7 @@ import {
   distanceMeters,
   fitPoints,
   scaleBar,
+  screenHeading,
   toLocalMeters,
 } from "../src/lib/geo.ts";
 import { lang } from "../src/lib/i18n.ts";
@@ -80,6 +81,21 @@ describe("bearingDegrees and compassPoint", () => {
     const bearing = bearingDegrees({ lat: 0, lng: 179.9995 }, { lat: 0, lng: -179.9995 });
     expect(Number.isFinite(bearing)).toBe(true);
     expect(compassPoint(bearing)).toBe("e");
+  });
+});
+
+describe("screenHeading", () => {
+  it("leaves the heading alone in portrait", () => {
+    expect(screenHeading(30, 0)).toBe(30);
+  });
+
+  it("turns the heading with the screen, wrapping into [0, 360)", () => {
+    // Phone on its side, top edge to the left: the screen's top is the phone's right edge.
+    expect(screenHeading(0, 90)).toBe(90);
+    expect(screenHeading(300, 90)).toBe(30);
+    expect(screenHeading(10, 180)).toBe(190);
+    expect(screenHeading(45, 270)).toBe(315);
+    expect(screenHeading(350, 270)).toBe(260);
   });
 });
 
