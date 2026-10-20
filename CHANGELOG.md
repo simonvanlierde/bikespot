@@ -63,6 +63,8 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Buttons, segments and list items have an outline with at least 3:1 contrast in light and
   dark mode.
 - "Clear all data" shows its red outline again.
+- On the spot map, the arrow for the way your phone points is right when you hold the
+  phone sideways. Before, it was a quarter turn off in landscape.
 
 ### Security
 

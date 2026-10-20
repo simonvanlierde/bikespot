@@ -40,6 +40,12 @@ export function compassPoint(bearing: number): Compass {
   return COMPASS[Math.round((((bearing % 360) + 360) % 360) / 45) % 8];
 }
 
+// Turns a heading measured from the device's top edge into one measured from
+// the screen's top, given the screen's rotation (screen.orientation.angle).
+export function screenHeading(deviceHeading: number, screenAngle: number): number {
+  return (((deviceHeading + screenAngle) % 360) + 360) % 360;
+}
+
 // Metres east (x) and north (y) of `origin`.
 export function toLocalMeters(origin: LatLng, point: LatLng): { x: number; y: number } {
   return {
