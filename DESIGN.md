@@ -225,11 +225,11 @@ The main component: a sign-blue panel with the keyline inside, the spot headline
 
 ### Segmented Controls
 
-A grid of outlined segments inside a bordered fieldset. The active segment is filled sign blue, with a `night-selected` edge in dark mode. Used for station/outside, side, rack level, distance, theme and language.
+A grid of outlined segments inside a bordered fieldset. The active segment is filled sign blue, with a `night-selected` edge in dark mode. Used for station/outside, side, rack level, distance and theme. A segment breaks a long word with a hyphen instead of running past its edge.
 
 ### Inputs / Fields
 
-- **Style:** a bold label above an input filled with the surface colour, with a `control-edge` border and the control radius, at least 3rem tall.
+- **Style:** a bold label above an input filled with the surface colour, with a `control-edge` border and the control radius, at least 3rem tall. The language picker is a native select in the same style, since seven languages do not fit a segmented row.
 - **Focus:** a 2px `focus-ring` outline, offset 2px (sign blue in light mode, signal yellow in dark mode).
 - **Error:** a danger border, plus a danger message in a live region.
 
