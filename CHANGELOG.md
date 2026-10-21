@@ -43,6 +43,7 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- In French the off-map marker says "Toi, hors de la carte" instead of just "Toi", and the Japanese station question asks which details the bike park has.
 - More translation fixes after a second review in Dutch, French, German, Danish, Swedish and Japanese: clearer map and empty-screen text, and notices that read naturally.
 - Translation fixes after a review in Dutch, French, German, Danish and
   Swedish. In French, the "Close" distance option is now "Proche".
