@@ -851,7 +851,7 @@
   display: none;
 }
 
-@media (pointer: coarse) {
+@media (any-pointer: coarse) {
   .file-trigger--camera {
     display: inline-flex;
   }

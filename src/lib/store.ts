@@ -88,6 +88,8 @@ export function createStore(repo: SpotRepository = browserRepository) {
   let persistRequested = false;
   // The last photo pick's downscale and draft update; never rejects.
   let photoInFlight: Promise<void> = Promise.resolve();
+  // Bumped on every photo change, so a slow shrink that finishes after a newer pick is dropped.
+  let photoChangeCount = 0;
   // Whether the last write of app data reached storage. When it did not, the
   // disk still holds the records the in-memory change dropped, photos included.
   let lastSaveOk = true;
@@ -307,11 +309,12 @@ export function createStore(repo: SpotRepository = browserRepository) {
       return;
     }
 
+    const change = ++photoChangeCount;
     photoInFlight = (async () => {
       const shrunk = picked ? await downscalePhoto(picked) : null;
       const current = openEditor(editor.session);
 
-      if (current) {
+      if (current && change === photoChangeCount) {
         patchEditor(current.session, {
           draft: { ...current.draft, photoFile: shrunk ?? picked },
           // The photo never leaves the device, so keep it rather than lose the

@@ -176,6 +176,36 @@ describe("store handlers", () => {
       expect(store.data.value.current?.photoId).toEqual(expect.any(String));
     });
 
+    it("keeps the newer photo when an older one finishes shrinking last", async () => {
+      const decodes: Array<(reason: Error) => void> = [];
+      vi.stubGlobal(
+        "createImageBitmap",
+        vi.fn(
+          () =>
+            new Promise((_resolve, reject) => {
+              decodes.push(reject);
+            }),
+        ),
+      );
+      vi.stubGlobal("OffscreenCanvas", class {});
+      store.openOverlay({ kind: "edit-location" });
+      const camera = new File(["big"], "camera.jpg", { type: "image/jpeg" });
+      const gallery = new File(["small"], "gallery.jpg", { type: "image/jpeg" });
+
+      const first = store.handlePhotoChange({
+        currentTarget: { files: [camera], value: "" },
+      } as unknown as TargetedEvent<HTMLInputElement>);
+      const second = store.handlePhotoChange({
+        currentTarget: { files: [gallery], value: "" },
+      } as unknown as TargetedEvent<HTMLInputElement>);
+      decodes[1]?.(new Error("gallery done"));
+      await second;
+      decodes[0]?.(new Error("camera done"));
+      await first;
+
+      expect(editorOf(store).draft.photoFile?.name).toBe(gallery.name);
+    });
+
     it("ignores photo change and remove without an open editor", async () => {
       await store.handlePhotoChange({
         currentTarget: { files: [], value: "" },
