@@ -77,6 +77,10 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - The site sends a content security policy that allows only its own scripts and
   requests.
+- The policy no longer allows any inline script. The site also tells browsers to load it
+  over HTTPS only, sends no referrer when you follow a link out, keeps other sites'
+  windows and pages from reaching it, and turns off camera access from the page. Taking
+  a photo for a spot still works.
 
 ## [0.3.0] - 2026-08-24
 
