@@ -847,6 +847,16 @@
   cursor: pointer;
 }
 
+.file-trigger--camera {
+  display: none;
+}
+
+@media (pointer: coarse) {
+  .file-trigger--camera {
+    display: inline-flex;
+  }
+}
+
 .file-trigger:hover {
   background: var(--surface-sunken);
 }

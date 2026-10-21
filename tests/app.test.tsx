@@ -199,7 +199,7 @@ describe("bike storage tracker app", () => {
 
     await openSheet(user, /change spot/i);
     await user.click(screen.getByRole("button", { name: /parked outside/i }));
-    await user.upload(screen.getByLabelText(/photo/i), new File(["outside"], "outside.png", { type: "image/png" }));
+    await user.upload(screen.getByLabelText(/^photo$/i), new File(["outside"], "outside.png", { type: "image/png" }));
     await user.type(screen.getByLabelText(/notes/i), "At the fence near the station exit");
     await user.click(screen.getByRole("button", { name: /^save$/i }));
 
@@ -223,7 +223,7 @@ describe("bike storage tracker app", () => {
     await openSheet(user, /change spot/i);
     await user.click(screen.getByRole("button", { name: /parked outside/i }));
     await user.type(screen.getByLabelText(/notes/i), "By the bike shop");
-    await user.upload(screen.getByLabelText(/photo/i), new File(["outside"], "outside.png", { type: "image/png" }));
+    await user.upload(screen.getByLabelText(/^photo$/i), new File(["outside"], "outside.png", { type: "image/png" }));
 
     await user.click(screen.getByRole("button", { name: /in the station/i }));
     await user.click(screen.getByRole("button", { name: /more details/i }));
@@ -247,7 +247,7 @@ describe("bike storage tracker app", () => {
     expect(within(editorSheet).queryByRole("button", { name: /remove photo/i })).toBeNull();
 
     await user.upload(
-      within(editorSheet).getByLabelText(/photo/i),
+      within(editorSheet).getByLabelText(/^photo$/i),
       new File(["outside"], "outside.png", { type: "image/png" }),
     );
 

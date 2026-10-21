@@ -120,6 +120,7 @@ type Dict = {
   photoPreviewAlt: string;
   replacePhoto: string;
   addPhoto: string;
+  takePhoto: string;
   removePhoto: string;
   photoMetadataKept: string;
 
@@ -286,6 +287,7 @@ const en: Dict = {
   photoPreviewAlt: "Bike reference preview",
   replacePhoto: "Replace photo",
   addPhoto: "Add photo",
+  takePhoto: "Take photo",
   removePhoto: "Remove photo",
   photoMetadataKept: "This browser could not remove the photo's location data. The photo stays on this device.",
 
@@ -426,6 +428,7 @@ const nl: Dict = {
   photoPreviewAlt: "Voorbeeld fietsreferentie",
   replacePhoto: "Foto vervangen",
   addPhoto: "Foto toevoegen",
+  takePhoto: "Foto maken",
   removePhoto: "Foto verwijderen",
   photoMetadataKept: "Deze browser kon de locatiegegevens niet uit de foto halen. De foto blijft op dit apparaat.",
 
@@ -584,6 +587,7 @@ const de: Dict = {
   photoPreviewAlt: "Fotovorschau",
   replacePhoto: "Foto ersetzen",
   addPhoto: "Foto hinzufügen",
+  takePhoto: "Foto aufnehmen",
   removePhoto: "Foto entfernen",
   photoMetadataKept:
     "Dieser Browser konnte die Standortdaten nicht aus dem Foto entfernen. Das Foto bleibt auf diesem Gerät.",
@@ -746,6 +750,7 @@ const fr: Dict = {
   photoPreviewAlt: "Aperçu de la photo",
   replacePhoto: "Remplacer la photo",
   addPhoto: "Ajouter une photo",
+  takePhoto: "Prendre une photo",
   removePhoto: "Supprimer la photo",
   photoMetadataKept:
     "Ce navigateur n’a pas pu retirer les données de position de la photo. La photo reste sur cet appareil.",
@@ -904,6 +909,7 @@ const da: Dict = {
   photoPreviewAlt: "Forhåndsvisning af foto",
   replacePhoto: "Erstat foto",
   addPhoto: "Tilføj foto",
+  takePhoto: "Tag et foto",
   removePhoto: "Fjern foto",
   photoMetadataKept: "Denne browser kunne ikke fjerne positionsdata fra fotoet. Fotoet bliver på denne enhed.",
 
@@ -1061,6 +1067,7 @@ const sv: Dict = {
   photoPreviewAlt: "Förhandsvisning av foto",
   replacePhoto: "Byt foto",
   addPhoto: "Lägg till foto",
+  takePhoto: "Ta ett foto",
   removePhoto: "Ta bort foto",
   photoMetadataKept: "Webbläsaren kunde inte ta bort platsdata från fotot. Fotot stannar på den här enheten.",
 
@@ -1219,6 +1226,7 @@ const ja: Dict = {
   photoPreviewAlt: "写真のプレビュー",
   replacePhoto: "写真を変更",
   addPhoto: "写真を追加",
+  takePhoto: "写真を撮る",
   removePhoto: "写真を削除",
   photoMetadataKept: "このブラウザでは写真の位置情報を削除できませんでした。写真はこの端末から出ません。",
 
