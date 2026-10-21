@@ -1,5 +1,6 @@
 # Formatting-only commits, skipped by `git blame` (run
 # `git config blame.ignoreRevsFile .git-blame-ignore-revs` once; GitHub reads this file itself).
 
-# style: reformat to 120 columns
-dd0dd937d4040f8d2afa4d30114470de0cfd1525
+# chore: adopt the project-templates web-app template (#77). Squash-merged, so this one
+# commit holds the 120-column reformat and the template changes beside it.
+9fdf96578fae771a1d6ca178e08aa7c8b24176e1
