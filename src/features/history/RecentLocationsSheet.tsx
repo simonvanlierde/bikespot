@@ -61,9 +61,7 @@ export function RecentLocationsSheet({
               <span className="recent-item__body">
                 <span className="recent-title">
                   {title}
-                  {entry.coords ? (
-                    <MapPin aria-label={t.value.hasGps} className="recent-title__pin" />
-                  ) : null}
+                  {entry.coords ? <MapPin aria-label={t.value.hasGps} className="recent-title__pin" /> : null}
                 </span>
                 {meta ? <span className="recent-meta">{meta}</span> : null}
               </span>

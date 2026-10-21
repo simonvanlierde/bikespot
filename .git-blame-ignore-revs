@@ -1,0 +1,5 @@
+# Formatting-only commits, skipped by `git blame` (run
+# `git config blame.ignoreRevsFile .git-blame-ignore-revs` once; GitHub reads this file itself).
+
+# style: reformat to 120 columns
+dd0dd937d4040f8d2afa4d30114470de0cfd1525

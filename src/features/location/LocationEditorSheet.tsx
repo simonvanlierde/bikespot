@@ -67,8 +67,7 @@ export function LocationEditorSheet({
   function switchMode(kind: LocationDraft["kind"]) {
     if (kind !== formState.kind) {
       const { notes, photoFile, coords } = formState;
-      const fresh =
-        kind === "outside" ? createOutsideLocationDraft() : createLocationDraft(null, station);
+      const fresh = kind === "outside" ? createOutsideLocationDraft() : createLocationDraft(null, station);
       setFormState({ ...fresh, notes, photoFile, coords });
     }
   }
@@ -87,11 +86,7 @@ export function LocationEditorSheet({
         {formState.kind === "outside" ? (
           <>
             <NotesField value={formState.notes} onChange={updateNotes} />
-            <CoordsField
-              coords={formState.coords}
-              status={geoStatus}
-              onCapture={onCaptureLocation}
-            />
+            <CoordsField coords={formState.coords} status={geoStatus} onCapture={onCaptureLocation} />
             <PhotoField
               photoFile={formState.photoFile}
               metadataKept={photoMetadataKept}

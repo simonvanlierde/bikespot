@@ -10,14 +10,8 @@ import type {
 import { ENABLED_FIELD_KEYS, RECENT_LIMIT, VISIBLE_FIELD_KEYS } from "./app-data";
 import { defaultStationConfig } from "./defaults";
 
-type StationLocationRecordSeed = Omit<
-  Extract<LocationRecord, { mode: "station" }>,
-  "id" | "updatedAt"
->;
-type OutsideLocationRecordSeed = Omit<
-  Extract<LocationRecord, { mode: "outside" }>,
-  "id" | "updatedAt"
->;
+type StationLocationRecordSeed = Omit<Extract<LocationRecord, { mode: "station" }>, "id" | "updatedAt">;
+type OutsideLocationRecordSeed = Omit<Extract<LocationRecord, { mode: "outside" }>, "id" | "updatedAt">;
 type LocationRecordSeed = StationLocationRecordSeed | OutsideLocationRecordSeed;
 
 export function createId(): string {
@@ -26,9 +20,7 @@ export function createId(): string {
   }
 
   // randomUUID needs a secure context; http-on-LAN testing lands here.
-  return Array.from(crypto.getRandomValues(new Uint8Array(16)), (byte) =>
-    byte.toString(16).padStart(2, "0"),
-  ).join("");
+  return Array.from(crypto.getRandomValues(new Uint8Array(16)), (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
 export function createLocationRecord(
@@ -148,7 +140,7 @@ export function updateStationConfig(data: AppData, station: StationConfig): AppD
   };
 }
 
-export function buildVisibleFields(enabledFields: EnabledFields): VisibleFields {
+function buildVisibleFields(enabledFields: EnabledFields): VisibleFields {
   const visibleFields: VisibleFields = {};
 
   for (const key of VISIBLE_FIELD_KEYS) {
@@ -193,11 +185,7 @@ function normalizeMode(value: unknown, fallback: FieldInputMode): FieldInputMode
   return value === "quick" || value === "number" ? value : fallback;
 }
 
-function buildRecord(
-  station: StationConfig,
-  input: LocationRecordInput,
-  timestamp: string,
-): LocationRecord {
+function buildRecord(station: StationConfig, input: LocationRecordInput, timestamp: string): LocationRecord {
   if (input.mode === "outside") {
     return createLocationRecord(
       {

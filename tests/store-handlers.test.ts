@@ -250,7 +250,7 @@ describe("store handlers", () => {
       vi.stubGlobal("confirm", () => true);
       const dropUnusedPhotos = vi.fn(() => Promise.resolve());
       const clearPhotos = vi.fn(() => Promise.resolve());
-      const withPhoto = { ...sampleAppData.recent[0], photoId: "photo-1" };
+      const withPhoto = { ...sampleAppData.recent[0]!, photoId: "photo-1" };
       const saveAppData = vi.fn();
       const failing = createStore({
         ...browserRepository,
@@ -275,8 +275,8 @@ describe("store handlers", () => {
   });
 
   describe("handleRemoveRecent", () => {
-    const withPhoto = { ...sampleAppData.recent[0], photoId: "photo-1" };
-    const other = { ...sampleAppData.recent[0], id: "other", photoId: "photo-2" };
+    const withPhoto = { ...sampleAppData.recent[0]!, photoId: "photo-1" };
+    const other = { ...sampleAppData.recent[0]!, id: "other", photoId: "photo-2" };
     let dropUnusedPhotos: Mock<SpotRepository["dropUnusedPhotos"]>;
     let stop: () => void;
 
@@ -309,7 +309,7 @@ describe("store handlers", () => {
       vi.advanceTimersByTime(UNDO_WINDOW_MS);
 
       expect(dropUnusedPhotos).toHaveBeenCalledTimes(1);
-      const [previous, next] = dropUnusedPhotos.mock.calls[0];
+      const [previous, next] = dropUnusedPhotos.mock.calls[0]!;
       expect(previous.recent).toEqual([withPhoto]);
       expect(next).toBe(store.data.value);
       expect(store.notice.value).toBeNull();
@@ -343,7 +343,7 @@ describe("store handlers", () => {
     it("drops the photos of spots the import pushes out of Recent", async () => {
       const dropUnusedPhotos = vi.fn(() => Promise.resolve());
       const old = Array.from({ length: RECENT_LIMIT }, (_, index) => ({
-        ...sampleAppData.recent[0],
+        ...sampleAppData.recent[0]!,
         id: `old-${index}`,
         photoId: `photo-${index}`,
         updatedAt: `2026-01-0${index + 1}T08:00:00.000Z`,
@@ -355,7 +355,7 @@ describe("store handlers", () => {
         dropUnusedPhotos,
       });
       const stop = importing.start();
-      const fresh = { ...sampleAppData.recent[0], id: "fresh" };
+      const fresh = { ...sampleAppData.recent[0]!, id: "fresh" };
       const file = new File([JSON.stringify({ version: 1, spots: [fresh] })], "spots.json");
 
       await importing.handleImportSpots({
@@ -363,10 +363,7 @@ describe("store handlers", () => {
       } as unknown as TargetedEvent<HTMLInputElement>);
 
       expect(importing.data.value.recent.map((entry) => entry.id)).not.toContain("old-0");
-      expect(dropUnusedPhotos).toHaveBeenCalledWith(
-        expect.objectContaining({ recent: old }),
-        importing.data.value,
-      );
+      expect(dropUnusedPhotos).toHaveBeenCalledWith(expect.objectContaining({ recent: old }), importing.data.value);
       stop();
     });
   });

@@ -81,9 +81,7 @@ describe("getSummary", () => {
   });
 
   it("joins visible station facts with a middot", () => {
-    expect(getSummary(station({ side: "left", rackLevel: "top", distance: "close" }))).toBe(
-      "Left · Top · Close",
-    );
+    expect(getSummary(station({ side: "left", rackLevel: "top", distance: "close" }))).toBe("Left · Top · Close");
   });
 
   it("omits fields whose visibility flag is off", () => {

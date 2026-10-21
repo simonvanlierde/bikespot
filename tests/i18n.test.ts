@@ -76,10 +76,7 @@ function problems(label: string, out: unknown, echoed: string[]): string[] {
     return [`${label} returned ${typeof out}`];
   }
   const found = /undefined|NaN|\$\{/.test(out) ? [`${label}: ${out}`] : [];
-  return [
-    ...found,
-    ...echoed.filter((arg) => !out.includes(arg)).map((arg) => `${label} drops "${arg}": ${out}`),
-  ];
+  return [...found, ...echoed.filter((arg) => !out.includes(arg)).map((arg) => `${label} drops "${arg}": ${out}`)];
 }
 
 describe("templates", () => {

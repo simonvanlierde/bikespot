@@ -14,7 +14,7 @@ const overlays: Record<OverlayRequest["kind"], (store: Store) => OverlayRequest>
   "location-details": () => ({ kind: "location-details" }),
   "recent-list": () => ({ kind: "recent-list" }),
   "spot-map": () => ({ kind: "spot-map" }),
-  "recent-preview": (store) => ({ kind: "recent-preview", id: store.data.value.recent[0].id }),
+  "recent-preview": (store) => ({ kind: "recent-preview", id: store.data.value.recent[0]!.id }),
 };
 
 // Tests assert on violations directly so the failure message lists offending rules,

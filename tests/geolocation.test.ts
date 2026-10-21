@@ -28,11 +28,9 @@ describe("captureCoords", () => {
   });
 
   it("rejects when the user denies permission", async () => {
-    const getCurrentPosition = vi.fn(
-      (_success: PositionCallback, error?: PositionErrorCallback) => {
-        error?.({ code: 1, message: "denied" } as GeolocationPositionError);
-      },
-    );
+    const getCurrentPosition = vi.fn((_success: PositionCallback, error?: PositionErrorCallback) => {
+      error?.({ code: 1, message: "denied" } as GeolocationPositionError);
+    });
 
     vi.stubGlobal("navigator", { geolocation: { getCurrentPosition } });
 

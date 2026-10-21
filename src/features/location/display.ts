@@ -19,9 +19,7 @@ export function shouldShowEntryField(entry: LocationRecord, field: keyof Enabled
   }
 
   const value = entry[field];
-  const hasValue = TEXT_FIELDS.has(field)
-    ? Boolean((value as string | undefined)?.trim())
-    : Boolean(value);
+  const hasValue = TEXT_FIELDS.has(field) ? Boolean((value as string | undefined)?.trim()) : Boolean(value);
 
   // Lane is always shown when set; the rest depend on the saved visibility flags.
   return field === "lane" ? hasValue : entry.visibleFields[field] === true && hasValue;
@@ -40,10 +38,11 @@ const timestampFormat = computed(
 // "3 hours ago" beats "Aug 22, 2026, 10:48 PM" when you're standing in the
 // garage; past a week the absolute date is more useful again.
 const RELATIVE_LIMIT_MS = 7 * 24 * 60 * 60 * 1000;
+const MINUTE: [Intl.RelativeTimeFormatUnit, number] = ["minute", 60 * 1000];
 const RELATIVE_UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
   ["day", 24 * 60 * 60 * 1000],
   ["hour", 60 * 60 * 1000],
-  ["minute", 60 * 1000],
+  MINUTE,
 ];
 
 export function formatRelativeTimestamp(value?: string, now: number = Date.now()) {
@@ -68,7 +67,7 @@ export function formatRelativeTimestamp(value?: string, now: number = Date.now()
   }
 
   const formatter = new Intl.RelativeTimeFormat(lang.value, { numeric: "auto" });
-  const [unit, size] = RELATIVE_UNITS.find(([, ms]) => elapsed >= ms) ?? RELATIVE_UNITS[2];
+  const [unit, size] = RELATIVE_UNITS.find(([, ms]) => elapsed >= ms) ?? MINUTE;
   return formatter.format(-Math.floor(elapsed / size), unit);
 }
 
@@ -97,9 +96,7 @@ export function getSummary(entry: LocationRecord | null): string {
 
   const parts = [
     shouldShowEntryField(entry, "side") && entry.side ? t.value.opts[entry.side] : "",
-    shouldShowEntryField(entry, "rackLevel") && entry.rackLevel
-      ? t.value.opts[entry.rackLevel]
-      : "",
+    shouldShowEntryField(entry, "rackLevel") && entry.rackLevel ? t.value.opts[entry.rackLevel] : "",
     shouldShowEntryField(entry, "distance") && entry.distance ? t.value.opts[entry.distance] : "",
   ].filter(Boolean);
 
@@ -117,7 +114,7 @@ export function formatAccuracy(coords: Coords): string {
 // Which field earns the headline: the most specific primary locator that's
 // filled — a rack number pinpoints a spot, a lane names a zone. Everything else
 // (floor, side, level, distance) is a supporting detail, not a headline.
-export function getPrimaryFieldKey(entry: LocationRecord): "rackNumber" | "lane" | null {
+function getPrimaryFieldKey(entry: LocationRecord): "rackNumber" | "lane" | null {
   if (entry.mode !== "station") {
     return null;
   }

@@ -1,12 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import type { AppData } from "../src/lib/app-data.ts";
 import { defaultAppData, defaultStationConfig } from "../src/lib/defaults.ts";
-import {
-  createLocationRecord,
-  promoteRecentLocation,
-  saveLocation,
-  updateStationConfig,
-} from "../src/lib/domain.ts";
+import { createLocationRecord, promoteRecentLocation, saveLocation, updateStationConfig } from "../src/lib/domain.ts";
 import { buildLocationRecordInput } from "../src/lib/drafts.ts";
 import { clearPhotoBlobs } from "../src/lib/photos.ts";
 import { APP_DATA_STORAGE_KEY, loadAppData } from "../src/lib/repository.ts";
@@ -175,7 +170,7 @@ describe("location storage", () => {
         current,
         recent,
       },
-      recent[1].id,
+      recent[1]!.id,
       "2026-04-19T07:10:00.000Z",
     );
 

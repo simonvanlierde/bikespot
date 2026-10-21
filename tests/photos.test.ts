@@ -75,10 +75,7 @@ describe("downscalePhoto", () => {
   });
 
   function stubCanvas(encodes: string[]) {
-    vi.stubGlobal(
-      "createImageBitmap",
-      vi.fn().mockResolvedValue({ width: 3024, height: 4032, close: vi.fn() }),
-    );
+    vi.stubGlobal("createImageBitmap", vi.fn().mockResolvedValue({ width: 3024, height: 4032, close: vi.fn() }));
     vi.stubGlobal(
       "OffscreenCanvas",
       class {
@@ -87,9 +84,7 @@ describe("downscalePhoto", () => {
         }
         convertToBlob({ type }: { type: string }) {
           // Mimics a browser that falls back to PNG for types it cannot encode.
-          return Promise.resolve(
-            new Blob(["clean"], { type: encodes.includes(type) ? type : "image/png" }),
-          );
+          return Promise.resolve(new Blob(["clean"], { type: encodes.includes(type) ? type : "image/png" }));
         }
       },
     );

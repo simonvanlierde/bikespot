@@ -4,14 +4,7 @@ import { useEffect, useRef, useState } from "preact/hooks";
 import { SheetDialog } from "@/components/SheetDialog";
 import { formatDistance, getPrimaryLabel, mapsLink } from "@/features/location/display";
 import type { Coords, LocationRecord } from "@/lib/app-data";
-import {
-  bearingDegrees,
-  compassPoint,
-  distanceMeters,
-  fitPoints,
-  scaleBar,
-  screenHeading,
-} from "@/lib/geo";
+import { bearingDegrees, compassPoint, distanceMeters, fitPoints, scaleBar, screenHeading } from "@/lib/geo";
 import { watchCoords } from "@/lib/geolocation";
 import { lang, t } from "@/lib/i18n";
 
@@ -37,9 +30,7 @@ function headingOf(event: OrientationWithCompass): number | null {
   if (typeof event.webkitCompassHeading === "number") {
     return screenHeading(event.webkitCompassHeading, angle);
   }
-  return event.absolute && typeof event.alpha === "number"
-    ? screenHeading(360 - event.alpha, angle)
-    : null;
+  return event.absolute && typeof event.alpha === "number" ? screenHeading(360 - event.alpha, angle) : null;
 }
 
 // Follows the device's position and heading from the first tap until the sheet closes.
@@ -91,9 +82,7 @@ function useTracking(attempt: number) {
 // Safari asks for motion access, and only from inside a tap. Elsewhere this is a no-op.
 // A refusal is fine: the map works without a heading.
 function requestOrientationAccess(): void {
-  const orientation = globalThis.DeviceOrientationEvent as
-    | { requestPermission?: () => Promise<unknown> }
-    | undefined;
+  const orientation = globalThis.DeviceOrientationEvent as { requestPermission?: () => Promise<unknown> } | undefined;
   orientation?.requestPermission?.().catch(() => undefined);
 }
 
@@ -131,7 +120,7 @@ export function SpotMapSheet({
   const { positions, metersPerPx } = fitPoints(points, WIDTH, HEIGHT, PAD, spotCount);
   const offset = currentCoords ? 1 : 0;
   const currentAt = currentCoords ? positions[0] : null;
-  const youRaw = position ? positions[positions.length - 1] : null;
+  const youRaw = position ? (positions.at(-1) ?? null) : null;
   // Out of frame, your marker sits on the drawing's edge, on the side you are.
   const youAt = youRaw && {
     x: Math.min(Math.max(youRaw.x, EDGE), WIDTH - EDGE),
@@ -146,11 +135,9 @@ export function SpotMapSheet({
     const meters = distanceMeters(position, currentCoords);
     const direction = compassPoint(bearingDegrees(position, currentCoords));
     way = meters < AT_BIKE_M ? "here" : direction;
-    route =
-      meters < AT_BIKE_M ? t.value.atYourBike : t.value.towards(formatDistance(meters), direction);
+    route = meters < AT_BIKE_M ? t.value.atYourBike : t.value.towards(formatDistance(meters), direction);
   }
-  const status =
-    route ?? (attempt > 0 && !failed ? (noSignal ? t.value.noSignal : t.value.locatingYou) : "");
+  const status = route ?? (attempt > 0 && !failed ? (noSignal ? t.value.noSignal : t.value.locatingYou) : "");
 
   // A screen reader hears the route again only when the way to the bike
   // changes (another compass point, or arrived), not on every few metres of
@@ -186,16 +173,13 @@ export function SpotMapSheet({
                 </g>
               ) : null}
               {youAt && currentAt ? (
-                <line
-                  className="spot-map__route-line"
-                  x1={youAt.x}
-                  x2={currentAt.x}
-                  y1={youAt.y}
-                  y2={currentAt.y}
-                />
+                <line className="spot-map__route-line" x1={youAt.x} x2={currentAt.x} y1={youAt.y} y2={currentAt.y} />
               ) : null}
               {recentSpots.map((spot, index) => {
                 const at = positions[index + offset];
+                if (!at) {
+                  return null;
+                }
                 return (
                   <g key={spot.id} transform={`translate(${at.x} ${at.y})`}>
                     <circle className="spot-map__spot" r="10" />
@@ -212,16 +196,9 @@ export function SpotMapSheet({
               {youAt ? (
                 <g transform={`translate(${youAt.x} ${youAt.y})`}>
                   {heading === null ? null : (
-                    <path
-                      className="spot-map__heading"
-                      d="M0 -22 L7 -8 L-7 -8 Z"
-                      transform={`rotate(${heading})`}
-                    />
+                    <path className="spot-map__heading" d="M0 -22 L7 -8 L-7 -8 Z" transform={`rotate(${heading})`} />
                   )}
-                  <circle
-                    className={`spot-map__you${youOffMap ? " spot-map__you--off" : ""}`}
-                    r="7"
-                  />
+                  <circle className={`spot-map__you${youOffMap ? " spot-map__you--off" : ""}`} r="7" />
                 </g>
               ) : null}
             </svg>
@@ -263,9 +240,7 @@ export function SpotMapSheet({
           </>
         )}
 
-        {current && !currentCoords && spotCount > 0 ? (
-          <p className="detail-note">{t.value.mapCurrentNoGps}</p>
-        ) : null}
+        {current && !currentCoords && spotCount > 0 ? <p className="detail-note">{t.value.mapCurrentNoGps}</p> : null}
 
         {currentCoords ? (
           <div className="spot-map__route">
@@ -291,12 +266,7 @@ export function SpotMapSheet({
               <LocateFixed aria-hidden="true" className="button-icon" />
               <span>{t.value.showMyPosition}</span>
             </button>
-            <a
-              className="maps-link"
-              href={mapsLink(currentCoords)}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
+            <a className="maps-link" href={mapsLink(currentCoords)} rel="noopener noreferrer" target="_blank">
               <MapPin aria-hidden="true" className="button-icon" />
               <span>{t.value.openInMaps}</span>
             </a>

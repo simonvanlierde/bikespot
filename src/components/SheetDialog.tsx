@@ -23,8 +23,7 @@ export function SheetDialog({
   const sheetRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    previousFocusRef.current =
-      document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     sheetRef.current?.focus();
 
     // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: focus-trap Tab/Escape handling is irreducibly branchy
@@ -49,13 +48,13 @@ export function SheetDialog({
           'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
         );
 
-        if (focusable.length === 0) {
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (!(first && last)) {
           event.preventDefault();
           return;
         }
-
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
         const active = document.activeElement;
 
         if (event.shiftKey && (active === first || active === sheet)) {
@@ -86,21 +85,8 @@ export function SheetDialog({
     <div className="sheet-overlay">
       {/* Backdrop hit target — a pointer convenience behind the sheet. Hidden
           from assistive tech; Escape and the close button are the a11y paths. */}
-      <button
-        aria-hidden="true"
-        className="sheet-overlay__hit"
-        tabIndex={-1}
-        type="button"
-        onClick={onClose}
-      />
-      <section
-        ref={sheetRef}
-        aria-label={label}
-        aria-modal="true"
-        className="editor-sheet"
-        role="dialog"
-        tabIndex={-1}
-      >
+      <button aria-hidden="true" className="sheet-overlay__hit" tabIndex={-1} type="button" onClick={onClose} />
+      <section ref={sheetRef} aria-label={label} aria-modal="true" className="editor-sheet" role="dialog" tabIndex={-1}>
         <div className="sheet-header">
           <h2 className="sheet-title">
             {titleIcon}

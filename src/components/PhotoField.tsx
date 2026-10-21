@@ -33,13 +33,7 @@ export function PhotoField({
         <label className="file-trigger">
           <ImagePlus aria-hidden="true" className="button-icon" />
           <span>{photoUrl ? t.value.replacePhoto : t.value.addPhoto}</span>
-          <input
-            accept="image/*"
-            aria-label={t.value.photo}
-            className="sr-only"
-            onChange={onPhotoChange}
-            type="file"
-          />
+          <input accept="image/*" aria-label={t.value.photo} className="sr-only" onChange={onPhotoChange} type="file" />
         </label>
         {photoUrl ? (
           <button className="ghost-button" type="button" onClick={onPhotoRemove}>

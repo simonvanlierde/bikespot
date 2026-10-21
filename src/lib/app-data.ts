@@ -24,10 +24,7 @@ export type EnabledFields = {
 
 export const VISIBLE_FIELD_KEYS = ["side", "rackLevel", "distance", "floor", "rackNumber"] as const;
 
-export const ENABLED_FIELD_KEYS = [
-  "lane",
-  ...VISIBLE_FIELD_KEYS,
-] as const satisfies readonly (keyof EnabledFields)[];
+export const ENABLED_FIELD_KEYS = ["lane", ...VISIBLE_FIELD_KEYS] as const satisfies readonly (keyof EnabledFields)[];
 
 export type StationConfig = {
   name: string;
@@ -49,7 +46,7 @@ type RecordBase = {
   coords?: Coords;
 };
 
-export type StationLocationRecord = RecordBase & {
+type StationLocationRecord = RecordBase & {
   mode: "station";
   lane?: string;
   visibleFields: VisibleFields;
@@ -62,13 +59,13 @@ export type StationLocationRecord = RecordBase & {
 
 // An outside spot's free text lives in `notes`. Records saved before that
 // called it `outsideDescription`; repository.ts reads both.
-export type OutsideLocationRecord = RecordBase & {
+type OutsideLocationRecord = RecordBase & {
   mode: "outside";
 };
 
 export type LocationRecord = StationLocationRecord | OutsideLocationRecord;
 
-export type StationLocationRecordInput = {
+type StationLocationRecordInput = {
   mode: "station";
   lane?: string;
   side?: Side;
@@ -81,7 +78,7 @@ export type StationLocationRecordInput = {
   coords?: Coords;
 };
 
-export type OutsideLocationRecordInput = {
+type OutsideLocationRecordInput = {
   mode: "outside";
   notes?: string;
   photoId?: string;

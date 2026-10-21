@@ -62,7 +62,7 @@ export function saveAppData(data: AppData): void {
   window.localStorage.setItem(APP_DATA_STORAGE_KEY, JSON.stringify(data));
 }
 
-export function loadUnreadableBackup(): string | null {
+function loadUnreadableBackup(): string | null {
   try {
     return window.localStorage.getItem(UNREADABLE_BACKUP_KEY);
   } catch {
@@ -70,7 +70,7 @@ export function loadUnreadableBackup(): string | null {
   }
 }
 
-export function clearUnreadableBackup(): void {
+function clearUnreadableBackup(): void {
   window.localStorage.removeItem(UNREADABLE_BACKUP_KEY);
 }
 
@@ -175,9 +175,7 @@ async function reconcilePhotos(data: AppData, isCurrent: () => boolean): Promise
     const referenced = referencedPhotoIds(data);
     // Photos of records only the unreadable backup still holds stay with it.
     const backup = window.localStorage.getItem(UNREADABLE_BACKUP_KEY) ?? "";
-    await Promise.all(
-      [...stored].filter((id) => !(referenced.has(id) || backup.includes(id))).map(deletePhotoBlob),
-    );
+    await Promise.all([...stored].filter((id) => !(referenced.has(id) || backup.includes(id))).map(deletePhotoBlob));
 
     const dropMissing = (entry: LocationRecord): LocationRecord =>
       entry.photoId && !stored.has(entry.photoId) ? { ...entry, photoId: undefined } : entry;
@@ -220,8 +218,7 @@ function normalizeStoredDraft(value: unknown, now: number): StoredDraft | null {
   }
 
   const candidate = value as { draft?: unknown; showDetails?: unknown; savedAt?: unknown };
-  const savedAt =
-    typeof candidate.savedAt === "string" ? Date.parse(candidate.savedAt) : Number.NaN;
+  const savedAt = typeof candidate.savedAt === "string" ? Date.parse(candidate.savedAt) : Number.NaN;
 
   // A draft with no readable timestamp is treated as expired: it predates this
   // format, and there is no way to tell whether it still describes this trip.
@@ -307,9 +304,7 @@ export function normalizeLocationRecord(value: unknown): LocationRecord | null {
   const id = typeof entry.id === "string" ? entry.id : null;
   // Must parse to a real date so no consumer downstream ever sees Invalid Date.
   const updatedAt =
-    typeof entry.updatedAt === "string" && !Number.isNaN(Date.parse(entry.updatedAt))
-      ? entry.updatedAt
-      : null;
+    typeof entry.updatedAt === "string" && !Number.isNaN(Date.parse(entry.updatedAt)) ? entry.updatedAt : null;
   const stationName = typeof entry.stationName === "string" ? entry.stationName.trim() : "";
 
   // Station name is optional: the user may never name their station.

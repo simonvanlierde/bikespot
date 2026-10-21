@@ -1,12 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { defaultAppData } from "../src/lib/defaults.ts";
-import {
-  clearPhotoBlobs,
-  deletePhotoBlob,
-  loadPhotoBlob,
-  savePhotoBlob,
-} from "../src/lib/photos.ts";
+import { clearPhotoBlobs, deletePhotoBlob, loadPhotoBlob, savePhotoBlob } from "../src/lib/photos.ts";
 import { APP_DATA_STORAGE_KEY, loadAppData, saveAppData } from "../src/lib/repository.ts";
 import { sampleAppData } from "./fixtures.ts";
 
@@ -21,9 +16,7 @@ describe("app data repository", () => {
   });
 
   it("stores photo blobs outside localStorage and can read them back by photo id", async () => {
-    const photoId = await savePhotoBlob(
-      new File(["bike-photo"], "bike.png", { type: "image/png" }),
-    );
+    const photoId = await savePhotoBlob(new File(["bike-photo"], "bike.png", { type: "image/png" }));
 
     const nextData = {
       ...sampleAppData,
@@ -56,9 +49,7 @@ describe("app data repository", () => {
   });
 
   it("deletes a stored photo blob so orphaned photos do not accumulate", async () => {
-    const photoId = await savePhotoBlob(
-      new File(["bike-photo"], "bike.png", { type: "image/png" }),
-    );
+    const photoId = await savePhotoBlob(new File(["bike-photo"], "bike.png", { type: "image/png" }));
 
     expect(await loadPhotoBlob(photoId)).not.toBeNull();
 
@@ -101,10 +92,7 @@ describe("app data repository", () => {
       throw new Error("expected a station current record in defaults");
     }
 
-    window.localStorage.setItem(
-      APP_DATA_STORAGE_KEY,
-      JSON.stringify({ ...sampleAppData, recent: "not-an-array" }),
-    );
+    window.localStorage.setItem(APP_DATA_STORAGE_KEY, JSON.stringify({ ...sampleAppData, recent: "not-an-array" }));
 
     const hydrated = loadAppData().data;
 
@@ -125,10 +113,7 @@ describe("app data repository", () => {
   });
   it("keeps the station settings when no spot has been saved yet", () => {
     const station = { ...defaultAppData.station, name: "Utrecht Centraal", laneInputMode: "quick" };
-    window.localStorage.setItem(
-      APP_DATA_STORAGE_KEY,
-      JSON.stringify({ station, current: null, recent: [] }),
-    );
+    window.localStorage.setItem(APP_DATA_STORAGE_KEY, JSON.stringify({ station, current: null, recent: [] }));
 
     expect(loadAppData().data).toEqual({ station, current: null, recent: [] });
   });

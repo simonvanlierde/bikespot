@@ -1,13 +1,18 @@
-# Cloudflare Pages response headers. Spots, coordinates and photos stay in this
-# origin's storage and the app fetches nothing but its own files, so keep the
-# page unframeable and the network surface closed. Photos render from blob: URLs.
-# The script-src placeholder is replaced at build time by
-# scripts/writeCspHeaders.mjs with the sha256 of the inline theme script.
-# Cloudflare already sends nosniff and this referrer policy by default; they are
-# repeated here so every header the site relies on is declared in one place.
+# Response headers for Cloudflare Pages, which reads this file from the build output.
+# Spots, coordinates and photos stay in this origin's storage and the app fetches
+# nothing but its own files, so the policy allows this origin only. Photos render
+# from blob: URLs, the service worker needs worker-src, and the map asks for this
+# origin's geolocation.
+# script-src 'self' blocks inline scripts: code that must run before first paint
+# (public/theme-init.js) is a file loaded with <script src>. tests/e2e/csp.spec.ts
+# runs the built app under this policy and fails on any violation.
+# HSTS leaves out includeSubDomains: other subdomains may not be served from here.
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' __INLINE_SCRIPT_HASHES__; style-src 'self'; img-src 'self' blob:; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'; object-src 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob:; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'; object-src 'none'
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
-  Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: microphone=(), geolocation=(self), payment=()
+  Referrer-Policy: no-referrer
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(self), payment=()
+  Strict-Transport-Security: max-age=31536000

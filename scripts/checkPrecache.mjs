@@ -19,9 +19,7 @@ const cssUrls = files
     [...readFileSync(join(DIST, css), "utf8").matchAll(/url\(\s*["']?([^"')]+)["']?\s*\)/g)]
       .map(([, url]) => url)
       .filter((url) => !url.startsWith("data:"))
-      .map((url) =>
-        relative(DIST, url.startsWith("/") ? join(DIST, url) : join(DIST, css, "..", url)),
-      )
+      .map((url) => relative(DIST, url.startsWith("/") ? join(DIST, url) : join(DIST, css, "..", url)))
       .map((file) => file.replaceAll("\\", "/")),
   );
 
@@ -34,6 +32,4 @@ const missing = [...new Set([...fonts, ...cssUrls])].filter((file) => !precached
 if (missing.length > 0) {
   throw new Error(`dist/sw.js does not precache: ${missing.join(", ")}`);
 }
-process.stdout.write(
-  `Precache: all ${fonts.length} font file(s) and CSS assets are in dist/sw.js\n`,
-);
+process.stdout.write(`Precache: all ${fonts.length} font file(s) and CSS assets are in dist/sw.js\n`);

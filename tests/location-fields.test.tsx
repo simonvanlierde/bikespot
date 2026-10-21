@@ -75,9 +75,7 @@ describe("StationLocationFields", () => {
 
 describe("CoordsField", () => {
   it("shows captured coordinates with accuracy", () => {
-    render(
-      <CoordsField coords={{ lat: 1, lng: 2, accuracy: 8 }} status="idle" onCapture={() => {}} />,
-    );
+    render(<CoordsField coords={{ lat: 1, lng: 2, accuracy: 8 }} status="idle" onCapture={() => {}} />);
     expect(screen.getByText(/Captured/)).toHaveTextContent("±8m accuracy");
     expect(screen.getByRole("button", { name: "Update location" })).toBeEnabled();
   });

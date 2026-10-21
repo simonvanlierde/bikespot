@@ -25,9 +25,7 @@ describe("distanceMeters", () => {
     // Amsterdam Centraal to Utrecht Centraal is about 35 km as the crow flies.
     expect(distanceMeters(amsterdamCentraal, utrechtCentraal) / 1000).toBeCloseTo(35.1, 0);
     // London to Paris: 343.5 km on a 6371 km sphere.
-    expect(
-      distanceMeters({ lat: 51.5074, lng: -0.1278 }, { lat: 48.8566, lng: 2.3522 }) / 1000,
-    ).toBeCloseTo(343.5, 0);
+    expect(distanceMeters({ lat: 51.5074, lng: -0.1278 }, { lat: 48.8566, lng: 2.3522 }) / 1000).toBeCloseTo(343.5, 0);
   });
 
   it("is zero for the same point and symmetric", () => {
@@ -119,8 +117,8 @@ describe("projection", () => {
     // 111 m spread over the 180 px of usable height.
     expect(metersPerPx).toBeCloseTo(111.2 / 180, 2);
     expect(positions[0]).toEqual({ x: 160, y: 200 });
-    expect(positions[1].x).toBeCloseTo(160, 6);
-    expect(positions[1].y).toBeCloseTo(20, 6);
+    expect(positions[1]!.x).toBeCloseTo(160, 6);
+    expect(positions[1]!.y).toBeCloseTo(20, 6);
   });
 
   it("centres a single point and has no scale", () => {
@@ -140,8 +138,8 @@ describe("projection", () => {
     const framed = fitPoints([...spots, far], 320, 220, 20, 2);
 
     expect(framed.positions.slice(0, 2)).toEqual(fitPoints(spots, 320, 220, 20).positions);
-    expect(framed.positions[2].x).toBeGreaterThan(320);
-    expect(framed.positions[2].y).toBeLessThan(0);
+    expect(framed.positions[2]!.x).toBeGreaterThan(320);
+    expect(framed.positions[2]!.y).toBeLessThan(0);
   });
 
   it("frames every point when the framing points sit in one place", () => {
@@ -156,7 +154,7 @@ describe("projection", () => {
       1,
     );
     expect(metersPerPx).toBeGreaterThan(0);
-    expect(positions[1].y).toBeCloseTo(20, 6);
+    expect(positions[1]!.y).toBeCloseTo(20, 6);
   });
 
   it("keeps points near the antimeridian close together", () => {
@@ -169,7 +167,7 @@ describe("projection", () => {
       220,
       20,
     );
-    expect(positions[1].x).toBeGreaterThan(positions[0].x);
+    expect(positions[1]!.x).toBeGreaterThan(positions[0]!.x);
     expect(positions.every((p) => p.x >= 20 && p.x <= 300)).toBe(true);
   });
 });

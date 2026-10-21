@@ -37,12 +37,8 @@ describe("bike storage tracker app", () => {
 
     expect(currentSpotCard).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /change spot/i })).toBeInTheDocument();
-    expect(
-      within(currentSpotCard).getByRole("button", { name: /view details/i }),
-    ).toBeInTheDocument();
-    expect(
-      within(navigation).getByRole("button", { name: /recent locations/i }),
-    ).toBeInTheDocument();
+    expect(within(currentSpotCard).getByRole("button", { name: /view details/i })).toBeInTheDocument();
+    expect(within(navigation).getByRole("button", { name: /recent locations/i })).toBeInTheDocument();
     expect(within(navigation).getByRole("button", { name: /^settings$/i })).toBeInTheDocument();
   });
 
@@ -53,9 +49,7 @@ describe("bike storage tracker app", () => {
     render(<App store={createStore()} />);
 
     const currentSpotCard = screen.getByRole("region", { name: /current spot/i });
-    expect(
-      await within(currentSpotCard).findByRole("heading", { name: /no bike parked/i }),
-    ).toBeVisible();
+    expect(await within(currentSpotCard).findByRole("heading", { name: /no bike parked/i })).toBeVisible();
     expect(within(currentSpotCard).queryByRole("button", { name: /view details/i })).toBeNull();
     expect(screen.getByText("0")).toBeInTheDocument();
 
@@ -150,10 +144,7 @@ describe("bike storage tracker app", () => {
 
     // The motion lives only under no-preference, so reduced motion gets none.
     const css = readFileSync("src/styles/surfaces.css", "utf8");
-    const motionFree = css.replace(
-      /@media \(prefers-reduced-motion: no-preference\) \{[\s\S]*?\n\}\n/g,
-      "",
-    );
+    const motionFree = css.replace(/@media \(prefers-reduced-motion: no-preference\) \{[\s\S]*?\n\}\n/g, "");
     expect(css).toContain(".current-card--flip");
     expect(motionFree).not.toContain("current-card--flip");
   });
@@ -208,10 +199,7 @@ describe("bike storage tracker app", () => {
 
     await openSheet(user, /change spot/i);
     await user.click(screen.getByRole("button", { name: /parked outside/i }));
-    await user.upload(
-      screen.getByLabelText(/photo/i),
-      new File(["outside"], "outside.png", { type: "image/png" }),
-    );
+    await user.upload(screen.getByLabelText(/photo/i), new File(["outside"], "outside.png", { type: "image/png" }));
     await user.type(screen.getByLabelText(/notes/i), "At the fence near the station exit");
     await user.click(screen.getByRole("button", { name: /^save$/i }));
 
@@ -223,9 +211,7 @@ describe("bike storage tracker app", () => {
     const detailsSheet = screen.getByRole("dialog", {
       name: /spot details/i,
     });
-    expect(
-      within(detailsSheet).getByText(/at the fence near the station exit/i),
-    ).toBeInTheDocument();
+    expect(within(detailsSheet).getByText(/at the fence near the station exit/i)).toBeInTheDocument();
     expect(await within(detailsSheet).findByAltText(/saved bike reference/i)).toBeInTheDocument();
   });
 
@@ -237,10 +223,7 @@ describe("bike storage tracker app", () => {
     await openSheet(user, /change spot/i);
     await user.click(screen.getByRole("button", { name: /parked outside/i }));
     await user.type(screen.getByLabelText(/notes/i), "By the bike shop");
-    await user.upload(
-      screen.getByLabelText(/photo/i),
-      new File(["outside"], "outside.png", { type: "image/png" }),
-    );
+    await user.upload(screen.getByLabelText(/photo/i), new File(["outside"], "outside.png", { type: "image/png" }));
 
     await user.click(screen.getByRole("button", { name: /in the station/i }));
     await user.click(screen.getByRole("button", { name: /more details/i }));
@@ -302,9 +285,7 @@ describe("bike storage tracker app", () => {
 
     expect(screen.getByRole("heading", { name: /lane 4/i })).toBeInTheDocument();
     // A restored spot comes back without the split-flap; only a save flips.
-    expect(screen.getByRole("region", { name: /current spot/i })).not.toHaveClass(
-      "current-card--flip",
-    );
+    expect(screen.getByRole("region", { name: /current spot/i })).not.toHaveClass("current-card--flip");
   });
 
   it("offers a keyboard-reachable undo after removing a spot from recent", async () => {
@@ -329,9 +310,7 @@ describe("bike storage tracker app", () => {
     expect(within(list).getByRole("button", { name: /^view lane 5$/i })).toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent(/back in recent/i);
     expect(within(list).queryByRole("button", { name: /^undo$/i })).toBeNull();
-    expect(screen.getByRole("region", { name: /current spot/i })).not.toHaveClass(
-      "current-card--flip",
-    );
+    expect(screen.getByRole("region", { name: /current spot/i })).not.toHaveClass("current-card--flip");
   });
 
   it("keeps the saved visible fields on recent entries after station settings change", async () => {

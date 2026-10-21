@@ -1,3 +1,7 @@
+// Cloudflare Pages builds and deploys this app through its Git integration:
+// create the project in the dashboard from this repository, with build command
+// `pnpm build` and output directory `dist`. No workflow deploys it.
+// public/_headers sets the response headers.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "bikespot",

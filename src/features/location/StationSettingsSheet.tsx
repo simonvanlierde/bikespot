@@ -37,10 +37,7 @@ export function StationSettingsSheet({
   onImportSpots: (event: TargetedEvent<HTMLInputElement>) => void;
   onClearAllData: () => void;
 }) {
-  function updateStationField<K extends keyof StationSettingsDraft>(
-    field: K,
-    value: StationSettingsDraft[K],
-  ) {
+  function updateStationField<K extends keyof StationSettingsDraft>(field: K, value: StationSettingsDraft[K]) {
     setStationForm((previous) => ({
       ...previous,
       [field]: value,
@@ -111,10 +108,7 @@ export function StationSettingsSheet({
           {/* A native select: seven languages don't fit a segmented row at 320 px. */}
           <label className="field">
             <span>{t.value.language}</span>
-            <select
-              value={lang.value}
-              onChange={(event) => setLang(event.currentTarget.value as Lang)}
-            >
+            <select value={lang.value} onChange={(event) => setLang(event.currentTarget.value as Lang)}>
               {LANGS.map((code) => (
                 <option key={code} lang={code} value={code}>
                   {LANG_NAMES[code]}
@@ -146,11 +140,7 @@ export function StationSettingsSheet({
           </label>
           {onExportUnreadable ? (
             <>
-              <button
-                className="ghost-button ghost-button--wide"
-                type="button"
-                onClick={onExportUnreadable}
-              >
+              <button className="ghost-button ghost-button--wide" type="button" onClick={onExportUnreadable}>
                 <Download aria-hidden="true" className="button-icon" />
                 <span>{t.value.exportUnreadable}</span>
               </button>

@@ -9,13 +9,11 @@ const features = readFileSync("src/styles/features.css", "utf8");
 const blocks = [...css.matchAll(/:root(?:[^{]*)\{([^}]*)\}/g)].map((m) => m[1]);
 
 function tokens(block: string): Record<string, string> {
-  return Object.fromEntries(
-    [...block.matchAll(/(--[\w-]+):\s*([^;]+);/g)].map((m) => [m[1], m[2].trim()]),
-  );
+  return Object.fromEntries([...block.matchAll(/(--[\w-]+):\s*([^;]+);/g)].map((m) => [m[1], m[2]?.trim() ?? ""]));
 }
 
 function luminance(hex: string): number {
-  const [r, g, b] = [1, 3, 5].map((i) => {
+  const [r = 0, g = 0, b = 0] = [1, 3, 5].map((i) => {
     const c = Number.parseInt(hex.slice(i, i + 2), 16) / 255;
     return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
   });
@@ -40,7 +38,7 @@ function over(color: string, bg: string): string {
 }
 
 function ratio(a: string, b: string): number {
-  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  const [hi = 0, lo = 0] = [luminance(a), luminance(b)].sort((x, y) => y - x);
   return (hi + 0.05) / (lo + 0.05);
 }
 
@@ -73,36 +71,34 @@ describe("palette contrast", () => {
     ".app-footer__version",
   ])("outlines %s with the --control-edge token", (selector) => {
     const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const rule = new RegExp(
-      `\\n${escaped} \\{[^}]*border(?:-color)?:[^;]*var\\(--control-edge\\);`,
-    );
+    const rule = new RegExp(`\\n${escaped} \\{[^}]*border(?:-color)?:[^;]*var\\(--control-edge\\);`);
     expect(`\n${surfaces}\n${features}`).toMatch(rule);
   });
 
-  const palette = tokens(blocks[0]);
+  const palette = tokens(blocks[0] ?? "");
 
   for (const [name, scheme] of [
     ["light", 0],
     ["dark", 1],
   ] as const) {
-    const resolve = (value: string): string => {
+    const resolve = (value: string | undefined): string => {
+      if (value === undefined) {
+        throw new Error("a colour refers to a token that is not defined");
+      }
       const ref = value.match(/^var\((--[\w-]+)\)$/);
-      if (ref) {
+      if (ref?.[1]) {
         return resolve(palette[ref[1]]);
       }
       // light-dark(light, dark); an argument may hold one level of parentheses.
       const pair = value.match(/^light-dark\(((?:[^,()]|\([^()]*\))+),\s*(.+)\)$/);
-      return pair ? resolve(pair[scheme + 1].trim()) : value;
+      return pair ? resolve(pair[scheme + 1]?.trim()) : value;
     };
 
-    it.each(["--selected", "--control-edge"])(
-      `gives %s 3:1 against every ${name} background`,
-      (token) => {
-        for (const bg of ["--bg", "--surface", "--surface-sunken"]) {
-          expect(ratio(resolve(palette[token]), resolve(palette[bg]))).toBeGreaterThanOrEqual(3);
-        }
-      },
-    );
+    it.each(["--selected", "--control-edge"])(`gives %s 3:1 against every ${name} background`, (token) => {
+      for (const bg of ["--bg", "--surface", "--surface-sunken"]) {
+        expect(ratio(resolve(palette[token]), resolve(palette[bg]))).toBeGreaterThanOrEqual(3);
+      }
+    });
 
     it(`gives the keyline-edged Maps button 3:1 against the ${name} sign`, () => {
       const sign = resolve(palette["--sign"]);

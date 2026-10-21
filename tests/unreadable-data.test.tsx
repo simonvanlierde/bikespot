@@ -7,11 +7,7 @@ import App from "../src/App.tsx";
 import { defaultAppData } from "../src/lib/defaults.ts";
 import { t } from "../src/lib/i18n.ts";
 import { clearPhotoBlobs, listPhotoIds, savePhotoBlob } from "../src/lib/photos.ts";
-import {
-  APP_DATA_STORAGE_KEY,
-  browserRepository,
-  UNREADABLE_BACKUP_KEY,
-} from "../src/lib/repository.ts";
+import { APP_DATA_STORAGE_KEY, browserRepository, UNREADABLE_BACKUP_KEY } from "../src/lib/repository.ts";
 import { createStore } from "../src/lib/store.ts";
 import { sampleAppData, seedStorage } from "./fixtures.ts";
 
@@ -176,9 +172,7 @@ describe("getting the unreadable copy out", () => {
       return "blob:unreadable";
     });
     vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => undefined);
-    const click = vi
-      .spyOn(HTMLAnchorElement.prototype, "click")
-      .mockImplementation(() => undefined);
+    const click = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => undefined);
     const store = createStore();
 
     store.handleExportUnreadable();

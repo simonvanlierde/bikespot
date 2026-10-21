@@ -102,22 +102,16 @@ describe("spot map", () => {
     await user.click(within(dialog).getByRole("button", { name: "Show where I am" }));
     // Effects run after paint, so the watch starts a moment after the tap.
     await vi.waitFor(() => expect(geo.watchPosition).toHaveBeenCalledTimes(1));
-    expect(
-      within(dialog).getByText("Finding your location…", { selector: DISTANCE }),
-    ).toBeInTheDocument();
+    expect(within(dialog).getByText("Finding your location…", { selector: DISTANCE })).toBeInTheDocument();
 
     geo.move({ ...youSouthWest, accuracy: 5 });
-    expect(
-      within(dialog).getByText("120 m north-east", { selector: DISTANCE }),
-    ).toBeInTheDocument();
+    expect(within(dialog).getByText("120 m north-east", { selector: DISTANCE })).toBeInTheDocument();
     expect(within(dialog).getByRole("img", { name: "Map of 2 spots" })).toBeInTheDocument();
     expect(within(dialog).getByText("You, off the edge of the map")).toBeInTheDocument();
     expect((await axe(view.container)).violations).toEqual([]);
 
     geo.move({ ...bike, lat: bike.lat + 0.00002 });
-    expect(
-      within(dialog).getByText("You are at your bike", { selector: DISTANCE }),
-    ).toBeInTheDocument();
+    expect(within(dialog).getByText("You are at your bike", { selector: DISTANCE })).toBeInTheDocument();
     expect(within(dialog).getByText("You")).toBeInTheDocument();
 
     await user.click(within(dialog).getByRole("button", { name: "Close" }));
@@ -135,9 +129,7 @@ describe("spot map", () => {
     await vi.waitFor(() => expect(geo.watchPosition).toHaveBeenCalled());
     geo.move({ ...youSouthWest, accuracy: 5 });
 
-    expect(
-      screen.getByText("120 m naar het noordoosten", { selector: DISTANCE }),
-    ).toBeInTheDocument();
+    expect(screen.getByText("120 m naar het noordoosten", { selector: DISTANCE })).toBeInTheDocument();
     expect(screen.getByText("Rij 5: 40 m ten zuiden van de huidige plek")).toBeInTheDocument();
   });
 
@@ -149,16 +141,12 @@ describe("spot map", () => {
     await user.click(within(dialog).getByRole("button", { name: "Show where I am" }));
     await vi.waitFor(() => expect(geo.watchPosition).toHaveBeenCalledTimes(1));
     geo.fail(3);
-    expect(
-      within(dialog).getByText(/No GPS signal yet/, { selector: DISTANCE }),
-    ).toBeInTheDocument();
+    expect(within(dialog).getByText(/No GPS signal yet/, { selector: DISTANCE })).toBeInTheDocument();
     expect(within(dialog).queryByRole("alert")).toBeNull();
 
     geo.move({ ...youSouthWest, accuracy: 5 });
     geo.fail(3);
-    expect(
-      within(dialog).getByText("120 m north-east", { selector: DISTANCE }),
-    ).toBeInTheDocument();
+    expect(within(dialog).getByText("120 m north-east", { selector: DISTANCE })).toBeInTheDocument();
     expect(within(dialog).queryByRole("alert")).toBeNull();
   });
 
@@ -200,8 +188,8 @@ describe("spot map", () => {
 
     expect(within(dialog).getByText("You, off the edge of the map")).toBeInTheDocument();
     // The two spots, 40 m apart, still fill the drawing's height.
-    const spots = [...dialog.querySelectorAll("g[transform] > circle.spot-map__spot")].map(
-      (circle) => circle.parentElement?.getAttribute("transform"),
+    const spots = [...dialog.querySelectorAll("g[transform] > circle.spot-map__spot")].map((circle) =>
+      circle.parentElement?.getAttribute("transform"),
     );
     expect(spots).toEqual(["translate(160 192)", "translate(160 28)"]);
     expect(dialog.querySelector(".spot-map__you--off")?.parentElement).toHaveAttribute(
@@ -212,12 +200,10 @@ describe("spot map", () => {
 
   it("shows an error when location is refused, and lets you try again", async () => {
     seedStorage(withCoords);
-    const watchPosition = vi.fn(
-      (_success: PositionCallback, error?: PositionErrorCallback | null) => {
-        error?.({ code: 1 } as GeolocationPositionError);
-        return 1;
-      },
-    );
+    const watchPosition = vi.fn((_success: PositionCallback, error?: PositionErrorCallback | null) => {
+      error?.({ code: 1 } as GeolocationPositionError);
+      return 1;
+    });
     Object.defineProperty(navigator, "geolocation", {
       configurable: true,
       value: { watchPosition, clearWatch: vi.fn() },
@@ -225,9 +211,7 @@ describe("spot map", () => {
     const { user, dialog } = await openMap();
 
     await user.click(within(dialog).getByRole("button", { name: "Show where I am" }));
-    expect(await within(dialog).findByRole("alert")).toHaveTextContent(
-      /Could not get your location/,
-    );
+    expect(await within(dialog).findByRole("alert")).toHaveTextContent(/Could not get your location/);
     await user.click(within(dialog).getByRole("button", { name: "Show where I am" }));
     await vi.waitFor(() => expect(watchPosition).toHaveBeenCalledTimes(2));
   });
