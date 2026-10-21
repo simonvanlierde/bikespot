@@ -1,4 +1,4 @@
-import { ImagePlus, Trash2 } from "lucide-preact";
+import { Camera, ImagePlus, Trash2 } from "lucide-preact";
 
 import type { TargetedEvent } from "preact";
 
@@ -30,6 +30,20 @@ export function PhotoField({
         {metadataKept ? t.value.photoMetadataKept : ""}
       </p>
       <div className="photo-field__actions">
+        {/* Chrome on Android opens its photo picker, which has no camera, for an input without
+            `capture`. Shown only on touch screens; desktops ignore `capture`. */}
+        <label className="file-trigger file-trigger--camera">
+          <Camera aria-hidden="true" className="button-icon" />
+          <span>{t.value.takePhoto}</span>
+          <input
+            accept="image/*"
+            aria-label={t.value.takePhoto}
+            capture="environment"
+            className="sr-only"
+            onChange={onPhotoChange}
+            type="file"
+          />
+        </label>
         <label className="file-trigger">
           <ImagePlus aria-hidden="true" className="button-icon" />
           <span>{photoUrl ? t.value.replacePhoto : t.value.addPhoto}</span>
