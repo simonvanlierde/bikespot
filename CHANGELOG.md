@@ -43,6 +43,8 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- On a phone, a Take photo button opens the camera. Chrome on Android had stopped
+  offering the camera from Add photo, which now opens the gallery only.
 - In French the off-map marker says "Toi, hors de la carte" instead of just "Toi", and the Japanese station question asks which details the bike park has.
 - More translation fixes after a second review in Dutch, French, German, Danish, Swedish and Japanese: clearer map and empty-screen text, and notices that read naturally.
 - Translation fixes after a review in Dutch, French, German, Danish and
