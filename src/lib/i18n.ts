@@ -785,7 +785,7 @@ const fr: Dict = {
   positionError: "Impossible d’obtenir ta position. Vérifie que ce site peut l’utiliser.",
   toYourBike: "Vers ton vélo",
   you: "Toi",
-  youOffMap: "Toi",
+  youOffMap: "Toi, hors de la carte",
   atYourBike: "Tu es près de ton vélo",
   towards: (distance, direction) => `${distance} ${COMPASS_FR[direction]}`,
   fromCurrent: (label, distance, direction) =>
@@ -1285,7 +1285,7 @@ const ja: Dict = {
   stationName: "駐輪場の名前",
   stationNamePlaceholder: "例：京都駅",
   general: "一般",
-  enabledFields: "駐輪場にある表示は？",
+  enabledFields: "駐輪場には、どの項目がありますか？",
   floorInput: "階の入力",
   laneInput: "列の入力",
   theme: "テーマ",
