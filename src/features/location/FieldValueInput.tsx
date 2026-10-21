@@ -28,9 +28,7 @@ export function FieldValueInput({
               key={label}
               aria-label={`${noun} ${label}`}
               aria-pressed={value === label}
-              className={
-                value === label ? "segment segment--dense is-active" : "segment segment--dense"
-              }
+              className={value === label ? "segment segment--dense is-active" : "segment segment--dense"}
               type="button"
               onClick={() => onChange(label)}
               onKeyDown={segmentKeyHandler(labels, value, onChange)}

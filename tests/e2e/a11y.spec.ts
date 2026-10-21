@@ -20,10 +20,7 @@ for (const colorScheme of ["light", "dark"] as const) {
         // One line per violation, then the selector of each element it hit. The
         // comparison is on the rule ids alone, so the diff stays short.
         const report = violations
-          .map(
-            (v) =>
-              `${v.id} (${v.impact}): ${v.help}\n${v.nodes.map((n) => `  ${n.target.join(" ")}`).join("\n")}`,
-          )
+          .map((v) => `${v.id} (${v.impact}): ${v.help}\n${v.nodes.map((n) => `  ${n.target.join(" ")}`).join("\n")}`)
           .join("\n");
         expect(
           violations.map((v) => v.id),

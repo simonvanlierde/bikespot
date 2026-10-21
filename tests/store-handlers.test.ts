@@ -363,10 +363,7 @@ describe("store handlers", () => {
       } as unknown as TargetedEvent<HTMLInputElement>);
 
       expect(importing.data.value.recent.map((entry) => entry.id)).not.toContain("old-0");
-      expect(dropUnusedPhotos).toHaveBeenCalledWith(
-        expect.objectContaining({ recent: old }),
-        importing.data.value,
-      );
+      expect(dropUnusedPhotos).toHaveBeenCalledWith(expect.objectContaining({ recent: old }), importing.data.value);
       stop();
     });
   });

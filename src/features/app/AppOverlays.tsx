@@ -39,9 +39,7 @@ export function AppOverlays({ store }: { store: Store }) {
           setStationForm={store.handleStationChange}
           onClose={store.closeOverlay}
           onExportSpots={store.handleExportSpots}
-          onExportUnreadable={
-            store.unreadableBackup.value === null ? undefined : store.handleExportUnreadable
-          }
+          onExportUnreadable={store.unreadableBackup.value === null ? undefined : store.handleExportUnreadable}
           onClearUnreadable={store.handleClearUnreadable}
           onImportSpots={store.handleImportSpots}
           onClearAllData={store.handleClearAllData}
@@ -65,13 +63,7 @@ export function AppOverlays({ store }: { store: Store }) {
         />
       );
     case "spot-map":
-      return (
-        <SpotMapSheet
-          current={appData.current}
-          recent={appData.recent}
-          onClose={store.closeOverlay}
-        />
-      );
+      return <SpotMapSheet current={appData.current} recent={appData.recent} onClose={store.closeOverlay} />;
     case "recent-preview": {
       const selectedRecent = appData.recent.find((entry) => entry.id === current.id);
 

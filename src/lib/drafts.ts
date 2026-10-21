@@ -1,12 +1,4 @@
-import type {
-  Coords,
-  Distance,
-  LocationRecord,
-  LocationRecordInput,
-  RackLevel,
-  Side,
-  StationConfig,
-} from "./app-data";
+import type { Coords, Distance, LocationRecord, LocationRecordInput, RackLevel, Side, StationConfig } from "./app-data";
 
 export type StationLocationDraft = {
   kind: "station";
@@ -49,10 +41,7 @@ export function createStationSettingsDraft(station: StationConfig): StationSetti
 // the same spot twice, but usually the same floor: carry the floor over, start
 // every other locator (lane, side, rack, distance) and all evidence fresh, so a
 // careless tap can never re-save yesterday's lane as today's.
-export function createLocationDraft(
-  current: LocationRecord | null,
-  station: StationConfig,
-): LocationDraft {
+export function createLocationDraft(current: LocationRecord | null, station: StationConfig): LocationDraft {
   if (current?.mode === "outside") {
     return createOutsideLocationDraft();
   }
@@ -80,10 +69,7 @@ export function createOutsideLocationDraft(): OutsideLocationDraft {
   };
 }
 
-export function buildLocationRecordInput(
-  draft: LocationDraft,
-  station: StationConfig,
-): LocationRecordInput | null {
+export function buildLocationRecordInput(draft: LocationDraft, station: StationConfig): LocationRecordInput | null {
   if (draft.kind === "outside") {
     const notes = draft.notes.trim();
 
@@ -103,10 +89,7 @@ export function buildLocationRecordInput(
   return buildStationInput(draft, station);
 }
 
-function buildStationInput(
-  draft: StationLocationDraft,
-  station: StationConfig,
-): LocationRecordInput | null {
+function buildStationInput(draft: StationLocationDraft, station: StationConfig): LocationRecordInput | null {
   const { enabledFields } = station;
   const lane = enabledFields.lane ? draft.lane.trim() : undefined;
 

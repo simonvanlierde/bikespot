@@ -10,8 +10,7 @@
   font-style: normal;
   font-display: swap;
   font-weight: 100 900;
-  src: url("@fontsource-variable/overpass/files/overpass-latin-wght-normal.woff2")
-    format("woff2-variations");
+  src: url("@fontsource-variable/overpass/files/overpass-latin-wght-normal.woff2") format("woff2-variations");
 }
 
 @font-face {
@@ -19,6 +18,5 @@
   font-style: normal;
   font-display: swap;
   font-weight: 300 700;
-  src: url("@fontsource-variable/overpass-mono/files/overpass-mono-latin-wght-normal.woff2")
-    format("woff2-variations");
+  src: url("@fontsource-variable/overpass-mono/files/overpass-mono-latin-wght-normal.woff2") format("woff2-variations");
 }

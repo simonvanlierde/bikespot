@@ -25,9 +25,7 @@ describe("distanceMeters", () => {
     // Amsterdam Centraal to Utrecht Centraal is about 35 km as the crow flies.
     expect(distanceMeters(amsterdamCentraal, utrechtCentraal) / 1000).toBeCloseTo(35.1, 0);
     // London to Paris: 343.5 km on a 6371 km sphere.
-    expect(
-      distanceMeters({ lat: 51.5074, lng: -0.1278 }, { lat: 48.8566, lng: 2.3522 }) / 1000,
-    ).toBeCloseTo(343.5, 0);
+    expect(distanceMeters({ lat: 51.5074, lng: -0.1278 }, { lat: 48.8566, lng: 2.3522 }) / 1000).toBeCloseTo(343.5, 0);
   });
 
   it("is zero for the same point and symmetric", () => {

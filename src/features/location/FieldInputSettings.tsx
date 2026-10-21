@@ -58,8 +58,7 @@ export function FieldInputSettings({
       return;
     }
     pendingFocus.current = null;
-    const removes =
-      editorRef.current?.querySelectorAll<HTMLButtonElement>(".labels-editor__remove");
+    const removes = editorRef.current?.querySelectorAll<HTMLButtonElement>(".labels-editor__remove");
     const target = removes?.[Math.min(index, removes.length - 1)];
     (target ?? editorRef.current?.querySelector<HTMLButtonElement>(".labels-editor__add"))?.focus();
   });
@@ -118,11 +117,7 @@ export function FieldInputSettings({
               ) : null}
             </div>
           ))}
-          <button
-            className="text-button text-button--switch labels-editor__add"
-            type="button"
-            onClick={addLabel}
-          >
+          <button className="text-button text-button--switch labels-editor__add" type="button" onClick={addLabel}>
             <Plus aria-hidden="true" size={16} />
             {t.value.addPreset(noun)}
           </button>

@@ -83,9 +83,10 @@ describe("buildLocationRecordInput (outside)", () => {
       mode: "outside",
       notes: undefined,
     });
-    expect(
-      buildLocationRecordInput({ ...base, coords: { lat: 1, lng: 2 } }, defaultStationConfig),
-    ).toMatchObject({ mode: "outside", coords: { lat: 1, lng: 2 } });
+    expect(buildLocationRecordInput({ ...base, coords: { lat: 1, lng: 2 } }, defaultStationConfig)).toMatchObject({
+      mode: "outside",
+      coords: { lat: 1, lng: 2 },
+    });
   });
 });
 

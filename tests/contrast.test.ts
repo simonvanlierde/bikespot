@@ -9,9 +9,7 @@ const features = readFileSync("src/styles/features.css", "utf8");
 const blocks = [...css.matchAll(/:root(?:[^{]*)\{([^}]*)\}/g)].map((m) => m[1]);
 
 function tokens(block: string): Record<string, string> {
-  return Object.fromEntries(
-    [...block.matchAll(/(--[\w-]+):\s*([^;]+);/g)].map((m) => [m[1], m[2]?.trim() ?? ""]),
-  );
+  return Object.fromEntries([...block.matchAll(/(--[\w-]+):\s*([^;]+);/g)].map((m) => [m[1], m[2]?.trim() ?? ""]));
 }
 
 function luminance(hex: string): number {
@@ -73,9 +71,7 @@ describe("palette contrast", () => {
     ".app-footer__version",
   ])("outlines %s with the --control-edge token", (selector) => {
     const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const rule = new RegExp(
-      `\\n${escaped} \\{[^}]*border(?:-color)?:[^;]*var\\(--control-edge\\);`,
-    );
+    const rule = new RegExp(`\\n${escaped} \\{[^}]*border(?:-color)?:[^;]*var\\(--control-edge\\);`);
     expect(`\n${surfaces}\n${features}`).toMatch(rule);
   });
 
@@ -98,14 +94,11 @@ describe("palette contrast", () => {
       return pair ? resolve(pair[scheme + 1]?.trim()) : value;
     };
 
-    it.each(["--selected", "--control-edge"])(
-      `gives %s 3:1 against every ${name} background`,
-      (token) => {
-        for (const bg of ["--bg", "--surface", "--surface-sunken"]) {
-          expect(ratio(resolve(palette[token]), resolve(palette[bg]))).toBeGreaterThanOrEqual(3);
-        }
-      },
-    );
+    it.each(["--selected", "--control-edge"])(`gives %s 3:1 against every ${name} background`, (token) => {
+      for (const bg of ["--bg", "--surface", "--surface-sunken"]) {
+        expect(ratio(resolve(palette[token]), resolve(palette[bg]))).toBeGreaterThanOrEqual(3);
+      }
+    });
 
     it(`gives the keyline-edged Maps button 3:1 against the ${name} sign`, () => {
       const sign = resolve(palette["--sign"]);

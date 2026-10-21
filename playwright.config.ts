@@ -9,9 +9,7 @@ export default defineConfig({
   testDir: "tests/e2e",
   forbidOnly: ci,
   retries: ci ? 2 : 0,
-  reporter: ci
-    ? [["github"], ["html", { open: "never" }]]
-    : [["list"], ["html", { open: "never" }]],
+  reporter: ci ? [["github"], ["html", { open: "never" }]] : [["list"], ["html", { open: "never" }]],
   use: { baseURL: url, trace: "on-first-retry" },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   // The tests run against the production build, which is what Cloudflare Pages serves.

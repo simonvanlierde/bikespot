@@ -43,10 +43,7 @@ export function parseSpotsFile(text: string): LocationRecord[] | null {
 // Imported spots join Recent, newest first, within the usual cap. The current
 // spot is left alone: the file cannot say whether that bike is still parked.
 // `added` counts only spots that made it past the id check and the cap.
-export function mergeSpots(
-  data: AppData,
-  spots: LocationRecord[],
-): { data: AppData; added: number } {
+export function mergeSpots(data: AppData, spots: LocationRecord[]): { data: AppData; added: number } {
   const known = new Set([data.current?.id, ...data.recent.map((entry) => entry.id)]);
   const incoming = spots.filter((entry) => {
     if (known.has(entry.id)) {

@@ -6,13 +6,7 @@ import { t } from "@/lib/i18n";
 import { formatAccuracy, mapsLink, shouldShowEntryField, showFloor } from "./display";
 
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: conditional field rows are inherent to the detail view
-export function LocationDetailContent({
-  entry,
-  photoAlt,
-}: {
-  entry: LocationRecord;
-  photoAlt: string;
-}) {
+export function LocationDetailContent({ entry, photoAlt }: { entry: LocationRecord; photoAlt: string }) {
   const photoUrl = usePhotoUrl(entry.photoId);
   // Enabled fields in broad → specific order (floor → rack number), matching the
   // editor and settings views.
@@ -23,24 +17,16 @@ export function LocationDetailContent({
           { label: t.value.lane, value: entry.lane },
           {
             label: t.value.distance,
-            value:
-              shouldShowEntryField(entry, "distance") && entry.distance
-                ? t.value.opts[entry.distance]
-                : undefined,
+            value: shouldShowEntryField(entry, "distance") && entry.distance ? t.value.opts[entry.distance] : undefined,
           },
           {
             label: t.value.side,
-            value:
-              shouldShowEntryField(entry, "side") && entry.side
-                ? t.value.opts[entry.side]
-                : undefined,
+            value: shouldShowEntryField(entry, "side") && entry.side ? t.value.opts[entry.side] : undefined,
           },
           {
             label: t.value.rackLevel,
             value:
-              shouldShowEntryField(entry, "rackLevel") && entry.rackLevel
-                ? t.value.opts[entry.rackLevel]
-                : undefined,
+              shouldShowEntryField(entry, "rackLevel") && entry.rackLevel ? t.value.opts[entry.rackLevel] : undefined,
           },
           {
             label: t.value.rackNumber,
@@ -64,12 +50,7 @@ export function LocationDetailContent({
       {entry.notes ? <p className="detail-note">{entry.notes}</p> : null}
 
       {entry.coords ? (
-        <a
-          className="maps-link"
-          href={mapsLink(entry.coords)}
-          rel="noopener noreferrer"
-          target="_blank"
-        >
+        <a className="maps-link" href={mapsLink(entry.coords)} rel="noopener noreferrer" target="_blank">
           <MapPin aria-hidden="true" className="button-icon" />
           <span>{t.value.openInMaps}</span>
           {formatAccuracy(entry.coords) ? (

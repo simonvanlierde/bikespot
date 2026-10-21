@@ -2,11 +2,7 @@ import type { ReactNode } from "preact/compat";
 
 // Arrow keys move the selection like a native radio group (the buttons stay
 // aria-pressed toggles, which AT already announces with state).
-export function segmentKeyHandler<T>(
-  options: readonly T[],
-  value: T,
-  onChange: (value: T) => void,
-) {
+export function segmentKeyHandler<T>(options: readonly T[], value: T, onChange: (value: T) => void) {
   return (event: KeyboardEvent) => {
     const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[event.key];
     if (!step) {
@@ -18,9 +14,7 @@ export function segmentKeyHandler<T>(
     if (next !== undefined) {
       onChange(next);
     }
-    (event.currentTarget as HTMLElement).parentElement
-      ?.querySelectorAll<HTMLButtonElement>("button")
-      [index]?.focus();
+    (event.currentTarget as HTMLElement).parentElement?.querySelectorAll<HTMLButtonElement>("button")[index]?.focus();
   };
 }
 

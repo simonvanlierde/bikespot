@@ -18,12 +18,12 @@ describe("usePhotoUrl", () => {
   });
 
   it("falls back to no photo when loading the stored blob fails", async () => {
-    const { result, rerender } = renderHook<
-      string | null,
-      { photoId?: string; photoFile?: File | null }
-    >(({ photoId, photoFile }) => usePhotoUrl(photoId, photoFile), {
-      initialProps: { photoFile: new File(["draft"], "draft.png") },
-    });
+    const { result, rerender } = renderHook<string | null, { photoId?: string; photoFile?: File | null }>(
+      ({ photoId, photoFile }) => usePhotoUrl(photoId, photoFile),
+      {
+        initialProps: { photoFile: new File(["draft"], "draft.png") },
+      },
+    );
     await waitFor(() => expect(result.current).toBe("blob:draft"));
 
     rerender({ photoId: "broken", photoFile: null });

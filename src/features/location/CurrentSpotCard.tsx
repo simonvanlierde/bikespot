@@ -43,9 +43,7 @@ export function CurrentSpotCard({
       <div className="current-card__content">
         {current ? (
           <span className="current-card__topline-end">
-            {current.coords ? (
-              <MapPin aria-label={t.value.hasGps} className="button-icon current-card__pin" />
-            ) : null}
+            {current.coords ? <MapPin aria-label={t.value.hasGps} className="button-icon current-card__pin" /> : null}
             <ChevronRight aria-hidden="true" className="button-icon current-card__chevron" />
           </span>
         ) : null}
@@ -75,18 +73,14 @@ export function CurrentSpotCard({
             ) : null}
             <h1
               key={flipKey}
-              className={
-                !current || current.mode === "outside" ? "headline headline--outside" : "headline"
-              }
+              className={!current || current.mode === "outside" ? "headline headline--outside" : "headline"}
             >
               {current ? getPrimaryLabel(current) : t.value.noSpotYet}
             </h1>
           </div>
           <div className="current-card__body" key={flipKey}>
             {!current ? <p className="spot-summary">{t.value.emptyIntro}</p> : null}
-            {current?.mode === "outside" && current.notes ? (
-              <p className="spot-summary">{current.notes}</p>
-            ) : null}
+            {current?.mode === "outside" && current.notes ? <p className="spot-summary">{current.notes}</p> : null}
             {facts.length ? (
               <p className="spot-facts">
                 {facts.map((fact) => (
@@ -96,9 +90,7 @@ export function CurrentSpotCard({
                 ))}
               </p>
             ) : null}
-            {current?.mode === "station" && current.notes?.trim() ? (
-              <p className="spot-note">{current.notes}</p>
-            ) : null}
+            {current?.mode === "station" && current.notes?.trim() ? <p className="spot-note">{current.notes}</p> : null}
           </div>
           <div className="current-card__footer">
             {current ? (
@@ -139,9 +131,7 @@ export function CurrentSpotCard({
         </div>
       </div>
       {/* Keyboard / AT path to the details sheet; its click bubbles to the section. */}
-      {current ? (
-        <button aria-label={t.value.viewDetails} className="current-card__hit" type="button" />
-      ) : null}
+      {current ? <button aria-label={t.value.viewDetails} className="current-card__hit" type="button" /> : null}
     </section>
   );
 }

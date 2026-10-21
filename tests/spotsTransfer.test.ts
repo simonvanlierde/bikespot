@@ -33,10 +33,7 @@ describe("spots transfer", () => {
 
     expect(JSON.parse(file).version).toBe(1);
     const spots = parseSpotsFile(file);
-    expect(spots?.map((entry) => entry.id)).toEqual([
-      sampleAppData.current?.id,
-      sampleAppData.recent[0]?.id,
-    ]);
+    expect(spots?.map((entry) => entry.id)).toEqual([sampleAppData.current?.id, sampleAppData.recent[0]?.id]);
     expect(spots?.[0]?.photoId).toBeUndefined();
   });
 
@@ -59,10 +56,7 @@ describe("spots transfer", () => {
 
     expect(result.added).toBe(1);
     expect(result.data.current).toBe(sampleAppData.current);
-    expect(result.data.recent.map((entry) => entry.id)).toEqual([
-      fresh.id,
-      sampleAppData.recent[0]?.id,
-    ]);
+    expect(result.data.recent.map((entry) => entry.id)).toEqual([fresh.id, sampleAppData.recent[0]?.id]);
   });
 
   it("leaves data untouched when nothing is new", () => {
@@ -72,9 +66,7 @@ describe("spots transfer", () => {
   });
 
   it("keeps Recent within its cap and counts only the spots that fit", () => {
-    const older = Array.from({ length: 6 }, (_, i) =>
-      outsideSpot(`2026-01-0${i + 1}T00:00:00.000Z`),
-    );
+    const older = Array.from({ length: 6 }, (_, i) => outsideSpot(`2026-01-0${i + 1}T00:00:00.000Z`));
 
     const result = mergeSpots(sampleAppData, older);
 

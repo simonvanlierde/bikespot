@@ -150,10 +150,7 @@ export function createStore(repo: SpotRepository = browserRepository) {
   function openEditor(session?: number): EditorState | null {
     const current = overlay.value;
 
-    return current.kind === "edit-location" &&
-      (session === undefined || current.session === session)
-      ? current
-      : null;
+    return current.kind === "edit-location" && (session === undefined || current.session === session) ? current : null;
   }
 
   function patchEditor(session: number, patch: Partial<Omit<EditorState, "kind" | "session">>) {
@@ -354,9 +351,7 @@ export function createStore(repo: SpotRepository = browserRepository) {
       if (current) {
         patchEditor(
           session,
-          coords
-            ? { draft: { ...current.draft, coords }, geoStatus: "idle" }
-            : { geoStatus: "error" },
+          coords ? { draft: { ...current.draft, coords }, geoStatus: "idle" } : { geoStatus: "error" },
         );
       }
     } catch {

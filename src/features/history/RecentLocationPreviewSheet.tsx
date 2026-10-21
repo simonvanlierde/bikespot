@@ -27,19 +27,11 @@ export function RecentLocationPreviewSheet({
       <div className="preview-stack">
         <LocationDetailContent entry={selectedRecent} photoAlt={t.value.recentBikeRef} />
         <p className="timestamp">{t.value.saved(formatTimestamp(selectedRecent.updatedAt))}</p>
-        <button
-          className="primary-button primary-button--wide"
-          type="button"
-          onClick={() => onUse(selectedRecent.id)}
-        >
+        <button className="primary-button primary-button--wide" type="button" onClick={() => onUse(selectedRecent.id)}>
           <RotateCcw aria-hidden="true" className="button-icon" />
           {t.value.useThisLocation}
         </button>
-        <button
-          className="ghost-button ghost-button--wide"
-          type="button"
-          onClick={() => onRemove(selectedRecent.id)}
-        >
+        <button className="ghost-button ghost-button--wide" type="button" onClick={() => onRemove(selectedRecent.id)}>
           <Trash2 aria-hidden="true" className="button-icon" />
           <span>{t.value.removeFromRecent}</span>
         </button>

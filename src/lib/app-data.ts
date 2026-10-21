@@ -24,10 +24,7 @@ export type EnabledFields = {
 
 export const VISIBLE_FIELD_KEYS = ["side", "rackLevel", "distance", "floor", "rackNumber"] as const;
 
-export const ENABLED_FIELD_KEYS = [
-  "lane",
-  ...VISIBLE_FIELD_KEYS,
-] as const satisfies readonly (keyof EnabledFields)[];
+export const ENABLED_FIELD_KEYS = ["lane", ...VISIBLE_FIELD_KEYS] as const satisfies readonly (keyof EnabledFields)[];
 
 export type StationConfig = {
   name: string;

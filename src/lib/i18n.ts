@@ -29,8 +29,7 @@ type ThemeKey = "system" | "light" | "dark";
 
 const STORAGE_KEY = "bikespot-lang";
 
-const isLang = (value: string | null | undefined): value is Lang =>
-  (LANGS as readonly string[]).includes(value ?? "");
+const isLang = (value: string | null | undefined): value is Lang => (LANGS as readonly string[]).includes(value ?? "");
 
 // A stored choice wins; otherwise the first browser language whose primary
 // subtag we have ("de-AT" -> de, "ja-JP" -> ja); otherwise English.
@@ -240,8 +239,7 @@ const en: Dict = {
   currentBikeRef: "Current bike reference",
   navigation: "More",
   noSpotYet: "No bike parked",
-  emptyIntro:
-    "Save where you leave your bike, and find it again later. Everything stays on this phone.",
+  emptyIntro: "Save where you leave your bike, and find it again later. Everything stays on this phone.",
   saveSpot: "Save spot",
   justNow: "just now",
   bikeCollected: "Bike collected",
@@ -289,8 +287,7 @@ const en: Dict = {
   replacePhoto: "Replace photo",
   addPhoto: "Add photo",
   removePhoto: "Remove photo",
-  photoMetadataKept:
-    "This browser could not remove the photo's location data. The photo stays on this device.",
+  photoMetadataKept: "This browser could not remove the photo's location data. The photo stays on this device.",
 
   close: "Close",
 
@@ -313,8 +310,7 @@ const en: Dict = {
   youOffMap: "You, off the edge of the map",
   atYourBike: "You are at your bike",
   towards: (distance, direction) => `${distance} ${COMPASS_EN[direction]}`,
-  fromCurrent: (label, distance, direction) =>
-    `${label}: ${distance} ${COMPASS_EN[direction]} of the current spot`,
+  fromCurrent: (label, distance, direction) => `${label}: ${distance} ${COMPASS_EN[direction]} of the current spot`,
   stationFloor: "Station floor",
   useThisLocation: "Restore this spot",
   viewRecent: (title) => `View ${title}`,
@@ -431,8 +427,7 @@ const nl: Dict = {
   replacePhoto: "Foto vervangen",
   addPhoto: "Foto toevoegen",
   removePhoto: "Foto verwijderen",
-  photoMetadataKept:
-    "Deze browser kon de locatiegegevens niet uit de foto halen. De foto blijft op dit apparaat.",
+  photoMetadataKept: "Deze browser kon de locatiegegevens niet uit de foto halen. De foto blijft op dit apparaat.",
 
   close: "Sluiten",
 
@@ -444,8 +439,7 @@ const nl: Dict = {
   spotMap: "Plekkenkaart",
   mapIntro:
     "Getekend op deze telefoon op basis van de GPS-locaties van je plekken. Er wordt geen externe kaart geladen. Het noorden is boven.",
-  mapNoGps:
-    "Geen van je plekken heeft al een GPS-locatie. Voeg er een toe als je een plek opslaat.",
+  mapNoGps: "Geen van je plekken heeft al een GPS-locatie. Voeg er een toe als je een plek opslaat.",
   mapCurrentNoGps: "De huidige plek heeft geen GPS-locatie.",
   mapLabel: (count) => (count === 1 ? "Kaart van één plek" : `Kaart van ${count} plekken`),
   showMyPosition: "Laat zien waar ik ben",
@@ -457,8 +451,7 @@ const nl: Dict = {
   youOffMap: "Jij, buiten de rand van de kaart",
   atYourBike: "Je bent bij je fiets",
   towards: (distance, direction) => `${distance} naar het ${COMPASS_NL[direction]}`,
-  fromCurrent: (label, distance, direction) =>
-    `${label}: ${distance} ten ${COMPASS_NL[direction]} van de huidige plek`,
+  fromCurrent: (label, distance, direction) => `${label}: ${distance} ten ${COMPASS_NL[direction]} van de huidige plek`,
   stationFloor: "Verdieping stalling",
   useThisLocation: "Deze plek herstellen",
   viewRecent: (title) => `${title} bekijken`,
@@ -508,8 +501,7 @@ const nl: Dict = {
   clearUnreadable: "Onleesbare gegevens wissen",
   clearUnreadableConfirm:
     "Wil je de kopie van de onleesbare gegevens van dit apparaat wissen, inclusief de bijbehorende foto's? Exporteer deze eerst als je ze wilt bewaren.",
-  noticeImported: (count) =>
-    count === 1 ? "1 plek geïmporteerd" : `${count} plekken geïmporteerd`,
+  noticeImported: (count) => (count === 1 ? "1 plek geïmporteerd" : `${count} plekken geïmporteerd`),
   noticeImportInvalid: "Geen Bikespot-exportbestand — niets geïmporteerd",
   clearAllDataConfirm: "Alle opgeslagen plekken, foto's en instellingen van dit apparaat wissen?",
   viewSourceVersion: (version) => `Broncode bekijken, versie ${version}`,
@@ -545,8 +537,7 @@ const de: Dict = {
   currentBikeRef: "Foto vom aktuellen Platz",
   navigation: "Mehr",
   noSpotYet: "Kein Fahrrad abgestellt",
-  emptyIntro:
-    "Speichere, wo du dein Fahrrad abstellst, und finde es später wieder. Alles bleibt auf diesem Handy.",
+  emptyIntro: "Speichere, wo du dein Fahrrad abstellst, und finde es später wieder. Alles bleibt auf diesem Handy.",
   saveSpot: "Platz speichern",
   justNow: "gerade eben",
   bikeCollected: "Fahrrad abgeholt",
@@ -561,8 +552,7 @@ const de: Dict = {
   whereOpts: { station: "Im Fahrradparkhaus", outside: "Draußen" },
   saveLocation: "Speichern",
   errorLaneRequired: "Gib die Reihe ein, damit du das Fahrrad wiederfindest.",
-  errorNothingToFindBy:
-    "Füge eine Notiz, ein Foto oder einen GPS-Standort hinzu, damit du das Fahrrad wiederfindest.",
+  errorNothingToFindBy: "Füge eine Notiz, ein Foto oder einen GPS-Standort hinzu, damit du das Fahrrad wiederfindest.",
   moreDetails: "Weitere Details",
   gpsLocation: "GPS-Standort",
   notes: "Notizen",
@@ -589,8 +579,7 @@ const de: Dict = {
   useMyLocation: "Meinen Standort nutzen",
   captured: "Erfasst",
   accuracy: (value) => `Genauigkeit ${value}`,
-  geoError:
-    "Dein Standort konnte nicht ermittelt werden. Prüfe die Berechtigungen und versuche es erneut.",
+  geoError: "Dein Standort konnte nicht ermittelt werden. Prüfe die Berechtigungen und versuche es erneut.",
 
   photoPreviewAlt: "Fotovorschau",
   replacePhoto: "Foto ersetzen",
@@ -609,8 +598,7 @@ const de: Dict = {
   spotMap: "Karte",
   mapIntro:
     "Wird auf diesem Handy anhand der GPS-Daten deiner Plätze erstellt. Es wird keine Karte geladen. Norden ist oben.",
-  mapNoGps:
-    "Noch keiner deiner Plätze hat einen GPS-Standort. Füge einen hinzu, wenn du einen Platz speicherst.",
+  mapNoGps: "Noch keiner deiner Plätze hat einen GPS-Standort. Füge einen hinzu, wenn du einen Platz speicherst.",
   mapCurrentNoGps: "Der aktuelle Platz hat keinen GPS-Standort.",
   mapLabel: (count) => (count === 1 ? "Karte mit einem Platz" : `Karte mit ${count} Plätzen`),
   showMyPosition: "Meinen Standort anzeigen",
@@ -622,8 +610,7 @@ const de: Dict = {
   youOffMap: "Du, außerhalb der Karte",
   atYourBike: "Du bist bei deinem Fahrrad",
   towards: (distance, direction) => `${distance} ${COMPASS_DE[direction]}`,
-  fromCurrent: (label, distance, direction) =>
-    `${label}: ${distance} ${COMPASS_DE[direction]} des aktuellen Platzes`,
+  fromCurrent: (label, distance, direction) => `${label}: ${distance} ${COMPASS_DE[direction]} des aktuellen Platzes`,
   stationFloor: "Etage",
   useThisLocation: "Diesen Platz wiederherstellen",
   viewRecent: (title) => `${title} ansehen`,
@@ -675,8 +662,7 @@ const de: Dict = {
     "Die Kopie der unlesbaren Daten von diesem Gerät löschen, samt der Fotos, auf die nur sie verweist? Exportiere sie vorher, wenn du sie behalten willst.",
   noticeImported: (count) => (count === 1 ? "1 Platz importiert" : `${count} Plätze importiert`),
   noticeImportInvalid: "Keine Bikespot-Exportdatei – nichts importiert",
-  clearAllDataConfirm:
-    "Alle gespeicherten Plätze, Fotos und Einstellungen von diesem Gerät löschen?",
+  clearAllDataConfirm: "Alle gespeicherten Plätze, Fotos und Einstellungen von diesem Gerät löschen?",
   viewSourceVersion: (version) => `Quellcode ansehen, Version ${version}`,
 
   language: "Sprache",
@@ -713,8 +699,7 @@ const fr: Dict = {
   currentBikeRef: "Photo de la place actuelle",
   navigation: "Plus",
   noSpotYet: "Aucun vélo garé",
-  emptyIntro:
-    "Enregistre l’endroit où tu laisses ton vélo, et retrouve-le plus tard. Tout reste sur ce téléphone.",
+  emptyIntro: "Enregistre l’endroit où tu laisses ton vélo, et retrouve-le plus tard. Tout reste sur ce téléphone.",
   saveSpot: "Enregistrer la place",
   justNow: "à l’instant",
   bikeCollected: "Vélo récupéré",
@@ -773,10 +758,8 @@ const fr: Dict = {
   recentPreview: "Aperçu d’une place précédente",
   openInMaps: "Ouvrir dans Maps",
   spotMap: "Carte des places",
-  mapIntro:
-    "Dessinée sur ce téléphone à partir du GPS de tes places. Aucune carte n’est chargée. Le nord est en haut.",
-  mapNoGps:
-    "Aucune de tes places n’a encore de position GPS. Ajoute-en une quand tu enregistres une place.",
+  mapIntro: "Dessinée sur ce téléphone à partir du GPS de tes places. Aucune carte n’est chargée. Le nord est en haut.",
+  mapNoGps: "Aucune de tes places n’a encore de position GPS. Ajoute-en une quand tu enregistres une place.",
   mapCurrentNoGps: "La place actuelle n’a pas de position GPS.",
   mapLabel: (count) => (count === 1 ? "Carte d’une place" : `Carte de ${count} places`),
   showMyPosition: "Afficher ma position",
@@ -788,8 +771,7 @@ const fr: Dict = {
   youOffMap: "Toi, hors de la carte",
   atYourBike: "Tu es près de ton vélo",
   towards: (distance, direction) => `${distance} ${COMPASS_FR[direction]}`,
-  fromCurrent: (label, distance, direction) =>
-    `${label} : ${distance} ${COMPASS_FR[direction]} de la place actuelle`,
+  fromCurrent: (label, distance, direction) => `${label} : ${distance} ${COMPASS_FR[direction]} de la place actuelle`,
   stationFloor: "Étage",
   useThisLocation: "Reprendre cette place",
   viewRecent: (title) => `Voir ${title}`,
@@ -841,8 +823,7 @@ const fr: Dict = {
     "Effacer de cet appareil la copie des données illisibles, avec les photos auxquelles elle seule renvoie ? Exporte-la d’abord pour la garder.",
   noticeImported: (count) => (count === 1 ? "1 place importée" : `${count} places importées`),
   noticeImportInvalid: "Ce n’est pas un fichier d’export Bikespot – rien n’a été importé",
-  clearAllDataConfirm:
-    "Effacer de cet appareil toutes les places, photos et réglages enregistrés ?",
+  clearAllDataConfirm: "Effacer de cet appareil toutes les places, photos et réglages enregistrés ?",
   viewSourceVersion: (version) => `Voir le code source, version ${version}`,
 
   language: "Langue",
@@ -876,8 +857,7 @@ const da: Dict = {
   currentBikeRef: "Foto af den nuværende plads",
   navigation: "Mere",
   noSpotYet: "Ingen cykel parkeret",
-  emptyIntro:
-    "Gem, hvor du stiller din cykel, og find den igen senere. Alt bliver på denne telefon.",
+  emptyIntro: "Gem, hvor du stiller din cykel, og find den igen senere. Alt bliver på denne telefon.",
   saveSpot: "Gem plads",
   justNow: "netop nu",
   bikeCollected: "Cykel hentet",
@@ -892,8 +872,7 @@ const da: Dict = {
   whereOpts: { station: "I cykelparkeringen", outside: "Udenfor" },
   saveLocation: "Gem",
   errorLaneRequired: "Angiv rækken, så du kan finde cyklen igen.",
-  errorNothingToFindBy:
-    "Tilføj en note, et foto eller en GPS-position, så du kan finde cyklen igen.",
+  errorNothingToFindBy: "Tilføj en note, et foto eller en GPS-position, så du kan finde cyklen igen.",
   moreDetails: "Flere detaljer",
   gpsLocation: "GPS-position",
   notes: "Noter",
@@ -926,8 +905,7 @@ const da: Dict = {
   replacePhoto: "Erstat foto",
   addPhoto: "Tilføj foto",
   removePhoto: "Fjern foto",
-  photoMetadataKept:
-    "Denne browser kunne ikke fjerne positionsdata fra fotoet. Fotoet bliver på denne enhed.",
+  photoMetadataKept: "Denne browser kunne ikke fjerne positionsdata fra fotoet. Fotoet bliver på denne enhed.",
 
   close: "Luk",
 
@@ -937,8 +915,7 @@ const da: Dict = {
   recentPreview: "Forhåndsvisning af tidligere plads",
   openInMaps: "Åbn i Maps",
   spotMap: "Pladskort",
-  mapIntro:
-    "Tegnet på denne telefon ud fra dine pladsers GPS. Der hentes intet kort. Nord er opad.",
+  mapIntro: "Tegnet på denne telefon ud fra dine pladsers GPS. Der hentes intet kort. Nord er opad.",
   mapNoGps: "Ingen af dine pladser har en GPS-position endnu. Tilføj en, når du gemmer en plads.",
   mapCurrentNoGps: "Den nuværende plads har ingen GPS-position.",
   mapLabel: (count) => (count === 1 ? "Kort over én plads" : `Kort over ${count} pladser`),
@@ -951,8 +928,7 @@ const da: Dict = {
   youOffMap: "Dig, uden for kortet",
   atYourBike: "Du er ved din cykel",
   towards: (distance, direction) => `${distance} mod ${COMPASS_DA[direction]}`,
-  fromCurrent: (label, distance, direction) =>
-    `${label}: ${distance} ${COMPASS_DA[direction]} for den nuværende plads`,
+  fromCurrent: (label, distance, direction) => `${label}: ${distance} ${COMPASS_DA[direction]} for den nuværende plads`,
   stationFloor: "Etage",
   useThisLocation: "Gendan denne plads",
   viewRecent: (title) => `Se ${title}`,
@@ -1038,8 +1014,7 @@ const sv: Dict = {
   currentBikeRef: "Foto av nuvarande plats",
   navigation: "Mer",
   noSpotYet: "Ingen cykel parkerad",
-  emptyIntro:
-    "Spara var du ställer cykeln och hitta den igen senare. All data sparas lokalt på telefonen.",
+  emptyIntro: "Spara var du ställer cykeln och hitta den igen senare. All data sparas lokalt på telefonen.",
   saveSpot: "Spara plats",
   justNow: "precis nu",
   bikeCollected: "Cykeln hämtad",
@@ -1054,8 +1029,7 @@ const sv: Dict = {
   whereOpts: { station: "I garaget", outside: "Utomhus" },
   saveLocation: "Spara",
   errorLaneRequired: "Ange raden så att du hittar cykeln igen.",
-  errorNothingToFindBy:
-    "Lägg till en anteckning, ett foto eller en GPS-position så att du hittar cykeln igen.",
+  errorNothingToFindBy: "Lägg till en anteckning, ett foto eller en GPS-position så att du hittar cykeln igen.",
   moreDetails: "Fler detaljer",
   gpsLocation: "GPS-position",
   notes: "Anteckningar",
@@ -1088,8 +1062,7 @@ const sv: Dict = {
   replacePhoto: "Byt foto",
   addPhoto: "Lägg till foto",
   removePhoto: "Ta bort foto",
-  photoMetadataKept:
-    "Webbläsaren kunde inte ta bort platsdata från fotot. Fotot stannar på den här enheten.",
+  photoMetadataKept: "Webbläsaren kunde inte ta bort platsdata från fotot. Fotot stannar på den här enheten.",
 
   close: "Stäng",
 
@@ -1113,8 +1086,7 @@ const sv: Dict = {
   youOffMap: "Du, utanför kartan",
   atYourBike: "Du är vid din cykel",
   towards: (distance, direction) => `${distance} åt ${COMPASS_SV[direction]}`,
-  fromCurrent: (label, distance, direction) =>
-    `${label}: ${distance} ${COMPASS_SV[direction]} om nuvarande plats`,
+  fromCurrent: (label, distance, direction) => `${label}: ${distance} ${COMPASS_SV[direction]} om nuvarande plats`,
   stationFloor: "Våning",
   useThisLocation: "Återställ den här platsen",
   viewRecent: (title) => `Visa ${title}`,
@@ -1215,8 +1187,7 @@ const ja: Dict = {
   whereOpts: { station: "駐輪場内", outside: "駐輪場外" },
   saveLocation: "保存",
   errorLaneRequired: "自転車を見つけられるよう、列を入力してください。",
-  errorNothingToFindBy:
-    "自転車を見つけられるよう、メモ・写真・GPS位置のいずれかを追加してください。",
+  errorNothingToFindBy: "自転車を見つけられるよう、メモ・写真・GPS位置のいずれかを追加してください。",
   moreDetails: "詳細",
   gpsLocation: "GPS位置",
   notes: "メモ",
@@ -1249,8 +1220,7 @@ const ja: Dict = {
   replacePhoto: "写真を変更",
   addPhoto: "写真を追加",
   removePhoto: "写真を削除",
-  photoMetadataKept:
-    "このブラウザでは写真の位置情報を削除できませんでした。写真はこの端末から出ません。",
+  photoMetadataKept: "このブラウザでは写真の位置情報を削除できませんでした。写真はこの端末から出ません。",
 
   close: "閉じる",
 
@@ -1260,23 +1230,20 @@ const ja: Dict = {
   recentPreview: "以前の場所のプレビュー",
   openInMaps: "マップで開く",
   spotMap: "場所マップ",
-  mapIntro:
-    "保存した場所のGPS情報をもとに、この端末上で描画されます。外部の地図データは読み込みません。上が北です。",
+  mapIntro: "保存した場所のGPS情報をもとに、この端末上で描画されます。外部の地図データは読み込みません。上が北です。",
   mapNoGps: "GPS位置のある場所はまだありません。場所を保存するときに追加できます。",
   mapCurrentNoGps: "現在の場所にはGPS位置がありません。",
   mapLabel: (count) => `${count}か所の地図`,
   showMyPosition: "現在地を表示",
   locatingYou: "現在地を検索中…",
   noSignal: "GPS信号をまだ受信していません。検索を続けています。屋外のほうが受信しやすくなります。",
-  positionError:
-    "現在地を取得できませんでした。このサイトに位置情報の使用を許可しているか確認してください。",
+  positionError: "現在地を取得できませんでした。このサイトに位置情報の使用を許可しているか確認してください。",
   toYourBike: "自転車まで",
   you: "現在地",
   youOffMap: "現在地（マップ範囲外）",
   atYourBike: "自転車の場所に着きました",
   towards: (distance, direction) => `${COMPASS_JA[direction]}へ${distance}`,
-  fromCurrent: (label, distance, direction) =>
-    `${label}：現在の場所から${COMPASS_JA[direction]}へ${distance}`,
+  fromCurrent: (label, distance, direction) => `${label}：現在の場所から${COMPASS_JA[direction]}へ${distance}`,
   stationFloor: "階",
   useThisLocation: "この場所に戻す",
   viewRecent: (title) => `${title}を見る`,

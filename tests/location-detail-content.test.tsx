@@ -25,9 +25,7 @@ describe("location detail content", () => {
   });
 
   it("renders a persisted outside photo after the async photo lookup resolves", async () => {
-    const photoId = await savePhotoBlob(
-      new File(["bike-photo"], "bike.png", { type: "image/png" }),
-    );
+    const photoId = await savePhotoBlob(new File(["bike-photo"], "bike.png", { type: "image/png" }));
 
     render(
       <LocationDetailContent
@@ -43,10 +41,7 @@ describe("location detail content", () => {
       />,
     );
 
-    expect(await screen.findByAltText(/saved bike reference/i)).toHaveAttribute(
-      "src",
-      "blob:bike-photo",
-    );
+    expect(await screen.findByAltText(/saved bike reference/i)).toHaveAttribute("src", "blob:bike-photo");
     expect(createObjectUrl).toHaveBeenCalledTimes(1);
   });
 
@@ -66,10 +61,7 @@ describe("location detail content", () => {
     );
 
     const link = screen.getByRole("link", { name: /open in maps/i });
-    expect(link).toHaveAttribute(
-      "href",
-      "https://www.google.com/maps/search/?api=1&query=52.379189,4.899431",
-    );
+    expect(link).toHaveAttribute("href", "https://www.google.com/maps/search/?api=1&query=52.379189,4.899431");
     expect(screen.getByText("±12m")).toBeInTheDocument();
   });
 
@@ -99,17 +91,8 @@ describe("location detail content", () => {
       />,
     );
 
-    const labels = Array.from(container.querySelectorAll(".detail-row__label")).map(
-      (element) => element.textContent,
-    );
-    expect(labels).toEqual([
-      "Station floor",
-      "Lane",
-      "Distance",
-      "Side",
-      "Rack level",
-      "Rack number",
-    ]);
+    const labels = Array.from(container.querySelectorAll(".detail-row__label")).map((element) => element.textContent);
+    expect(labels).toEqual(["Station floor", "Lane", "Distance", "Side", "Rack level", "Rack number"]);
     expect(screen.queryByText(/^station$/i)).not.toBeInTheDocument();
   });
 

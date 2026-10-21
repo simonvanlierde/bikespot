@@ -20,8 +20,7 @@ function deltaLng(from: number, to: number): number {
 export function distanceMeters(a: LatLng, b: LatLng): number {
   const dLat = rad(b.lat - a.lat);
   const dLng = rad(deltaLng(a.lng, b.lng));
-  const h =
-    Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2;
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2;
   return 2 * EARTH_RADIUS_M * Math.asin(Math.min(1, Math.sqrt(h)));
 }
 
@@ -30,8 +29,7 @@ export function bearingDegrees(from: LatLng, to: LatLng): number {
   const dLng = rad(deltaLng(from.lng, to.lng));
   const y = Math.sin(dLng) * Math.cos(rad(to.lat));
   const x =
-    Math.cos(rad(from.lat)) * Math.sin(rad(to.lat)) -
-    Math.sin(rad(from.lat)) * Math.cos(rad(to.lat)) * Math.cos(dLng);
+    Math.cos(rad(from.lat)) * Math.sin(rad(to.lat)) - Math.sin(rad(from.lat)) * Math.cos(rad(to.lat)) * Math.cos(dLng);
   return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
 }
 
@@ -91,10 +89,7 @@ export function fitPoints(
   if (box.minX === box.maxX && box.minY === box.maxY) {
     box = boundsOf(local);
   }
-  const metersPerPx = Math.max(
-    (box.maxX - box.minX) / (width - 2 * pad),
-    (box.maxY - box.minY) / (height - 2 * pad),
-  );
+  const metersPerPx = Math.max((box.maxX - box.minX) / (width - 2 * pad), (box.maxY - box.minY) / (height - 2 * pad));
   const midX = (box.minX + box.maxX) / 2;
   const midY = (box.minY + box.maxY) / 2;
 
@@ -108,17 +103,13 @@ export function fitPoints(
 }
 
 // The longest 1, 2 or 5 x 10^n metres that fits in `maxPx`, for a scale bar.
-export function scaleBar(
-  metersPerPx: number,
-  maxPx: number,
-): { meters: number; px: number } | null {
+export function scaleBar(metersPerPx: number, maxPx: number): { meters: number; px: number } | null {
   if (!(metersPerPx > 0)) {
     return null;
   }
 
   const limit = metersPerPx * maxPx;
   const magnitude = 10 ** Math.floor(Math.log10(limit));
-  const meters =
-    [5, 2, 1].map((step) => step * magnitude).find((value) => value <= limit) ?? magnitude;
+  const meters = [5, 2, 1].map((step) => step * magnitude).find((value) => value <= limit) ?? magnitude;
   return { meters, px: meters / metersPerPx };
 }

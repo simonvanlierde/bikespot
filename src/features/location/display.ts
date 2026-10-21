@@ -19,9 +19,7 @@ export function shouldShowEntryField(entry: LocationRecord, field: keyof Enabled
   }
 
   const value = entry[field];
-  const hasValue = TEXT_FIELDS.has(field)
-    ? Boolean((value as string | undefined)?.trim())
-    : Boolean(value);
+  const hasValue = TEXT_FIELDS.has(field) ? Boolean((value as string | undefined)?.trim()) : Boolean(value);
 
   // Lane is always shown when set; the rest depend on the saved visibility flags.
   return field === "lane" ? hasValue : entry.visibleFields[field] === true && hasValue;
@@ -98,9 +96,7 @@ export function getSummary(entry: LocationRecord | null): string {
 
   const parts = [
     shouldShowEntryField(entry, "side") && entry.side ? t.value.opts[entry.side] : "",
-    shouldShowEntryField(entry, "rackLevel") && entry.rackLevel
-      ? t.value.opts[entry.rackLevel]
-      : "",
+    shouldShowEntryField(entry, "rackLevel") && entry.rackLevel ? t.value.opts[entry.rackLevel] : "",
     shouldShowEntryField(entry, "distance") && entry.distance ? t.value.opts[entry.distance] : "",
   ].filter(Boolean);
 

@@ -1,13 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { StationLocationDraft } from "../src/lib/drafts.ts";
-import {
-  clearDraft,
-  DRAFT_MAX_AGE_MS,
-  DRAFT_STORAGE_KEY,
-  loadDraft,
-  saveDraft,
-} from "../src/lib/repository.ts";
+import { clearDraft, DRAFT_MAX_AGE_MS, DRAFT_STORAGE_KEY, loadDraft, saveDraft } from "../src/lib/repository.ts";
 import { createStore, type Store } from "../src/lib/store.ts";
 import { editorOf } from "./fixtures.ts";
 

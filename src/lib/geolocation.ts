@@ -14,10 +14,7 @@ function toCoords(position: GeolocationPosition): Coords {
   return {
     lat: round(position.coords.latitude),
     lng: round(position.coords.longitude),
-    accuracy:
-      typeof position.coords.accuracy === "number"
-        ? Math.round(position.coords.accuracy)
-        : undefined,
+    accuracy: typeof position.coords.accuracy === "number" ? Math.round(position.coords.accuracy) : undefined,
   };
 }
 
@@ -46,10 +43,7 @@ export function captureCoords(): Promise<Coords | null> {
 // onError(true) means no position will come: the browser has no Geolocation
 // API (called straight away) or the user refused. onError(false) is a timeout
 // or lost signal; the watch keeps trying.
-export function watchCoords(
-  onCoords: (coords: Coords) => void,
-  onError: (final: boolean) => void,
-): () => void {
+export function watchCoords(onCoords: (coords: Coords) => void, onError: (final: boolean) => void): () => void {
   if (!hasGeolocation()) {
     onError(true);
     return () => undefined;
