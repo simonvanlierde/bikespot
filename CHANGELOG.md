@@ -43,6 +43,9 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- On a narrow phone, the Save spot sheet no longer scrolls sideways once you open More
+  details. The hidden photo pickers behind Take photo and Add photo took the full width
+  of the sheet and stuck out past its edge.
 - On a phone, a Take photo button opens the camera. Chrome on Android had stopped
   offering the camera from Add photo, which now opens the gallery only.
 - In French the off-map marker says "Toi, hors de la carte" instead of just "Toi", and the Japanese station question asks which details the bike park has.
