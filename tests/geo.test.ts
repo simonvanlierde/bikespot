@@ -119,8 +119,8 @@ describe("projection", () => {
     // 111 m spread over the 180 px of usable height.
     expect(metersPerPx).toBeCloseTo(111.2 / 180, 2);
     expect(positions[0]).toEqual({ x: 160, y: 200 });
-    expect(positions[1].x).toBeCloseTo(160, 6);
-    expect(positions[1].y).toBeCloseTo(20, 6);
+    expect(positions[1]!.x).toBeCloseTo(160, 6);
+    expect(positions[1]!.y).toBeCloseTo(20, 6);
   });
 
   it("centres a single point and has no scale", () => {
@@ -140,8 +140,8 @@ describe("projection", () => {
     const framed = fitPoints([...spots, far], 320, 220, 20, 2);
 
     expect(framed.positions.slice(0, 2)).toEqual(fitPoints(spots, 320, 220, 20).positions);
-    expect(framed.positions[2].x).toBeGreaterThan(320);
-    expect(framed.positions[2].y).toBeLessThan(0);
+    expect(framed.positions[2]!.x).toBeGreaterThan(320);
+    expect(framed.positions[2]!.y).toBeLessThan(0);
   });
 
   it("frames every point when the framing points sit in one place", () => {
@@ -156,7 +156,7 @@ describe("projection", () => {
       1,
     );
     expect(metersPerPx).toBeGreaterThan(0);
-    expect(positions[1].y).toBeCloseTo(20, 6);
+    expect(positions[1]!.y).toBeCloseTo(20, 6);
   });
 
   it("keeps points near the antimeridian close together", () => {
@@ -169,7 +169,7 @@ describe("projection", () => {
       220,
       20,
     );
-    expect(positions[1].x).toBeGreaterThan(positions[0].x);
+    expect(positions[1]!.x).toBeGreaterThan(positions[0]!.x);
     expect(positions.every((p) => p.x >= 20 && p.x <= 300)).toBe(true);
   });
 });

@@ -148,7 +148,7 @@ export function updateStationConfig(data: AppData, station: StationConfig): AppD
   };
 }
 
-export function buildVisibleFields(enabledFields: EnabledFields): VisibleFields {
+function buildVisibleFields(enabledFields: EnabledFields): VisibleFields {
   const visibleFields: VisibleFields = {};
 
   for (const key of VISIBLE_FIELD_KEYS) {

@@ -14,7 +14,10 @@ export function segmentKeyHandler<T>(
     }
     event.preventDefault();
     const index = (options.indexOf(value) + step + options.length) % options.length;
-    onChange(options[index]);
+    const next = options[index];
+    if (next !== undefined) {
+      onChange(next);
+    }
     (event.currentTarget as HTMLElement).parentElement
       ?.querySelectorAll<HTMLButtonElement>("button")
       [index]?.focus();

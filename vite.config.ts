@@ -1,14 +1,7 @@
-import process from "node:process";
 import { fileURLToPath, URL } from "node:url";
-import { playwright } from "@vitest/browser-playwright";
+import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
-import { defineConfig } from "vitest/config";
 import pkg from "./package.json" with { type: "json" };
-
-// jsdom touches Node 26's experimental localStorage when it builds each test
-// window, which warns unless --localstorage-file is set. We shim localStorage in
-// tests/setup.ts instead, so silence that one warning; test workers inherit this.
-process.env.NODE_OPTIONS = `${process.env.NODE_OPTIONS ?? ""} --disable-warning=ExperimentalWarning`;
 
 export default defineConfig({
   define: {
@@ -18,6 +11,10 @@ export default defineConfig({
     chunkSizeWarningLimit: 235,
   },
   resolve: {
+    // Code written for React imports react and react-dom; preact/compat answers.
+    // `react` comes first on purpose: it also catches react/jsx-runtime, so the
+    // JSX runtime loads preact/compat and its React prop handling (onChange on a
+    // text field fires per keystroke). Reordering drops that, and changes behaviour.
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
       react: "preact/compat",
@@ -67,40 +64,4 @@ export default defineConfig({
       },
     }),
   ],
-  test: {
-    globals: true,
-    testTimeout: 30000,
-    projects: [
-      {
-        extends: true,
-        test: {
-          name: "unit",
-          environment: "jsdom",
-          setupFiles: "./tests/setup.ts",
-          include: ["tests/**/*.test.{ts,tsx}"],
-          exclude: ["tests/**/*.browser.test.ts"],
-        },
-      },
-      {
-        // Real Chromium, for code that needs a real canvas and image decoder.
-        extends: true,
-        test: {
-          name: "browser",
-          include: ["tests/**/*.browser.test.ts"],
-          browser: {
-            enabled: true,
-            headless: true,
-            provider: playwright(),
-            instances: [{ browser: "chromium" }],
-          },
-        },
-      },
-    ],
-    coverage: {
-      provider: "v8",
-      reporter: ["text", "html", "lcov"],
-      include: ["src/**/*.{ts,tsx}"],
-      exclude: ["src/**/*.d.ts", "src/main.tsx"],
-    },
-  },
 });

@@ -41,7 +41,7 @@ describe("overlay state", () => {
   });
 
   it("opens overlays without state as asked", () => {
-    const id = sampleAppData.recent[0].id;
+    const id = sampleAppData.recent[0]!.id;
 
     store.openOverlay({ kind: "recent-preview", id });
     expect(store.overlay.value).toEqual({ kind: "recent-preview", id });

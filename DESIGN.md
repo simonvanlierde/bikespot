@@ -118,6 +118,7 @@ components:
 
 ## Overview
 
+<!-- rumdl-disable-next-line MD036 -->
 **Creative North Star: "Stationsbord"**
 
 The interface borrows the signs of Dutch stations and their bike parks: deep sign blue, a white keyline set inside the panel, signal yellow, and heavy road-sign type. I draw the current spot as one of those signs, so the phone looks like the panels hanging over the bike park.

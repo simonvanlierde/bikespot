@@ -45,7 +45,7 @@ export function detectLang(): Lang {
   }
   const preferred = navigator.languages?.length ? navigator.languages : [navigator.language];
   for (const tag of preferred) {
-    const primary = tag?.split("-")[0].toLowerCase();
+    const primary = tag?.split("-")[0]?.toLowerCase();
     if (isLang(primary)) {
       return primary;
     }

@@ -49,7 +49,7 @@ type RecordBase = {
   coords?: Coords;
 };
 
-export type StationLocationRecord = RecordBase & {
+type StationLocationRecord = RecordBase & {
   mode: "station";
   lane?: string;
   visibleFields: VisibleFields;
@@ -62,13 +62,13 @@ export type StationLocationRecord = RecordBase & {
 
 // An outside spot's free text lives in `notes`. Records saved before that
 // called it `outsideDescription`; repository.ts reads both.
-export type OutsideLocationRecord = RecordBase & {
+type OutsideLocationRecord = RecordBase & {
   mode: "outside";
 };
 
 export type LocationRecord = StationLocationRecord | OutsideLocationRecord;
 
-export type StationLocationRecordInput = {
+type StationLocationRecordInput = {
   mode: "station";
   lane?: string;
   side?: Side;
@@ -81,7 +81,7 @@ export type StationLocationRecordInput = {
   coords?: Coords;
 };
 
-export type OutsideLocationRecordInput = {
+type OutsideLocationRecordInput = {
   mode: "outside";
   notes?: string;
   photoId?: string;

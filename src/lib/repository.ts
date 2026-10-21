@@ -62,7 +62,7 @@ export function saveAppData(data: AppData): void {
   window.localStorage.setItem(APP_DATA_STORAGE_KEY, JSON.stringify(data));
 }
 
-export function loadUnreadableBackup(): string | null {
+function loadUnreadableBackup(): string | null {
   try {
     return window.localStorage.getItem(UNREADABLE_BACKUP_KEY);
   } catch {
@@ -70,7 +70,7 @@ export function loadUnreadableBackup(): string | null {
   }
 }
 
-export function clearUnreadableBackup(): void {
+function clearUnreadableBackup(): void {
   window.localStorage.removeItem(UNREADABLE_BACKUP_KEY);
 }
 

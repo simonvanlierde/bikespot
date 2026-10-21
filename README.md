@@ -1,6 +1,6 @@
 # Bikespot
 
-[![CI](https://github.com/simonvanlierde/bikespot/actions/workflows/ci.yml/badge.svg)](https://github.com/simonvanlierde/bikespot/actions/workflows/ci.yml)
+[![ts](https://github.com/simonvanlierde/bikespot/actions/workflows/ts.yml/badge.svg)](https://github.com/simonvanlierde/bikespot/actions/workflows/ts.yml)
 [![codecov](https://codecov.io/gh/simonvanlierde/bikespot/branch/main/graph/badge.svg)](https://codecov.io/gh/simonvanlierde/bikespot)
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Fbikespot.duinlab.nl)](https://bikespot.duinlab.nl)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -12,12 +12,14 @@ It saves the spot the way a station bike park labels it (lane, side, rack level,
 
 It speaks English, Dutch, German, French, Danish, Swedish and Japanese. It follows your browser's language, and you can switch in Settings.
 
+<!-- rumdl-disable MD033 -->
 <p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/home-dark.png">
   <img alt="Bikespot home screen" src="docs/screenshots/home-light.png" width="300">
 </picture>
 </p>
+<!-- rumdl-enable MD033 -->
 
 ## Install
 

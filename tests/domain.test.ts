@@ -51,7 +51,7 @@ describe("promoteRecentLocation with no current spot", () => {
 
     const next = promoteRecentLocation(
       { ...defaultAppData, current: null, recent },
-      recent[0].id,
+      recent[0]!.id,
       "2026-04-19T07:10:00.000Z",
     );
 
@@ -112,7 +112,7 @@ describe("clearCurrentLocation and removeRecentLocation", () => {
     expect(collected.recent).toEqual([parked.current]);
     expect(clearCurrentLocation(collected)).toBe(collected);
 
-    const removed = removeRecentLocation(collected, collected.recent[0].id);
+    const removed = removeRecentLocation(collected, collected.recent[0]!.id);
     expect(removed.recent).toEqual([]);
   });
 });

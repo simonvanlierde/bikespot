@@ -2,7 +2,7 @@ import type { AppData, LocationRecord } from "./app-data";
 import { RECENT_LIMIT } from "./app-data";
 import { normalizeLocationRecord } from "./repository";
 
-export const SPOTS_FILE_VERSION = 1;
+const SPOTS_FILE_VERSION = 1;
 
 // Photos stay on the device that took them, so the file drops their ids:
 // on another device they would point at nothing.

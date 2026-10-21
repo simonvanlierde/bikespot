@@ -1,6 +1,13 @@
+# pnpm reads its project settings here, not from .npmrc. One package, so no
+# `packages:` list.
+
+# Resolve only releases at least a week old (in minutes): a compromised release
+# is usually caught and yanked within that window. Dependabot's cooldown waits
+# the same.
+minimumReleaseAge: 10080
+
 allowBuilds:
   esbuild: true
-  lefthook: true
   sharp: true
   workerd: true
 overrides:

@@ -37,7 +37,7 @@ export function bearingDegrees(from: LatLng, to: LatLng): number {
 
 // The nearest of the eight compass points.
 export function compassPoint(bearing: number): Compass {
-  return COMPASS[Math.round((((bearing % 360) + 360) % 360) / 45) % 8];
+  return COMPASS[Math.round((((bearing % 360) + 360) % 360) / 45) % 8] ?? "n";
 }
 
 // Turns a heading measured from the device's top edge into one measured from
@@ -81,11 +81,11 @@ export function fitPoints(
   pad: number,
   fitCount = points.length,
 ): { positions: { x: number; y: number }[]; metersPerPx: number } {
-  if (points.length === 0) {
+  const origin = points[0];
+  if (!origin) {
     return { positions: [], metersPerPx: 0 };
   }
 
-  const origin = points[0];
   const local = points.map((point) => toLocalMeters(origin, point));
   let box = boundsOf(local.slice(0, Math.max(1, fitCount)));
   if (box.minX === box.maxX && box.minY === box.maxY) {

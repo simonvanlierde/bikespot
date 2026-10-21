@@ -1,3 +1,4 @@
+<!-- rumdl-disable-file MD041 -->
 ## Summary
 
 <!-- What does this PR change, and why? -->
@@ -10,6 +11,6 @@
 
 ## Checklist
 
-- [ ] `pnpm check` passes (lint, test, build)
+- [ ] `just check` and `just ts-e2e` pass
 - [ ] Commits follow Conventional Commits
 - [ ] Docs/README updated if behaviour changed

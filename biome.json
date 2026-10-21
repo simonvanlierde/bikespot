@@ -1,5 +1,8 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.5.2/schema.json",
+  "$schema": "https://biomejs.dev/schemas/latest/schema.json",
+  "files": {
+    "includes": ["**", "!.vscode"]
+  },
   "assist": {
     "actions": {
       "source": {
@@ -43,11 +46,15 @@
             "noNodejsModules": "off"
           },
           "performance": {
+            "noAwaitInLoops": "off",
             "useTopLevelRegex": "off",
             "noJsxPropsBind": "off"
           },
           "security": {
             "noSecrets": "off"
+          },
+          "style": {
+            "noNonNullAssertion": "off"
           },
           "complexity": {
             "noExcessiveLinesPerFunction": "off"

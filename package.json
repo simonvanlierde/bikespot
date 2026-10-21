@@ -1,46 +1,63 @@
 {
   "name": "bikespot",
-  "private": true,
   "version": "0.3.0",
+  "description": "Save and reopen the bike spot you last used.",
+  "license": "MIT",
+  "author": "Simon van Lierde <simonvanlierde@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/simonvanlierde/bikespot.git"
+  },
   "type": "module",
-  "packageManager": "pnpm@11.10.0",
+  "private": true,
+  "packageManager": "pnpm@12.13.0",
   "engines": {
     "node": ">=26"
   },
   "scripts": {
-    "prepare": "lefthook install",
+    "budget": "node scripts/checkBundleBudget.mjs",
+    "build": "tsc && vite build && node scripts/checkPrecache.mjs",
+    "check": "biome check && knip",
+    "coverage": "vitest run --coverage --coverage.reporter=text",
+    "deploy": "pnpm run build && wrangler pages deploy",
     "dev": "vite",
-    "lint": "biome check .",
-    "format": "biome check . --write",
-    "typecheck": "tsc -b",
-    "build": "tsc -b && vite build && node scripts/writeCspHeaders.mjs && node scripts/checkCspHeaders.mjs && node scripts/checkPrecache.mjs",
-    "check": "pnpm lint && pnpm test && pnpm build",
+    "fix": "biome check --write",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
     "test:setup": "playwright install chromium --only-shell",
-    "deploy": "pnpm run build && wrangler pages deploy"
+    "test:watch": "vitest",
+    "typecheck": "tsc"
+  },
+  "knip": {
+    "ignoreDependencies": [
+      "@j178/prek",
+      "@fontsource-variable/overpass",
+      "@fontsource-variable/overpass-mono"
+    ]
   },
   "dependencies": {
     "@fontsource-variable/overpass": "^5.3.0",
     "@fontsource-variable/overpass-mono": "^5.3.0",
     "@preact/signals": "^2.11.3",
     "lucide-preact": "1.55.0",
-    "preact": "^11.0.0",
+    "preact": "^11.0.1",
     "workbox-window": "^7.4.1"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@biomejs/biome": "^2.5.15",
+    "@j178/prek": "^0.5.5",
+    "@playwright/test": "1.64.0",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/preact": "3.2.4",
     "@testing-library/user-event": "^14.6.7",
-    "@types/node": "^26.6.4",
+    "@types/node": "^26.6.5",
     "@vitest/browser-playwright": "5.0.4",
     "@vitest/coverage-v8": "5.0.4",
     "fake-indexeddb": "^6.2.5",
-    "jsdom": "^30.1.1",
-    "lefthook": "^2.2.1",
+    "jsdom": "^30.1.2",
+    "knip": "^6.41.0",
     "playwright": "1.64.0",
     "typescript": "^7.0.2",
     "vite": "^8.3.4",

@@ -175,7 +175,7 @@ describe("location storage", () => {
         current,
         recent,
       },
-      recent[1].id,
+      recent[1]!.id,
       "2026-04-19T07:10:00.000Z",
     );
 

@@ -131,7 +131,7 @@ export function SpotMapSheet({
   const { positions, metersPerPx } = fitPoints(points, WIDTH, HEIGHT, PAD, spotCount);
   const offset = currentCoords ? 1 : 0;
   const currentAt = currentCoords ? positions[0] : null;
-  const youRaw = position ? positions[positions.length - 1] : null;
+  const youRaw = position ? (positions.at(-1) ?? null) : null;
   // Out of frame, your marker sits on the drawing's edge, on the side you are.
   const youAt = youRaw && {
     x: Math.min(Math.max(youRaw.x, EDGE), WIDTH - EDGE),
@@ -196,6 +196,9 @@ export function SpotMapSheet({
               ) : null}
               {recentSpots.map((spot, index) => {
                 const at = positions[index + offset];
+                if (!at) {
+                  return null;
+                }
                 return (
                   <g key={spot.id} transform={`translate(${at.x} ${at.y})`}>
                     <circle className="spot-map__spot" r="10" />
