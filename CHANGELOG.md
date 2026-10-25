@@ -43,6 +43,9 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- In the preview of a recent spot, keyboard focus stays where you put it. Before, the
+  sheet could pull focus back to itself whenever the app redrew, so a keyboard or
+  screen-reader user lost their place.
 - On a narrow phone, the Save spot sheet no longer scrolls sideways once you open More
   details. The hidden photo pickers behind Take photo and Add photo took the full width
   of the sheet and stuck out past its edge.

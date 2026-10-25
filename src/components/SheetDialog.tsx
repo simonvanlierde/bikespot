@@ -21,6 +21,10 @@ export function SheetDialog({
 }) {
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const sheetRef = useRef<HTMLElement>(null);
+  // Read through a ref so a caller's new onClose each render does not rerun the
+  // effect, which would pull focus back to the sheet and lose the user's place.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   useEffect(() => {
     previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -30,7 +34,7 @@ export function SheetDialog({
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
-        onClose();
+        onCloseRef.current();
         return;
       }
 
@@ -79,7 +83,7 @@ export function SheetDialog({
       document.body.style.overflow = previousOverflow;
       previousFocusRef.current?.focus?.();
     };
-  }, [onClose]);
+  }, []);
 
   return (
     <div className="sheet-overlay">
