@@ -1,6 +1,6 @@
 import { X } from "lucide-preact";
 import type { ReactNode } from "preact/compat";
-import { useEffect, useRef } from "preact/hooks";
+import { useLayoutEffect, useRef } from "preact/hooks";
 import { t } from "@/lib/i18n";
 
 // biome-ignore lint/complexity/noExcessiveLinesPerFunction: JSX render fn; markup dominates the line count
@@ -26,7 +26,10 @@ export function SheetDialog({
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
 
-  useEffect(() => {
+  // A layout effect runs as the sheet is drawn. A plain effect waits for the
+  // next frame, so an Escape pressed right after the tap that opened the sheet
+  // found no listener and the sheet stayed open.
+  useLayoutEffect(() => {
     previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     sheetRef.current?.focus();
 

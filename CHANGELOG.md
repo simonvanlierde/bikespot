@@ -43,6 +43,9 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Escape closes a sheet, such as the spot map, also when you press it right after you
+  open the sheet. Before, a quick press was missed and the sheet stayed open, most often
+  on a touch screen with a keyboard.
 - In the preview of a recent spot, keyboard focus stays where you put it. Before, the
   sheet could pull focus back to itself whenever the app redrew, so a keyboard or
   screen-reader user lost their place.
