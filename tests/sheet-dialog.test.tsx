@@ -59,4 +59,22 @@ describe("SheetDialog focus trap", () => {
     expect(document.activeElement).toBe(getByLabelText("Close"));
     outside.remove();
   });
+  // A caller may pass a new onClose on every render, as an inline arrow does.
+  it("keeps focus where it is when re-rendered with a new onClose", () => {
+    const sheet = (onClose: () => void) => (
+      <SheetDialog label="Test sheet" title="Test" onClose={onClose}>
+        <button type="button">First</button>
+        <button type="button">Last</button>
+      </SheetDialog>
+    );
+    const { getByText, rerender } = render(sheet(vi.fn()));
+    getByText("Last").focus();
+    const latest = vi.fn();
+    act(() => {
+      rerender(sheet(latest));
+    });
+    expect(document.activeElement).toBe(getByText("Last"));
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(latest).toHaveBeenCalledOnce();
+  });
 });
