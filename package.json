@@ -3,7 +3,7 @@
   "version": "0.3.0",
   "description": "Save and reopen the bike spot you last used.",
   "license": "MIT",
-  "author": "Simon van Lierde <simonvanlierde@gmail.com>",
+  "author": "Simon van Lierde <code@duinlab.nl>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/simonvanlierde/bikespot.git"
