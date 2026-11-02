@@ -23,7 +23,7 @@ repos:
 
   # Tolerates JSONC configs (tsconfig, VS Code settings).
   - repo: https://github.com/simonvanlierde/check-json5
-    rev: 683c71205b596305a0c92304d21c7fbd0a761280 # frozen: v3.0.0
+    rev: f6735c9a4f55dbc83313b98f3e5bf83d716a0a19 # frozen: v3.1.1
     hooks:
       - id: check-json5
 
@@ -56,7 +56,7 @@ repos:
   # and shellcheck over every `run:` when shellcheck is on PATH. jactionlint is a
   # maintained fork of actionlint that adds release, cache and concurrency checks.
   - repo: https://github.com/jdx/jactionlint
-    rev: 1027f0a131ab98bc7e191d995bfa15dbed5bbf8f # frozen: v2.2.0
+    rev: a65ab044e916760429068fe5794b8306abdfcbb9 # frozen: v2.3.0
     hooks:
       - id: jactionlint
   - repo: https://github.com/rvben/rumdl-pre-commit
