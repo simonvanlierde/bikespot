@@ -60,6 +60,8 @@ export default defineConfig({
         cleanupOutdatedCaches: true,
         navigateFallback: "index.html",
         globPatterns: ["**/*.{html,js,css,png,svg,webmanifest,woff2}"],
+        // Only crawlers fetch the social card, so keep it out of the offline cache.
+        globIgnores: ["og.png"],
         runtimeCaching: [],
       },
     }),
