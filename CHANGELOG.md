@@ -9,6 +9,9 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Station setup directly from the empty sign, an explanation of the lane number, and
+  a reminder beside Export spots that photos are not included. The spot map button
+  appears once a current or recent spot has a GPS location.
 - German, French, Danish, Swedish and Japanese, next to English and Dutch. The app picks
   the first of your browser languages it knows, and Settings now has a language list
   instead of two buttons. Dates, times and distances follow the language you choose.

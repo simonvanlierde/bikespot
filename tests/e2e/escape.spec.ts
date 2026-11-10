@@ -7,12 +7,16 @@ for (const touch of [false, true]) {
   test.describe(touch ? "on a touch screen" : "with a mouse", () => {
     test.use({ hasTouch: touch, isMobile: touch });
 
-    test("Escape closes the spot map", async ({ page }) => {
+    test("Escape closes the spot map", async ({ page, context }) => {
+      await context.grantPermissions(["geolocation"]);
+      await context.setGeolocation({ latitude: 52, longitude: 5, accuracy: 10 });
       await page.goto("/");
       await page.getByRole("button", { name: "Save spot" }).click();
       await page.getByRole("button", { name: "More details" }).click();
       await page.getByRole("button", { name: "Parked Outside" }).click();
       await page.getByRole("textbox", { name: "Notes" }).fill("By the lamp post");
+      await page.getByRole("button", { name: "Use my location" }).click();
+      await expect(page.getByText(/Captured/)).toBeVisible();
       await page.getByRole("button", { name: "Save", exact: true }).click();
       await expect(page.getByRole("dialog")).toBeHidden();
 

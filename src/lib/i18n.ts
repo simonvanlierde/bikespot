@@ -89,6 +89,9 @@ type Dict = {
   noRecentYet: string;
   recentLocations: string;
   settings: string;
+  setupStation: string;
+  laneHelp: string;
+  exportHelp: string;
 
   cancel: string;
   back: string;
@@ -248,6 +251,9 @@ const en: Dict = {
   noRecentYet: "Earlier spots show up here once you save a new one.",
   recentLocations: "Recent locations",
   settings: "Settings",
+  setupStation: "Set up your station",
+  laneHelp: "The row number on the bike park sign, for example 12.",
+  exportHelp: "Exports spot details only. Photos stay on this device and are not included.",
 
   cancel: "Cancel",
   back: "Back",
@@ -389,6 +395,9 @@ const nl: Dict = {
   noRecentYet: "Eerdere plekken verschijnen hier zodra je een nieuwe opslaat.",
   recentLocations: "Recente locaties",
   settings: "Instellingen",
+  setupStation: "Stel je stalling in",
+  laneHelp: "Het rijnummer op het bord in de fietsenstalling, bijvoorbeeld 12.",
+  exportHelp: "Exporteert alleen de plekgegevens. Foto’s blijven op dit apparaat en zitten niet in het bestand.",
 
   cancel: "Annuleren",
   back: "Terug",
@@ -548,6 +557,9 @@ const de: Dict = {
   noRecentYet: "Frühere Plätze erscheinen hier, sobald du einen neuen speicherst.",
   recentLocations: "Verlauf",
   settings: "Einstellungen",
+  setupStation: "Fahrradparkhaus einrichten",
+  laneHelp: "Die Reihennummer auf dem Schild im Fahrradparkhaus, zum Beispiel 12.",
+  exportHelp: "Exportiert nur die Angaben zum Stellplatz. Fotos bleiben auf diesem Gerät und sind nicht enthalten.",
 
   cancel: "Abbrechen",
   back: "Zurück",
@@ -711,6 +723,9 @@ const fr: Dict = {
   noRecentYet: "Tes places précédentes s’affichent ici dès que tu en enregistres une nouvelle.",
   recentLocations: "Historique",
   settings: "Réglages",
+  setupStation: "Configurer ton parking",
+  laneHelp: "Le numéro de l’allée indiqué dans le parking vélo, par exemple 12.",
+  exportHelp: "Exporte uniquement les détails des places. Les photos restent sur cet appareil et ne sont pas incluses.",
 
   cancel: "Annuler",
   back: "Retour",
@@ -870,6 +885,9 @@ const da: Dict = {
   noRecentYet: "Tidligere pladser vises her, når du gemmer en ny.",
   recentLocations: "Seneste pladser",
   settings: "Indstillinger",
+  setupStation: "Indstil din cykelparkering",
+  laneHelp: "Rækkenummeret på skiltet i cykelparkeringen, for eksempel 12.",
+  exportHelp: "Eksporterer kun oplysninger om pladserne. Billeder bliver på denne enhed og er ikke med i filen.",
 
   cancel: "Annuller",
   back: "Tilbage",
@@ -1028,6 +1046,9 @@ const sv: Dict = {
   noRecentYet: "Tidigare platser visas här när du sparar en ny.",
   recentLocations: "Senaste platser",
   settings: "Inställningar",
+  setupStation: "Anpassa din cykelparkering",
+  laneHelp: "Radnumret på skylten i cykelparkeringen, till exempel 12.",
+  exportHelp: "Exporterar bara uppgifter om platserna. Foton stannar på den här enheten och ingår inte i filen.",
 
   cancel: "Avbryt",
   back: "Tillbaka",
@@ -1187,6 +1208,9 @@ const ja: Dict = {
   noRecentYet: "新しい場所を保存すると、以前の場所がここに表示されます。",
   recentLocations: "履歴",
   settings: "設定",
+  setupStation: "駐輪場を設定",
+  laneHelp: "駐輪場の案内板にある列番号です。例：12。",
+  exportHelp: "場所の詳細のみを書き出します。写真はこの端末に残り、ファイルには含まれません。",
 
   cancel: "キャンセル",
   back: "戻る",

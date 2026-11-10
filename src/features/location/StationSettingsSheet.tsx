@@ -123,10 +123,18 @@ export function StationSettingsSheet({
             onChange={setTheme}
             titleCase={(option) => t.value.themeOpts[option]}
           />
-          <button className="ghost-button ghost-button--wide" type="button" onClick={onExportSpots}>
+          <button
+            aria-describedby="export-help"
+            className="ghost-button ghost-button--wide"
+            type="button"
+            onClick={onExportSpots}
+          >
             <Download aria-hidden="true" className="button-icon" />
             <span>{t.value.exportSpots}</span>
           </button>
+          <p className="field-hint" id="export-help">
+            {t.value.exportHelp}
+          </p>
           <label className="file-trigger">
             <Upload aria-hidden="true" className="button-icon" />
             <span>{t.value.importSpots}</span>

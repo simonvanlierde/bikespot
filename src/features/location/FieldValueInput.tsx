@@ -1,3 +1,4 @@
+import { useId } from "preact/hooks";
 import { segmentKeyHandler } from "@/components/SegmentedControl";
 import type { FieldInputMode } from "@/lib/app-data";
 
@@ -9,6 +10,7 @@ export function FieldValueInput({
   labels,
   value,
   invalid = false,
+  hint,
   onChange,
 }: {
   noun: string;
@@ -16,11 +18,17 @@ export function FieldValueInput({
   labels: string[];
   value: string;
   invalid?: boolean;
+  hint?: string;
   onChange: (value: string) => void;
 }) {
+  const hintId = useId();
   if (mode === "quick") {
     return (
-      <fieldset className="segmented-field" aria-invalid={invalid || undefined}>
+      <fieldset
+        className="segmented-field"
+        aria-invalid={invalid || undefined}
+        aria-describedby={hint ? hintId : undefined}
+      >
         <legend>{noun}</legend>
         <div className="segmented-field__options segmented-field__options--fit">
           {labels.map((label) => (
@@ -37,6 +45,11 @@ export function FieldValueInput({
             </button>
           ))}
         </div>
+        {hint ? (
+          <p className="field-hint" id={hintId}>
+            {hint}
+          </p>
+        ) : null}
       </fieldset>
     );
   }
@@ -46,6 +59,7 @@ export function FieldValueInput({
       <span>{noun}</span>
       <input
         aria-invalid={invalid || undefined}
+        aria-describedby={hint ? hintId : undefined}
         aria-label={noun}
         autoComplete="off"
         inputMode="numeric"
@@ -53,6 +67,11 @@ export function FieldValueInput({
         value={value}
         onInput={(event) => onChange(event.currentTarget.value)}
       />
+      {hint ? (
+        <span className="field-hint" id={hintId}>
+          {hint}
+        </span>
+      ) : null}
     </label>
   );
 }

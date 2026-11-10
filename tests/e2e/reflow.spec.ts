@@ -46,6 +46,8 @@ async function closeSheets(page: Page) {
 // Opens every sheet. The details and recent-preview sheets need a saved spot and a
 // recent one, so the editor saves twice on the way.
 async function checkEverySheet(page: Page) {
+  await page.context().grantPermissions(["geolocation"]);
+  await page.context().setGeolocation({ latitude: 52, longitude: 5, accuracy: 10 });
   await page.goto("/");
   await expect(page.getByRole("main")).toBeVisible();
 
@@ -55,6 +57,8 @@ async function checkEverySheet(page: Page) {
   await page.getByRole("button", { name: "Parked Outside" }).click();
   await expectNoSidewaysScroll(page, "editor, outside");
   await page.getByRole("textbox", { name: "Notes" }).fill("By the lamp post");
+  await page.getByRole("button", { name: "Use my location" }).click();
+  await expect(page.getByText(/Captured/)).toBeVisible();
   await page.getByRole("button", { name: "Save", exact: true }).click();
   await expect(page.getByRole("dialog")).toBeHidden();
 

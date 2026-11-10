@@ -191,7 +191,7 @@ Blue and concrete, with one yellow signal and one red for errors.
 
 ## Layout
 
-One column, `min(40rem, 100%)` wide and centred, with padding that respects the safe area (at least 0.95rem at the sides). The order is fixed: the sign, then two utility buttons (Recent locations, Settings), then a footer pushed to the bottom of the viewport.
+One column, `min(40rem, 100%)` wide and centred, with padding that respects the safe area (at least 0.95rem at the sides). The sign comes first, followed by Recent locations and Settings, then a footer pushed to the bottom of the viewport. Spot map appears between the utility buttons when a current or recent spot has GPS coordinates. On an empty sign, Save spot is the primary action and Set up your station is secondary.
 
 Every other screen is a sheet (`min(34rem, 100%)` wide) over a dimmed backdrop. Below 640px a sheet sits in the centre of the viewport; at 640px and wider it sits near the top. It slides up as it opens, unless reduced motion is on. A sheet's submit row sticks to its bottom edge, so Save never scrolls behind the keyboard.
 

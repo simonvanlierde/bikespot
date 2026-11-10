@@ -72,9 +72,12 @@ describe("spot map", () => {
     Reflect.deleteProperty(navigator, "geolocation");
   });
 
-  it("says so plainly when no spot has a GPS fix", async () => {
+  it("says so plainly when no spot has a GPS fix", () => {
     seedStorage();
-    const { dialog } = await openMap();
+    const store = createStore();
+    render(<App store={store} />);
+    act(() => store.openOverlay({ kind: "spot-map" }));
+    const dialog = screen.getByRole("dialog", { name: "Spot map" });
 
     expect(within(dialog).getByText(/None of your spots has a GPS location/)).toBeInTheDocument();
     expect(within(dialog).queryByRole("img")).toBeNull();
