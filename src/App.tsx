@@ -31,18 +31,21 @@ export default function App({ store }: { store: Store }) {
   }, [currentNotice]);
 
   const current = data.value.current;
+  const overlayKind = store.overlay.value.kind;
 
   return (
     <main className="app-shell">
       <CurrentSpotCard
         current={current}
-        notice={currentNotice}
+        notice={overlayKind === "station-settings" || overlayKind === "edit-location" ? null : currentNotice}
         onEdit={() => openOverlay({ kind: "edit-location" })}
         onOpenDetails={() => openOverlay({ kind: "location-details" })}
+        onSetup={() => openOverlay({ kind: "station-settings" })}
       />
 
       <UtilityActions
         recentCount={data.value.recent.length}
+        hasGps={Boolean(current?.coords || data.value.recent.some((spot) => spot.coords))}
         onOpenRecent={() => openOverlay({ kind: "recent-list" })}
         onOpenStationSettings={() => openOverlay({ kind: "station-settings" })}
         onOpenMap={() => openOverlay({ kind: "spot-map" })}

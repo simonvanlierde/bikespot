@@ -7,14 +7,19 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-10
+
 ### Added
 
+- Station setup directly from the empty sign, an explanation of the lane number, and
+  a reminder beside Export spots that photos are not included. The spot map button
+  appears once a current or recent spot has a GPS location.
 - German, French, Danish, Swedish and Japanese, next to English and Dutch. The app picks
   the first of your browser languages it knows, and Settings now has a language list
   instead of two buttons. Dates, times and distances follow the language you choose.
-- Export your spots to a file and import them again from Settings, so a cleared browser or
-  a new phone no longer loses them. Import adds the spots from the file to Recent and
-  says how many it added. Photos stay on the device and are not exported.
+- Export current and recent spot details to a file from Settings. Import merges them
+  into Recent, keeping the five newest spots and leaving your current spot unchanged.
+  Photos and station settings are not exported.
 - After you save your first spot, the app asks the browser to keep its storage, so it is
   not cleared when the device runs low on space.
 - A note under a photo when the app could not remove its location data. The photo never
@@ -43,6 +48,17 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- The parking-data deletion confirmation names station settings and explains that
+  language and appearance are kept.
+- Clearing parking data waits for pending writes and reports incomplete deletion, so
+  you can retry. The recovery-copy action also reports a failed deletion.
+- Cancelling while a photo is prepared or saved no longer commits a cancelled spot
+  or closes a newly opened draft. Removing a photo also cancels a pending replacement.
+- A failed save keeps the editor and draft available for retry. Photo cleanup keeps
+  images referenced by recoverable data, including when storage is full.
+- Import results and errors appear inside Settings. Long parking references wrap on
+  the sign and in details and history.
+- The footer's accessible version name includes the same version prefix as its label.
 - Escape closes a sheet, such as the spot map, also when you press it right after you
   open the sheet. Before, a quick press was missed and the sheet stayed open, most often
   on a touch screen with a keyboard.
@@ -145,7 +161,8 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Recent spots, with a preview before you restore one.
 - Install it as an app and use it offline.
 
-[Unreleased]: https://github.com/simonvanlierde/bikespot/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/simonvanlierde/bikespot/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/simonvanlierde/bikespot/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/simonvanlierde/bikespot/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/simonvanlierde/bikespot/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/simonvanlierde/bikespot/compare/v0.1.1...v0.1.2

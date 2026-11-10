@@ -7,6 +7,7 @@ import { SheetDialog } from "@/components/SheetDialog";
 import { ToggleField } from "@/components/ToggleField";
 import type { StationSettingsDraft } from "@/lib/drafts";
 import { LANG_NAMES, LANGS, type Lang, lang, setLang, t } from "@/lib/i18n";
+import type { Notice } from "@/lib/store";
 import { setTheme, THEMES, theme } from "@/lib/theme";
 import { FieldInputSettings } from "./FieldInputSettings";
 
@@ -19,6 +20,7 @@ const FIELD_TOGGLE_KEYS = ["floor", "lane", "distance", "side", "rackLevel", "ra
 // biome-ignore lint/complexity/noExcessiveLinesPerFunction: JSX render fn; markup dominates the line count
 export function StationSettingsSheet({
   stationForm,
+  notice,
   setStationForm,
   onClose,
   onExportSpots,
@@ -28,6 +30,7 @@ export function StationSettingsSheet({
   onClearAllData,
 }: {
   stationForm: StationSettingsDraft;
+  notice: Notice | null;
   setStationForm: Dispatch<SetStateAction<StationSettingsDraft>>;
   onClose: () => void;
   onExportSpots: () => void;
@@ -123,21 +126,36 @@ export function StationSettingsSheet({
             onChange={setTheme}
             titleCase={(option) => t.value.themeOpts[option]}
           />
-          <button className="ghost-button ghost-button--wide" type="button" onClick={onExportSpots}>
+          <button
+            aria-describedby="export-help"
+            className="ghost-button ghost-button--wide"
+            type="button"
+            onClick={onExportSpots}
+          >
             <Download aria-hidden="true" className="button-icon" />
             <span>{t.value.exportSpots}</span>
           </button>
+          <p className="field-hint" id="export-help">
+            {t.value.exportHelp}
+          </p>
           <label className="file-trigger">
             <Upload aria-hidden="true" className="button-icon" />
             <span>{t.value.importSpots}</span>
             <input
               accept="application/json,.json"
               aria-label={t.value.importSpots}
+              aria-describedby="import-help"
               className="sr-only"
               onChange={onImportSpots}
               type="file"
             />
           </label>
+          <p className="field-hint" id="import-help">
+            {t.value.importHelp}
+          </p>
+          <p className={notice?.tone === "error" ? "form-error" : "field-hint"} role="status">
+            {notice?.text}
+          </p>
           {onExportUnreadable ? (
             <>
               <button className="ghost-button ghost-button--wide" type="button" onClick={onExportUnreadable}>

@@ -89,6 +89,9 @@ type Dict = {
   noRecentYet: string;
   recentLocations: string;
   settings: string;
+  setupStation: string;
+  laneHelp: string;
+  exportHelp: string;
 
   cancel: string;
   back: string;
@@ -193,9 +196,11 @@ type Dict = {
   undo: string;
   noticeLocationFromRecent: string;
   noticeDataCleared: string;
+  noticeClearFailed: string;
   clearAllData: string;
   exportSpots: string;
   importSpots: string;
+  importHelp: string;
   exportUnreadable: string;
   clearUnreadable: string;
   clearUnreadableConfirm: string;
@@ -248,6 +253,9 @@ const en: Dict = {
   noRecentYet: "Earlier spots show up here once you save a new one.",
   recentLocations: "Recent locations",
   settings: "Settings",
+  setupStation: "Set up your station",
+  laneHelp: "The row number on the bike park sign, for example 12.",
+  exportHelp: "Exports spot details only. Photos stay on this device and are not included.",
 
   cancel: "Cancel",
   back: "Back",
@@ -354,17 +362,20 @@ const en: Dict = {
   noticeRecentRestored: "Back in Recent",
   undo: "Undo",
   noticeLocationFromRecent: "Earlier spot restored",
-  noticeDataCleared: "All data cleared",
-  clearAllData: "Clear all data",
+  noticeDataCleared: "Parking data cleared",
+  noticeClearFailed: "Some data could not be cleared. Try again.",
+  clearAllData: "Clear parking data",
   exportSpots: "Export spots",
   importSpots: "Import spots",
+  importHelp: "Keeps the five newest spots in Recent. Your current spot and station settings stay unchanged.",
   exportUnreadable: "Export unreadable data",
   clearUnreadable: "Clear unreadable data",
   clearUnreadableConfirm:
     "Clear the copy of the unreadable data from this device, with the photos only it refers to? Export it first to keep it.",
   noticeImported: (count) => (count === 1 ? "1 spot imported" : `${count} spots imported`),
   noticeImportInvalid: "Not a Bikespot export file — nothing imported",
-  clearAllDataConfirm: "Clear all saved spots, photos and settings from this device?",
+  clearAllDataConfirm:
+    "Clear all saved spots, photos and station settings from this device? Your language and appearance will stay unchanged.",
   viewSourceVersion: (version) => `View source code, version ${version}`,
 
   language: "Language",
@@ -389,6 +400,9 @@ const nl: Dict = {
   noRecentYet: "Eerdere plekken verschijnen hier zodra je een nieuwe opslaat.",
   recentLocations: "Recente locaties",
   settings: "Instellingen",
+  setupStation: "Stel je stalling in",
+  laneHelp: "Het rijnummer op het bord in de fietsenstalling, bijvoorbeeld 12.",
+  exportHelp: "Exporteert alleen de plekgegevens. Foto’s blijven op dit apparaat en zitten niet in het bestand.",
 
   cancel: "Annuleren",
   back: "Terug",
@@ -496,17 +510,21 @@ const nl: Dict = {
   noticeRecentRestored: "Terug bij Recent",
   undo: "Ongedaan maken",
   noticeLocationFromRecent: "Eerdere plek hersteld",
-  noticeDataCleared: "Alle gegevens gewist",
-  clearAllData: "Alle gegevens wissen",
+  noticeDataCleared: "Parkeergegevens gewist",
+  noticeClearFailed: "Niet alle gegevens konden worden gewist. Probeer het opnieuw.",
+  clearAllData: "Parkeergegevens wissen",
   exportSpots: "Plekken exporteren",
   importSpots: "Plekken importeren",
+  importHelp:
+    "Bewaart de vijf nieuwste plekken in Recente locaties. Je huidige plek en stallingsinstellingen blijven ongewijzigd.",
   exportUnreadable: "Onleesbare gegevens exporteren",
   clearUnreadable: "Onleesbare gegevens wissen",
   clearUnreadableConfirm:
     "Wil je de kopie van de onleesbare gegevens van dit apparaat wissen, inclusief de bijbehorende foto's? Exporteer deze eerst als je ze wilt bewaren.",
   noticeImported: (count) => (count === 1 ? "1 plek geïmporteerd" : `${count} plekken geïmporteerd`),
   noticeImportInvalid: "Geen Bikespot-exportbestand — niets geïmporteerd",
-  clearAllDataConfirm: "Alle opgeslagen plekken, foto's en instellingen van dit apparaat wissen?",
+  clearAllDataConfirm:
+    "Alle opgeslagen plekken, foto's en stallingsinstellingen van dit apparaat wissen? Je taal en weergave blijven ongewijzigd.",
   viewSourceVersion: (version) => `Broncode bekijken, versie ${version}`,
 
   language: "Taal",
@@ -548,6 +566,9 @@ const de: Dict = {
   noRecentYet: "Frühere Plätze erscheinen hier, sobald du einen neuen speicherst.",
   recentLocations: "Verlauf",
   settings: "Einstellungen",
+  setupStation: "Fahrradparkhaus einrichten",
+  laneHelp: "Die Reihennummer auf dem Schild im Fahrradparkhaus, zum Beispiel 12.",
+  exportHelp: "Exportiert nur die Angaben zum Stellplatz. Fotos bleiben auf diesem Gerät und sind nicht enthalten.",
 
   cancel: "Abbrechen",
   back: "Zurück",
@@ -656,17 +677,21 @@ const de: Dict = {
   noticeRecentRestored: "Wieder im Verlauf",
   undo: "Rückgängig",
   noticeLocationFromRecent: "Früherer Platz wiederhergestellt",
-  noticeDataCleared: "Alle Daten gelöscht",
-  clearAllData: "Alle Daten löschen",
+  noticeDataCleared: "Parkdaten gelöscht",
+  noticeClearFailed: "Einige Daten konnten nicht gelöscht werden. Versuch es erneut.",
+  clearAllData: "Parkdaten löschen",
   exportSpots: "Plätze exportieren",
   importSpots: "Plätze importieren",
+  importHelp:
+    "Behält die fünf neuesten Plätze im Verlauf. Dein aktueller Platz und die Einstellungen bleiben unverändert.",
   exportUnreadable: "Unlesbare Daten exportieren",
   clearUnreadable: "Unlesbare Daten löschen",
   clearUnreadableConfirm:
     "Die Kopie der unlesbaren Daten von diesem Gerät löschen, samt der Fotos, auf die nur sie verweist? Exportiere sie vorher, wenn du sie behalten willst.",
   noticeImported: (count) => (count === 1 ? "1 Platz importiert" : `${count} Plätze importiert`),
   noticeImportInvalid: "Keine Bikespot-Exportdatei – nichts importiert",
-  clearAllDataConfirm: "Alle gespeicherten Plätze, Fotos und Einstellungen von diesem Gerät löschen?",
+  clearAllDataConfirm:
+    "Alle gespeicherten Plätze, Fotos und Einstellungen des Fahrradparkhauses von diesem Gerät löschen? Sprache und Darstellung bleiben unverändert.",
   viewSourceVersion: (version) => `Quellcode ansehen, Version ${version}`,
 
   language: "Sprache",
@@ -711,6 +736,9 @@ const fr: Dict = {
   noRecentYet: "Tes places précédentes s’affichent ici dès que tu en enregistres une nouvelle.",
   recentLocations: "Historique",
   settings: "Réglages",
+  setupStation: "Configurer ton parking",
+  laneHelp: "Le numéro de l’allée indiqué dans le parking vélo, par exemple 12.",
+  exportHelp: "Exporte uniquement les détails des places. Les photos restent sur cet appareil et ne sont pas incluses.",
 
   cancel: "Annuler",
   back: "Retour",
@@ -818,17 +846,21 @@ const fr: Dict = {
   noticeRecentRestored: "De retour dans l’historique",
   undo: "Annuler",
   noticeLocationFromRecent: "Place précédente reprise",
-  noticeDataCleared: "Toutes les données effacées",
-  clearAllData: "Effacer toutes les données",
+  noticeDataCleared: "Données de stationnement effacées",
+  noticeClearFailed: "Certaines données n’ont pas pu être effacées. Réessaie.",
+  clearAllData: "Effacer les données de stationnement",
   exportSpots: "Exporter les places",
   importSpots: "Importer des places",
+  importHelp:
+    "Garde les cinq places les plus récentes dans l’historique. Ta place actuelle et les réglages du parking ne changent pas.",
   exportUnreadable: "Exporter les données illisibles",
   clearUnreadable: "Effacer les données illisibles",
   clearUnreadableConfirm:
     "Effacer de cet appareil la copie des données illisibles, avec les photos auxquelles elle seule renvoie ? Exporte-la d’abord pour la garder.",
   noticeImported: (count) => (count === 1 ? "1 place importée" : `${count} places importées`),
   noticeImportInvalid: "Ce n’est pas un fichier d’export Bikespot – rien n’a été importé",
-  clearAllDataConfirm: "Effacer de cet appareil toutes les places, photos et réglages enregistrés ?",
+  clearAllDataConfirm:
+    "Effacer de cet appareil toutes les places, photos et réglages du parking vélos enregistrés ? La langue et l’apparence restent inchangées.",
   viewSourceVersion: (version) => `Voir le code source, version ${version}`,
 
   language: "Langue",
@@ -870,6 +902,9 @@ const da: Dict = {
   noRecentYet: "Tidligere pladser vises her, når du gemmer en ny.",
   recentLocations: "Seneste pladser",
   settings: "Indstillinger",
+  setupStation: "Indstil din cykelparkering",
+  laneHelp: "Rækkenummeret på skiltet i cykelparkeringen, for eksempel 12.",
+  exportHelp: "Eksporterer kun oplysninger om pladserne. Billeder bliver på denne enhed og er ikke med i filen.",
 
   cancel: "Annuller",
   back: "Tilbage",
@@ -976,17 +1011,20 @@ const da: Dict = {
   noticeRecentRestored: "Tilbage i Seneste",
   undo: "Fortryd",
   noticeLocationFromRecent: "Tidligere plads gendannet",
-  noticeDataCleared: "Alle data slettet",
-  clearAllData: "Slet alle data",
+  noticeDataCleared: "Parkeringsdata slettet",
+  noticeClearFailed: "Nogle data kunne ikke slettes. Prøv igen.",
+  clearAllData: "Slet parkeringsdata",
   exportSpots: "Eksporter pladser",
   importSpots: "Importer pladser",
+  importHelp: "Beholder de fem nyeste pladser i historikken. Din nuværende plads og indstillinger ændres ikke.",
   exportUnreadable: "Eksporter ulæselige data",
   clearUnreadable: "Slet ulæselige data",
   clearUnreadableConfirm:
     "Vil du slette kopien af de ulæselige data fra denne enhed, sammen med de fotos, den henviser til? Eksporter den først, hvis du vil beholde den.",
   noticeImported: (count) => (count === 1 ? "1 plads importeret" : `${count} pladser importeret`),
   noticeImportInvalid: "Ikke en Bikespot-eksportfil – intet importeret",
-  clearAllDataConfirm: "Slet alle gemte pladser, fotos og indstillinger fra denne enhed?",
+  clearAllDataConfirm:
+    "Slet alle gemte pladser, fotos og indstillinger for cykelparkeringen fra denne enhed? Dit sprog og udseende forbliver uændret.",
   viewSourceVersion: (version) => `Se kildekoden, version ${version}`,
 
   language: "Sprog",
@@ -1028,6 +1066,9 @@ const sv: Dict = {
   noRecentYet: "Tidigare platser visas här när du sparar en ny.",
   recentLocations: "Senaste platser",
   settings: "Inställningar",
+  setupStation: "Anpassa din cykelparkering",
+  laneHelp: "Radnumret på skylten i cykelparkeringen, till exempel 12.",
+  exportHelp: "Exporterar bara uppgifter om platserna. Foton stannar på den här enheten och ingår inte i filen.",
 
   cancel: "Avbryt",
   back: "Tillbaka",
@@ -1135,17 +1176,20 @@ const sv: Dict = {
   noticeRecentRestored: "Tillbaka i Senaste",
   undo: "Ångra",
   noticeLocationFromRecent: "Tidigare plats återställd",
-  noticeDataCleared: "All data har rensats",
-  clearAllData: "Rensa all data",
+  noticeDataCleared: "Parkeringsdata har rensats",
+  noticeClearFailed: "Vissa uppgifter kunde inte raderas. Försök igen.",
+  clearAllData: "Rensa parkeringsdata",
   exportSpots: "Exportera platser",
   importSpots: "Importera platser",
+  importHelp: "Behåller de fem senaste platserna i historiken. Din aktuella plats och inställningarna ändras inte.",
   exportUnreadable: "Exportera oläslig data",
   clearUnreadable: "Rensa oläslig data",
   clearUnreadableConfirm:
     "Vill du rensa kopian av den oläsliga datan från enheten, inklusive de foton som enbart tillhör den? Exportera datan först om du vill behålla den.",
   noticeImported: (count) => (count === 1 ? "1 plats importerad" : `${count} platser importerade`),
   noticeImportInvalid: "Inte en Bikespot-exportfil – inget importerat",
-  clearAllDataConfirm: "Rensa alla sparade platser, foton och inställningar från den här enheten?",
+  clearAllDataConfirm:
+    "Rensa alla sparade platser, foton och inställningar för cykelgaraget från den här enheten? Språk och utseende förblir oförändrade.",
   viewSourceVersion: (version) => `Visa källkoden, version ${version}`,
 
   language: "Språk",
@@ -1187,6 +1231,9 @@ const ja: Dict = {
   noRecentYet: "新しい場所を保存すると、以前の場所がここに表示されます。",
   recentLocations: "履歴",
   settings: "設定",
+  setupStation: "駐輪場を設定",
+  laneHelp: "駐輪場の案内板にある列番号です。例：12。",
+  exportHelp: "場所の詳細のみを書き出します。写真はこの端末に残り、ファイルには含まれません。",
 
   cancel: "キャンセル",
   back: "戻る",
@@ -1293,17 +1340,19 @@ const ja: Dict = {
   noticeRecentRestored: "履歴に戻しました",
   undo: "元に戻す",
   noticeLocationFromRecent: "以前の場所に戻しました",
-  noticeDataCleared: "すべてのデータを消去しました",
-  clearAllData: "すべてのデータを消去",
+  noticeDataCleared: "駐輪データを消去しました",
+  noticeClearFailed: "一部のデータを消去できませんでした。もう一度お試しください。",
+  clearAllData: "駐輪データを消去",
   exportSpots: "場所をエクスポート",
   importSpots: "場所をインポート",
+  importHelp: "最新の5件を履歴に保存します。現在の場所と駐輪場の設定は変更しません。",
   exportUnreadable: "読めないデータをエクスポート",
   clearUnreadable: "読めないデータを消去",
   clearUnreadableConfirm:
     "読み込めないデータのコピーと、関連する写真をこの端末から消去しますか？データを残す場合は、先にエクスポートしてください。",
   noticeImported: (count) => `${count}か所をインポートしました`,
   noticeImportInvalid: "Bikespotのエクスポートファイルではありません。何もインポートしていません",
-  clearAllDataConfirm: "保存した場所・写真・設定をすべてこの端末から消去しますか？",
+  clearAllDataConfirm: "保存した場所・写真・駐輪場の設定をすべてこの端末から消去しますか？言語と外観は変わりません。",
   viewSourceVersion: (version) => `ソースコードを見る（バージョン ${version}）`,
 
   language: "言語",

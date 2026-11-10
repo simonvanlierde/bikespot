@@ -5,7 +5,7 @@ Thanks for your interest in Bikespot. Issues and pull requests are welcome.
 ## Prerequisites
 
 - Node.js 26 (pinned in [`.node-version`](.node-version))
-- pnpm (run `corepack enable` to use the version pinned in `package.json`)
+- [pnpm 12.13.0](https://pnpm.io/installation), as pinned in `package.json`
 - [just](https://just.systems), which runs the same checks as CI
 
 ## Workflow

@@ -1,6 +1,6 @@
 {
   "name": "bikespot",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Save and reopen the bike spot you last used.",
   "license": "MIT",
   "author": "Simon van Lierde <code@duinlab.nl>",
@@ -19,7 +19,7 @@
     "build": "tsc && vite build && node scripts/checkPrecache.mjs",
     "check": "biome check && knip",
     "coverage": "vitest run --coverage --coverage.reporter=text",
-    "deploy": "pnpm run build && wrangler pages deploy",
+    "deploy": "pnpm run build && wrangler deploy",
     "dev": "vite",
     "fix": "biome check --write",
     "preview": "vite preview",

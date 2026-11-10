@@ -4,11 +4,13 @@ import { t } from "@/lib/i18n";
 
 export function UtilityActions({
   recentCount,
+  hasGps,
   onOpenRecent,
   onOpenStationSettings,
   onOpenMap,
 }: {
   recentCount: number;
+  hasGps: boolean;
   onOpenRecent: () => void;
   onOpenStationSettings: () => void;
   onOpenMap: () => void;
@@ -24,12 +26,14 @@ export function UtilityActions({
           <span className="utility-count">{recentCount}</span>
         </span>
       </button>
-      <button className="utility-button" type="button" onClick={onOpenMap}>
-        <span className="utility-button__title">
-          <MapIcon aria-hidden="true" className="button-icon" />
-          <span>{t.value.spotMap}</span>
-        </span>
-      </button>
+      {hasGps ? (
+        <button className="utility-button" type="button" onClick={onOpenMap}>
+          <span className="utility-button__title">
+            <MapIcon aria-hidden="true" className="button-icon" />
+            <span>{t.value.spotMap}</span>
+          </span>
+        </button>
+      ) : null}
       <button className="utility-button" type="button" onClick={onOpenStationSettings}>
         <span className="utility-button__title">
           <Settings2 aria-hidden="true" className="button-icon" />

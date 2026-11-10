@@ -79,6 +79,52 @@ describe("bike storage tracker app", () => {
     expect(screen.getByRole("alert")).toHaveTextContent(/add a note, photo or gps/i);
   });
 
+  it("offers station setup on the empty sign and explains the lane before saving", async () => {
+    window.localStorage.clear();
+    const user = userEvent.setup();
+    render(<App store={createStore()} />);
+
+    await user.click(await screen.findByRole("button", { name: "Set up your station" }));
+    expect(screen.getByRole("dialog", { name: "Settings" })).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "Close" }));
+    await openSheet(user, /save spot/i);
+    expect(screen.getByLabelText("Lane")).toHaveAccessibleDescription(
+      "The row number on the bike park sign, for example 12.",
+    );
+  });
+
+  it("keeps the map out of the empty navigation until a spot has GPS", () => {
+    window.localStorage.clear();
+    const store = createStore();
+    render(<App store={store} />);
+    expect(screen.queryByRole("button", { name: "Spot map" })).not.toBeInTheDocument();
+
+    act(() => {
+      store.data.value = {
+        ...store.data.value,
+        recent: [
+          {
+            id: "gps-spot",
+            mode: "outside",
+            stationName: "",
+            updatedAt: new Date().toISOString(),
+            coords: { lat: 52, lng: 5 },
+          },
+        ],
+      };
+    });
+    expect(screen.getByRole("button", { name: "Spot map" })).toBeVisible();
+  });
+
+  it("explains that exports leave photos on this device", async () => {
+    const user = userEvent.setup();
+    await renderApp();
+    await openSheet(user, /^settings$/i);
+    expect(screen.getByRole("button", { name: "Export spots" })).toHaveAccessibleDescription(
+      "Exports spot details only. Photos stay on this device and are not included.",
+    );
+  });
+
   it("marks the bike as collected from the details sheet and keeps the spot in recent", async () => {
     const user = userEvent.setup();
 

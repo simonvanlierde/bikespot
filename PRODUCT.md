@@ -6,7 +6,13 @@ web
 
 ## Users
 
-Anyone who parks a bike at a big Dutch station bike park and has to find it again hours later. They save the spot with one hand while walking away from the bike, often outside in bright light. They read it back on the way in, with the bike park's own signs in view. The app names no station: each person sets up their own.
+Station commuters come first: people who repeatedly park at a large station bike park and have to find their bike again hours later. People parking elsewhere are the next audience. They save the spot with one hand while walking away from the bike, often outside in bright light. They read it back on the way in, with the bike park's own signs in view. The app names no station: each person sets up their own.
+
+## Mission and Vision
+
+**Mission:** Save your spot quickly. Find your bike at a glance.
+
+**Vision:** Make large station bike parks easy to use, then bring that clarity to bike parking anywhere.
 
 ## Product Purpose
 
@@ -25,7 +31,7 @@ Bikespot describes the spot the way the bike park does (lane, side, rack level, 
 
 ## Capabilities and Constraints
 
-- A PWA that runs only in the browser. You can install it, it works offline, and it lives on one device on purpose. [docs/architecture.md](docs/architecture.md) covers storage, export and hosting.
+- A PWA that runs only in the browser. You can install it, it works offline, and currently keeps its data on one device. [docs/architecture.md](docs/architecture.md) covers storage, export and hosting.
 - The app strips location data from photos where the browser allows it, and tells you when it could not.
 - English, Dutch, German, French, Danish, Swedish and Japanese. The app picks the first of your browser languages it has, and you can switch in Settings. Each language words the spot details as a whole phrase (Dutch adjective forms, "nah am Eingang"), not a translated template. Japanese uses the system's Japanese font, since Overpass covers Latin only.
 - Light, dark and system themes. Dark mode is for reading the spot outside at night, so it keeps the same contrast rules as light mode.
@@ -34,7 +40,8 @@ Bikespot describes the spot the way the bike park does (lane, side, rack level, 
 ## Plans
 
 - Built: a schematic map of the spots that have a GPS fix, with the distance and direction from you to the current spot. It is drawn on the device with no map tiles, so it works offline and sends no spot to a map server. "Open in Maps" stays the way out to a real map.
-- Not planned: sync between devices, because there is no server. Export and import move spots to a new phone.
+- After 0.4.0, in order: a return view with prominent lane, rack, floor and photo; faster repeat saving; then multiple station profiles.
+- Stay offline first. Optional sync may be explored later; the current app has no account or sync service. Export and import move spot details to a new phone.
 
 ## Brand Commitments
 
@@ -52,7 +59,7 @@ Bikespot describes the spot the way the bike park does (lane, side, rack level, 
 
 1. Finding the bike comes first. The current spot is the first and biggest thing on screen.
 2. One hand, one glance. You can do everything with a thumb while walking, and you can read the spot at a glance in sunlight.
-3. The device is the whole system. Nothing leaves it unless you export it or open the spot in Google Maps.
+3. Offline comes first. Spot data stays on your device unless you export it or open the spot in Google Maps.
 4. Use the bike park's words. The fields match the signs overhead, and you turn off the ones your station doesn't have.
 5. Be honest. No sample data, no data lost without a word, and errors stay on screen until the next action.
 

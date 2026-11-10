@@ -114,17 +114,6 @@ describe("stored data that cannot be read", () => {
     await store.handleClearAllData();
 
     expect(window.localStorage.getItem(UNREADABLE_BACKUP_KEY)).toBeNull();
-    stop();
-  });
-
-  it("removes the backup when all data is cleared", async () => {
-    vi.stubGlobal("confirm", () => true);
-    window.localStorage.setItem(APP_DATA_STORAGE_KEY, corrupt);
-    const store = createStore();
-    const stop = store.start();
-
-    await store.handleClearAllData();
-
     expect(store.unreadableBackup.value).toBeNull();
     stop();
   });
@@ -200,5 +189,19 @@ describe("getting the unreadable copy out", () => {
     expect(store.unreadableBackup.value).toBeNull();
     expect(await listPhotoIds()).toEqual([]);
     stop();
+  });
+
+  it("reports a failed recovery-copy deletion and keeps the copy available", async () => {
+    vi.stubGlobal("confirm", () => true);
+    const store = createStore({
+      ...browserRepository,
+      loadUnreadableBackup: () => corrupt,
+      clearUnreadableBackup: () => {
+        throw new Error("storage blocked");
+      },
+    });
+    await store.handleClearUnreadable();
+    expect(store.notice.value).toEqual({ text: t.value.noticeClearFailed, tone: "error" });
+    expect(store.unreadableBackup.value).toBe(corrupt);
   });
 });

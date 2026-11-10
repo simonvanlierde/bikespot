@@ -148,14 +148,23 @@ export const browserRepository: SpotRepository = {
 };
 
 async function dropUnusedPhotos(previous: AppData, next: AppData): Promise<void> {
-  const nextIds = referencedPhotoIds(next);
+  try {
+    if (keepStoredData) {
+      return;
+    }
 
-  // Best-effort: a failed delete only leaves a blob for the next load-time sweep.
-  await Promise.all(
-    [...referencedPhotoIds(previous)]
-      .filter((id) => !nextIds.has(id))
-      .map((id) => deletePhotoBlob(id).catch(() => undefined)),
-  );
+    const nextIds = referencedPhotoIds(next);
+    const backup = window.localStorage.getItem(UNREADABLE_BACKUP_KEY) ?? "";
+
+    // Best-effort: a failed delete only leaves a blob for the next load-time sweep.
+    await Promise.all(
+      [...referencedPhotoIds(previous)]
+        .filter((id) => !(nextIds.has(id) || backup.includes(id)))
+        .map((id) => deletePhotoBlob(id).catch(() => undefined)),
+    );
+  } catch {
+    // Keep photos when storage cannot tell us whether recovery data uses them.
+  }
 }
 
 // Catches blobs no record uses (e.g. a deleted record left one behind) and
@@ -168,7 +177,7 @@ async function reconcilePhotos(data: AppData, isCurrent: () => boolean): Promise
     // A save landing during our IO mints new app data; its blob and photoId
     // could be misread as orphaned or dangling against this stale snapshot.
     // Bail and let that save's own cleanup (and the next startup) handle it.
-    if (!isCurrent()) {
+    if (keepStoredData || !isCurrent()) {
       return null;
     }
 

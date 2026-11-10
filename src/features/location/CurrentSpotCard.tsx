@@ -13,11 +13,13 @@ export function CurrentSpotCard({
   notice,
   onEdit,
   onOpenDetails,
+  onSetup,
 }: {
   current: LocationRecord | null;
   notice: Notice | null;
   onEdit: () => void;
   onOpenDetails: () => void;
+  onSetup: () => void;
 }) {
   const facts = current ? getDetailFacts(current) : [];
   const photoUrl = usePhotoUrl(current?.photoId);
@@ -126,6 +128,11 @@ export function CurrentSpotCard({
                 )}
                 {current ? t.value.changeLocation : t.value.saveSpot}
               </button>
+              {!current ? (
+                <button className="ghost-button current-card__maps" type="button" onClick={onSetup}>
+                  {t.value.setupStation}
+                </button>
+              ) : null}
             </div>
           </div>
         </div>

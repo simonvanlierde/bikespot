@@ -69,6 +69,7 @@ export function StationLocationFields({
       {station.enabledFields.lane ? (
         <FieldValueInput
           noun={t.value.lane}
+          hint={t.value.laneHelp}
           mode={station.laneInputMode}
           labels={station.laneLabels}
           value={formState.lane}

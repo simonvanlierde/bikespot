@@ -1,10 +1,14 @@
-// Cloudflare Pages builds and deploys this app through its Git integration:
-// create the project in the dashboard from this repository, with build command
-// `pnpm build` and output directory `dist`. No workflow deploys it.
-// public/_headers sets the response headers.
+// CI deploys the checked build as static assets to production and pull request Workers.
+// public/_headers sets the response headers. Pages keeps its existing Git integration
+// until the verified Worker's custom domain replaces it.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "bikespot",
-  "compatibility_date": "2026-06-25",
-  "pages_build_output_dir": "./dist"
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application"
+  },
+  "preview_urls": false,
+  "workers_dev": true
 }

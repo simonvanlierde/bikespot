@@ -46,6 +46,8 @@ async function closeSheets(page: Page) {
 // Opens every sheet. The details and recent-preview sheets need a saved spot and a
 // recent one, so the editor saves twice on the way.
 async function checkEverySheet(page: Page) {
+  await page.context().grantPermissions(["geolocation"]);
+  await page.context().setGeolocation({ latitude: 52, longitude: 5, accuracy: 10 });
   await page.goto("/");
   await expect(page.getByRole("main")).toBeVisible();
 
@@ -55,6 +57,8 @@ async function checkEverySheet(page: Page) {
   await page.getByRole("button", { name: "Parked Outside" }).click();
   await expectNoSidewaysScroll(page, "editor, outside");
   await page.getByRole("textbox", { name: "Notes" }).fill("By the lamp post");
+  await page.getByRole("button", { name: "Use my location" }).click();
+  await expect(page.getByText(/Captured/)).toBeVisible();
   await page.getByRole("button", { name: "Save", exact: true }).click();
   await expect(page.getByRole("dialog")).toBeHidden();
 
@@ -84,6 +88,27 @@ async function checkEverySheet(page: Page) {
 
 test("no sheet scrolls sideways at 320 px", async ({ page }) => {
   await checkEverySheet(page);
+});
+
+test("a long parking reference wraps on the sign, details and history", async ({ page }) => {
+  const reference =
+    "https://parking.example/station/entrance_north/underground_bicycle_parking/row_1234567890987654321";
+  await page.goto("/");
+  await page.getByRole("button", { name: "Save spot" }).click();
+  await page.getByRole("button", { name: "Parked Outside" }).click();
+  await page.getByRole("textbox", { name: "Notes" }).fill(reference);
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  await expect(page.getByRole("dialog")).toBeHidden();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
+
+  await page.getByRole("button", { name: "View details" }).press("Enter");
+  await expectNoSidewaysScroll(page, "details with a long reference");
+  await closeSheets(page);
+  await page.getByRole("button", { name: "Change spot" }).click();
+  await page.getByRole("textbox", { name: "Notes" }).fill("Beside the entrance");
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  await page.getByRole("button", { name: /Recent locations/ }).click();
+  await expectNoSidewaysScroll(page, "history with a long reference");
 });
 
 test.describe("on a touch screen", () => {

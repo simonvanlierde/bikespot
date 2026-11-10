@@ -136,6 +136,10 @@ The front matter lists the light palette plus the dark (`night-`) values. Four n
 - Flat surfaces with hairlines; only the sign and sheets have a shadow.
 - Light and dark palettes, set in Settings or following the OS.
 
+## Direction after 0.4.0
+
+Strengthen the station-sign identity with larger location details and a clearer floor, lane and rack hierarchy. Keep input controls calm and easy to use with one hand. Put playful colour and short motion in successful save and collection moments; neither may delay saving, obscure a location or override reduced-motion preferences. The roadmap order is in [PRODUCT.md](PRODUCT.md#plans).
+
 ## Colors
 
 Blue and concrete, with one yellow signal and one red for errors.
@@ -182,6 +186,7 @@ Blue and concrete, with one yellow signal and one red for errors.
 - **Display** (800, `clamp(2.85rem, 14vw, 4.4rem)`, 0.95): the spot headline on the sign ("Rack 42", "Lane 4"). An outside spot and the empty state drop to `clamp(1.85rem, 8vw, 2.7rem)`, because they are phrases, not markers.
 - **Headline** (800, 1.55rem, 1.1): sheet titles. No eyebrow above them.
 - **Body** (500, 1rem, 1.45): spot facts and summaries. Notes on the sign are 0.95rem and cut off after three lines.
+- **Hint** (500, 0.85rem): field help, import limits and secondary status text.
 - **Label** (mono 600, 0.72rem, 0.14em, uppercase): section kickers and the labels in detail rows.
 - **Stamp** (mono, 0.82rem): timestamps and GPS accuracy. Counts (0.78rem) and the version chip (0.8rem) use the same mono face.
 
@@ -191,7 +196,7 @@ Blue and concrete, with one yellow signal and one red for errors.
 
 ## Layout
 
-One column, `min(40rem, 100%)` wide and centred, with padding that respects the safe area (at least 0.95rem at the sides). The order is fixed: the sign, then two utility buttons (Recent locations, Settings), then a footer pushed to the bottom of the viewport.
+One column, `min(40rem, 100%)` wide and centred, with padding that respects the safe area (at least 0.95rem at the sides). The sign comes first, followed by Recent locations and Settings, then a footer pushed to the bottom of the viewport. Spot map appears between the utility buttons when a current or recent spot has GPS coordinates. On an empty sign, Save spot is the primary action and Set up your station is secondary.
 
 Every other screen is a sheet (`min(34rem, 100%)` wide) over a dimmed backdrop. Below 640px a sheet sits in the centre of the viewport; at 640px and wider it sits near the top. It slides up as it opens, unless reduced motion is on. A sheet's submit row sticks to its bottom edge, so Save never scrolls behind the keyboard.
 

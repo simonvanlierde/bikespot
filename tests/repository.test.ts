@@ -2,7 +2,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { defaultAppData } from "../src/lib/defaults.ts";
 import { clearPhotoBlobs, deletePhotoBlob, loadPhotoBlob, savePhotoBlob } from "../src/lib/photos.ts";
-import { APP_DATA_STORAGE_KEY, loadAppData, saveAppData } from "../src/lib/repository.ts";
+import {
+  APP_DATA_STORAGE_KEY,
+  browserRepository,
+  loadAppData,
+  saveAppData,
+  UNREADABLE_BACKUP_KEY,
+} from "../src/lib/repository.ts";
 import { sampleAppData } from "./fixtures.ts";
 
 describe("app data repository", () => {
@@ -13,6 +19,37 @@ describe("app data repository", () => {
 
   it("hydrates the default app data when nothing has been stored yet", () => {
     expect(loadAppData().data).toEqual(defaultAppData);
+  });
+
+  it("keeps photos in unreadable original data when its backup cannot be written", async () => {
+    const photoId = await savePhotoBlob(new Blob(["photo"]));
+    const raw = `{"current":{"photoId":"${photoId}"`;
+    window.localStorage.setItem(APP_DATA_STORAGE_KEY, raw);
+    const original = Storage.prototype.setItem;
+    const spy = vi.spyOn(Storage.prototype, "setItem").mockImplementation(function (this: Storage, key, value) {
+      if (key === UNREADABLE_BACKUP_KEY) throw new Error("quota");
+      original.call(this, key, value);
+    });
+    const loaded = loadAppData();
+    await browserRepository.reconcilePhotos(loaded.data, () => true);
+    spy.mockRestore();
+    loadAppData();
+    expect(window.localStorage.getItem(APP_DATA_STORAGE_KEY)).toBe(raw);
+    expect(await loadPhotoBlob(photoId)).not.toBeNull();
+  });
+
+  it("keeps a removed record's photo while unreadable backup data refers to it", async () => {
+    const photoId = await savePhotoBlob(new Blob(["photo"]));
+    window.localStorage.setItem(
+      APP_DATA_STORAGE_KEY,
+      JSON.stringify({ ...sampleAppData, current: { ...sampleAppData.current, photoId }, recent: [{ bad: true }] }),
+    );
+    const previous = loadAppData().data;
+    const next = { ...previous, current: null, recent: [] };
+    saveAppData(next);
+    await browserRepository.dropUnusedPhotos(previous, next);
+    expect(window.localStorage.getItem(UNREADABLE_BACKUP_KEY)).toContain(photoId);
+    expect(await loadPhotoBlob(photoId)).not.toBeNull();
   });
 
   it("stores photo blobs outside localStorage and can read them back by photo id", async () => {

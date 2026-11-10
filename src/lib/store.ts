@@ -90,6 +90,9 @@ export function createStore(repo: SpotRepository = browserRepository) {
   let photoInFlight: Promise<void> = Promise.resolve();
   // Bumped on every photo change, so a slow shrink that finishes after a newer pick is dropped.
   let photoChangeCount = 0;
+  const photoWrites = new Set<Promise<string>>();
+  let clearingData = false;
+  let clearGeneration = 0;
   // Whether the last write of app data reached storage. When it did not, the
   // disk still holds the records the in-memory change dropped, photos included.
   let lastSaveOk = true;
@@ -177,6 +180,10 @@ export function createStore(repo: SpotRepository = browserRepository) {
   }
 
   function openOverlay(request: OverlayRequest): void {
+    if (clearingData) {
+      return;
+    }
+
     if (request.kind === "edit-location") {
       // Work saved from an interrupted edit wins over a fresh draft, but only
       // once: after this the user either saves or cancels, and both clear it.
@@ -222,10 +229,16 @@ export function createStore(repo: SpotRepository = browserRepository) {
 
   async function handleLocationSubmit(event: TargetedEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
+    const session = openEditor()?.session;
+
+    if (session === undefined) {
+      return;
+    }
+
     // A photo picked just before Save is still being shrunk; wait so it is saved.
     await photoInFlight;
 
-    const editor = openEditor();
+    const editor = openEditor(session);
 
     if (!editor) {
       return;
@@ -246,27 +259,57 @@ export function createStore(repo: SpotRepository = browserRepository) {
     let photoId: string | undefined;
 
     try {
-      photoId = draft.photoFile ? await repo.savePhoto(draft.photoFile) : undefined;
+      photoId = draft.photoFile ? await savePendingPhoto(draft.photoFile) : undefined;
     } catch {
       // Keep the sheet open so the user can retry or drop the photo.
-      notice.value = { text: t.value.noticeSaveFailed, tone: "error" };
+      if (openEditor(session)) {
+        patchEditor(session, { error: t.value.noticeSaveFailed });
+      }
       return;
     }
 
     const nextLocation = photoId ? { ...input, photoId } : input;
-    const previous = data.value.current;
+    const previousData = data.value;
+    const previous = previousData.current;
     const next = saveLocation(data.value, nextLocation);
     const replaced = previous !== null && next.recent[0] === previous;
 
-    // Close before committing, as in handleUseRecent: the record is persisted
-    // synchronously inside commitData; only best-effort blob cleanup is awaited.
+    if (!openEditor(session)) {
+      if (photoId) {
+        await repo.dropUnusedPhotos({ ...next, recent: [] }, data.value);
+      }
+      return;
+    }
+
+    // Persistence runs synchronously; keep the draft available for retry if it fails.
+    const committing = commitData(next);
+
+    if (!lastSaveOk) {
+      data.value = previousData;
+      patchEditor(session, { error: t.value.noticeSaveFailed });
+      if (photoId) {
+        await repo.dropUnusedPhotos({ ...next, recent: [] }, data.value);
+      }
+      return;
+    }
+
     closeOverlay();
     notice.value = {
       text: replaced ? t.value.noticeLocationReplaced : t.value.noticeLocationUpdated,
       saved: true,
     };
-    await commitData(next);
+    await committing;
     requestPersistentStorage();
+  }
+
+  async function savePendingPhoto(blob: Blob): Promise<string> {
+    const writing = repo.savePhoto(blob);
+    photoWrites.add(writing);
+    try {
+      return await writing;
+    } finally {
+      photoWrites.delete(writing);
+    }
   }
 
   // Without this the browser may evict localStorage and IndexedDB under storage
@@ -330,6 +373,7 @@ export function createStore(repo: SpotRepository = browserRepository) {
     const editor = openEditor();
 
     if (editor) {
+      photoChangeCount++;
       patchEditor(editor.session, {
         draft: { ...editor.draft, photoFile: null },
         photoMetadataKept: false,
@@ -458,21 +502,39 @@ export function createStore(repo: SpotRepository = browserRepository) {
 
   async function handleClearAllData(): Promise<void> {
     // biome-ignore lint/suspicious/noAlert: a native confirm is the honest guard for a one-off destructive action
-    if (!window.confirm(t.value.clearAllDataConfirm)) {
+    if (clearingData || !window.confirm(t.value.clearAllDataConfirm)) {
       return;
     }
 
+    clearingData = true;
+    clearGeneration++;
+    if (pendingRemoval) {
+      clearTimeout(pendingRemoval.timer);
+      pendingRemoval = null;
+    }
     closeOverlay();
-    discardDraft();
-    // Notice before data, so a failed save in the persistence effect replaces it.
-    notice.value = { text: t.value.noticeDataCleared };
-    data.value = defaultAppData;
+    notice.value = null;
+    const previous = data.value;
 
-    // A failed save leaves the old records on disk; keep their photos with them.
-    if (lastSaveOk) {
-      ignoreFailure(() => repo.clearUnreadableBackup());
+    try {
+      data.value = defaultAppData;
+      if (!lastSaveOk) {
+        data.value = previous;
+        throw new Error("Could not clear stored spots");
+      }
+
+      repo.clearDraft();
+      restoredDraft = null;
+      repo.clearUnreadableBackup();
       unreadableBackup.value = repo.loadUnreadableBackup();
-      await repo.clearPhotos().catch(() => undefined);
+      // A cancelled save may still be writing its photo; clear after it finishes.
+      await Promise.allSettled(photoWrites);
+      await repo.clearPhotos();
+      notice.value = { text: t.value.noticeDataCleared };
+    } catch {
+      notice.value = { text: t.value.noticeClearFailed, tone: "error" };
+    } finally {
+      clearingData = false;
     }
   }
 
@@ -493,7 +555,12 @@ export function createStore(repo: SpotRepository = browserRepository) {
       return;
     }
 
-    ignoreFailure(() => repo.clearUnreadableBackup());
+    try {
+      repo.clearUnreadableBackup();
+    } catch {
+      notice.value = { text: t.value.noticeClearFailed, tone: "error" };
+      return;
+    }
     unreadableBackup.value = repo.loadUnreadableBackup();
 
     // The photos only the copy referred to are unused now.
@@ -503,15 +570,20 @@ export function createStore(repo: SpotRepository = browserRepository) {
   }
 
   async function handleImportSpots(event: TargetedEvent<HTMLInputElement>): Promise<void> {
+    const generation = clearGeneration;
     const file = event.currentTarget.files?.[0];
     // Reset the input so picking the same file again still fires change.
     event.currentTarget.value = "";
 
-    if (!file) {
+    if (!file || clearingData) {
       return;
     }
 
     const spots = parseSpotsFile(await file.text().catch(() => ""));
+
+    if (generation !== clearGeneration) {
+      return;
+    }
 
     if (!spots) {
       notice.value = { text: t.value.noticeImportInvalid, tone: "error" };
