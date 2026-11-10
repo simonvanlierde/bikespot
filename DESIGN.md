@@ -136,6 +136,10 @@ The front matter lists the light palette plus the dark (`night-`) values. Four n
 - Flat surfaces with hairlines; only the sign and sheets have a shadow.
 - Light and dark palettes, set in Settings or following the OS.
 
+## Direction after 0.4.0
+
+Strengthen the station-sign identity with larger location details and a clearer floor, lane and rack hierarchy. Keep input controls calm and easy to use with one hand. Put playful colour and short motion in successful save and collection moments; neither may delay saving, obscure a location or override reduced-motion preferences. The roadmap order is in [PRODUCT.md](PRODUCT.md#plans).
+
 ## Colors
 
 Blue and concrete, with one yellow signal and one red for errors.

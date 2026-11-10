@@ -48,6 +48,8 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- The parking-data deletion confirmation names station settings and explains that
+  language and appearance are kept.
 - Clearing parking data waits for pending writes and reports incomplete deletion, so
   you can retry. The recovery-copy action also reports a failed deletion.
 - Cancelling while a photo is prepared or saved no longer commits a cancelled spot
