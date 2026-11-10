@@ -383,6 +383,124 @@ describe("store handlers", () => {
   });
 
   describe("persistence", () => {
+    it.each(["clearPhotos", "clearUnreadableBackup", "clearDraft"] as const)(
+      "reports failed %s deletion and permits a retry",
+      async (method) => {
+        vi.stubGlobal("confirm", () => true);
+        let blocked = true;
+        const deletion = vi.fn(() => {
+          if (blocked) throw new Error("blocked");
+          return Promise.resolve();
+        });
+        const clearing = createStore({ ...browserRepository, [method]: deletion });
+        const stop = clearing.start();
+        await clearing.handleClearAllData();
+        expect(clearing.notice.value?.tone).toBe("error");
+        expect(clearing.notice.value?.text).not.toBe(t.value.noticeDataCleared);
+        blocked = false;
+        await clearing.handleClearAllData();
+        expect(clearing.notice.value).toEqual({ text: t.value.noticeDataCleared });
+        stop();
+      },
+    );
+
+    it("waits for an earlier photo write before clearing photos and reporting success", async () => {
+      vi.stubGlobal("confirm", () => true);
+      let finish: (id: string) => void = () => undefined;
+      const clearPhotos = vi.fn(() => Promise.resolve());
+      const clearing = createStore({
+        ...browserRepository,
+        clearPhotos,
+        savePhoto: () =>
+          new Promise<string>((resolve) => {
+            finish = resolve;
+          }),
+      });
+      const stop = clearing.start();
+      clearing.openOverlay({ kind: "edit-location" });
+      clearing.setLocationDraft({
+        ...createOutsideLocationDraft(),
+        notes: "spot",
+        photoFile: new File(["photo"], "bike.jpg"),
+      });
+      const saving = clearing.handleLocationSubmit(submitEvent());
+      await Promise.resolve();
+      const deleting = clearing.handleClearAllData();
+      expect(clearPhotos).not.toHaveBeenCalled();
+      expect(clearing.notice.value?.text).not.toBe(t.value.noticeDataCleared);
+      clearing.openOverlay({ kind: "edit-location" });
+      expect(clearing.overlay.value.kind).toBe("closed");
+      finish("pending-photo");
+      await Promise.all([saving, deleting]);
+      expect(clearPhotos).toHaveBeenCalledOnce();
+      expect(clearing.data.value.current).toBeNull();
+      expect(clearing.notice.value).toEqual({ text: t.value.noticeDataCleared });
+      stop();
+    });
+
+    it("cancels the previous removal timer and undo when clearing", async () => {
+      vi.stubGlobal("confirm", () => true);
+      vi.useFakeTimers();
+      const clearing = createStore({
+        ...browserRepository,
+        loadAppData: () => ({ data: sampleAppData, lost: null }),
+        reconcilePhotos: async () => null,
+      });
+      const stop = clearing.start();
+      clearing.handleRemoveRecent(sampleAppData.recent[0]!.id);
+      const undo = clearing.notice.value?.undo;
+      await clearing.handleClearAllData();
+      expect(vi.getTimerCount()).toBe(0);
+      undo?.();
+      expect(clearing.data.value.current).toBeNull();
+      expect(clearing.data.value.recent).toEqual([]);
+      stop();
+      vi.useRealTimers();
+    });
+
+    it("does not restore spots from an import that finishes after clearing", async () => {
+      vi.stubGlobal("confirm", () => true);
+      let finish: (text: string) => void = () => undefined;
+      const file = {
+        text: () =>
+          new Promise<string>((resolve) => {
+            finish = resolve;
+          }),
+      };
+      const importing = store.handleImportSpots({
+        currentTarget: { files: [file], value: "" },
+      } as unknown as TargetedEvent<HTMLInputElement>);
+      await store.handleClearAllData();
+      finish(exportSpots(sampleAppData));
+      await importing;
+      expect(store.data.value.current).toBeNull();
+      expect(store.data.value.recent).toEqual([]);
+      expect(store.notice.value).toEqual({ text: t.value.noticeDataCleared });
+    });
+
+    it("preserves the previous spots and their photos if clearing app data fails", async () => {
+      vi.stubGlobal("confirm", () => true);
+      let blocked = false;
+      const clearPhotos = vi.fn(() => Promise.resolve());
+      const clearing = createStore({
+        ...browserRepository,
+        clearPhotos,
+        loadAppData: () => ({ data: sampleAppData, lost: null }),
+        reconcilePhotos: async () => null,
+        saveAppData: (next) => {
+          if (blocked) throw new Error("quota");
+          browserRepository.saveAppData(next);
+        },
+      });
+      const stop = clearing.start();
+      blocked = true;
+      await clearing.handleClearAllData();
+      expect(clearing.data.value).toEqual(sampleAppData);
+      expect(clearPhotos).not.toHaveBeenCalled();
+      expect(clearing.notice.value?.tone).toBe("error");
+      stop();
+    });
+
     it("lets a failed save replace the success notice", async () => {
       const failing = createStore({
         ...browserRepository,
