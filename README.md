@@ -38,6 +38,11 @@ pnpm install
 pnpm dev
 ```
 
+## Deploy
+
+CI can deploy the checked build to Cloudflare Workers and create pull request previews.
+[Deployment setup and the Pages migration](docs/architecture.md#deployment) cover the required environments, credentials and domain checks.
+
 ## More
 
 - [CONTRIBUTING.md](CONTRIBUTING.md): prerequisites and checks
