@@ -555,7 +555,12 @@ export function createStore(repo: SpotRepository = browserRepository) {
       return;
     }
 
-    ignoreFailure(() => repo.clearUnreadableBackup());
+    try {
+      repo.clearUnreadableBackup();
+    } catch {
+      notice.value = { text: t.value.noticeClearFailed, tone: "error" };
+      return;
+    }
     unreadableBackup.value = repo.loadUnreadableBackup();
 
     // The photos only the copy referred to are unused now.
