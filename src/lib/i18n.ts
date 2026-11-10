@@ -196,9 +196,11 @@ type Dict = {
   undo: string;
   noticeLocationFromRecent: string;
   noticeDataCleared: string;
+  noticeClearFailed: string;
   clearAllData: string;
   exportSpots: string;
   importSpots: string;
+  importHelp: string;
   exportUnreadable: string;
   clearUnreadable: string;
   clearUnreadableConfirm: string;
@@ -361,9 +363,11 @@ const en: Dict = {
   undo: "Undo",
   noticeLocationFromRecent: "Earlier spot restored",
   noticeDataCleared: "All data cleared",
+  noticeClearFailed: "Some data could not be cleared. Try again.",
   clearAllData: "Clear all data",
   exportSpots: "Export spots",
   importSpots: "Import spots",
+  importHelp: "Keeps the five newest spots in Recent. Your current spot and station settings stay unchanged.",
   exportUnreadable: "Export unreadable data",
   clearUnreadable: "Clear unreadable data",
   clearUnreadableConfirm:
@@ -506,9 +510,12 @@ const nl: Dict = {
   undo: "Ongedaan maken",
   noticeLocationFromRecent: "Eerdere plek hersteld",
   noticeDataCleared: "Alle gegevens gewist",
+  noticeClearFailed: "Niet alle gegevens konden worden gewist. Probeer het opnieuw.",
   clearAllData: "Alle gegevens wissen",
   exportSpots: "Plekken exporteren",
   importSpots: "Plekken importeren",
+  importHelp:
+    "Bewaart de vijf nieuwste plekken in Recente locaties. Je huidige plek en stallingsinstellingen blijven ongewijzigd.",
   exportUnreadable: "Onleesbare gegevens exporteren",
   clearUnreadable: "Onleesbare gegevens wissen",
   clearUnreadableConfirm:
@@ -669,9 +676,12 @@ const de: Dict = {
   undo: "Rückgängig",
   noticeLocationFromRecent: "Früherer Platz wiederhergestellt",
   noticeDataCleared: "Alle Daten gelöscht",
+  noticeClearFailed: "Einige Daten konnten nicht gelöscht werden. Versuch es erneut.",
   clearAllData: "Alle Daten löschen",
   exportSpots: "Plätze exportieren",
   importSpots: "Plätze importieren",
+  importHelp:
+    "Behält die fünf neuesten Plätze im Verlauf. Dein aktueller Platz und die Einstellungen bleiben unverändert.",
   exportUnreadable: "Unlesbare Daten exportieren",
   clearUnreadable: "Unlesbare Daten löschen",
   clearUnreadableConfirm:
@@ -834,9 +844,12 @@ const fr: Dict = {
   undo: "Annuler",
   noticeLocationFromRecent: "Place précédente reprise",
   noticeDataCleared: "Toutes les données effacées",
+  noticeClearFailed: "Certaines données n’ont pas pu être effacées. Réessaie.",
   clearAllData: "Effacer toutes les données",
   exportSpots: "Exporter les places",
   importSpots: "Importer des places",
+  importHelp:
+    "Garde les cinq places les plus récentes dans l’historique. Ta place actuelle et les réglages du parking ne changent pas.",
   exportUnreadable: "Exporter les données illisibles",
   clearUnreadable: "Effacer les données illisibles",
   clearUnreadableConfirm:
@@ -995,9 +1008,11 @@ const da: Dict = {
   undo: "Fortryd",
   noticeLocationFromRecent: "Tidligere plads gendannet",
   noticeDataCleared: "Alle data slettet",
+  noticeClearFailed: "Nogle data kunne ikke slettes. Prøv igen.",
   clearAllData: "Slet alle data",
   exportSpots: "Eksporter pladser",
   importSpots: "Importer pladser",
+  importHelp: "Beholder de fem nyeste pladser i historikken. Din nuværende plads og indstillinger ændres ikke.",
   exportUnreadable: "Eksporter ulæselige data",
   clearUnreadable: "Slet ulæselige data",
   clearUnreadableConfirm:
@@ -1157,9 +1172,11 @@ const sv: Dict = {
   undo: "Ångra",
   noticeLocationFromRecent: "Tidigare plats återställd",
   noticeDataCleared: "All data har rensats",
+  noticeClearFailed: "Vissa uppgifter kunde inte raderas. Försök igen.",
   clearAllData: "Rensa all data",
   exportSpots: "Exportera platser",
   importSpots: "Importera platser",
+  importHelp: "Behåller de fem senaste platserna i historiken. Din aktuella plats och inställningarna ändras inte.",
   exportUnreadable: "Exportera oläslig data",
   clearUnreadable: "Rensa oläslig data",
   clearUnreadableConfirm:
@@ -1318,9 +1335,11 @@ const ja: Dict = {
   undo: "元に戻す",
   noticeLocationFromRecent: "以前の場所に戻しました",
   noticeDataCleared: "すべてのデータを消去しました",
+  noticeClearFailed: "一部のデータを消去できませんでした。もう一度お試しください。",
   clearAllData: "すべてのデータを消去",
   exportSpots: "場所をエクスポート",
   importSpots: "場所をインポート",
+  importHelp: "最新の5件を履歴に保存します。現在の場所と駐輪場の設定は変更しません。",
   exportUnreadable: "読めないデータをエクスポート",
   clearUnreadable: "読めないデータを消去",
   clearUnreadableConfirm:
