@@ -3,7 +3,12 @@ import { afterEach, beforeEach, describe, expect, it, type Mock, vi } from "vite
 import { RECENT_LIMIT } from "../src/lib/app-data.ts";
 import { createOutsideLocationDraft } from "../src/lib/drafts.ts";
 import { t } from "../src/lib/i18n.ts";
-import { browserRepository, type SpotRepository } from "../src/lib/repository.ts";
+import {
+  APP_DATA_STORAGE_KEY,
+  browserRepository,
+  DRAFT_STORAGE_KEY,
+  type SpotRepository,
+} from "../src/lib/repository.ts";
 import { exportSpots } from "../src/lib/spotsTransfer.ts";
 import { createStore, type Store, UNDO_WINDOW_MS } from "../src/lib/store.ts";
 import { editorOf, sampleAppData } from "./fixtures.ts";
@@ -118,6 +123,29 @@ describe("store handlers", () => {
   });
 
   describe("photo draft handlers", () => {
+    it("keeps a removed photo removed when a replacement finishes decoding", async () => {
+      let finish: (reason: Error) => void = () => undefined;
+      vi.stubGlobal(
+        "createImageBitmap",
+        vi.fn(
+          () =>
+            new Promise((_resolve, reject) => {
+              finish = reject;
+            }),
+        ),
+      );
+      vi.stubGlobal("OffscreenCanvas", class {});
+      store.openOverlay({ kind: "edit-location" });
+      store.setLocationDraft({ ...createOutsideLocationDraft(), photoFile: new File(["old"], "old.jpg") });
+      const picking = store.handlePhotoChange({
+        currentTarget: { files: [new File(["new"], "new.jpg")], value: "" },
+      } as unknown as TargetedEvent<HTMLInputElement>);
+      store.handlePhotoRemove();
+      finish(new Error("fallback"));
+      await picking;
+      expect(editorOf(store).draft.photoFile).toBeNull();
+    });
+
     it("keeps a photo it cannot strip and flags its metadata until removed", async () => {
       // jsdom has no OffscreenCanvas, so stripping always fails here.
       store.openOverlay({ kind: "edit-location" });
@@ -216,6 +244,106 @@ describe("store handlers", () => {
   });
 
   describe("handleLocationSubmit", () => {
+    it("does not submit a reopened editor after the previous photo decode finishes", async () => {
+      let finish: (reason: Error) => void = () => undefined;
+      vi.stubGlobal(
+        "createImageBitmap",
+        vi.fn(
+          () =>
+            new Promise((_resolve, reject) => {
+              finish = reject;
+            }),
+        ),
+      );
+      vi.stubGlobal("OffscreenCanvas", class {});
+      store.openOverlay({ kind: "edit-location" });
+      store.setLocationDraft({ ...createOutsideLocationDraft(), notes: "old draft" });
+      const picking = store.handlePhotoChange({
+        currentTarget: { files: [new File(["photo"], "bike.jpg")], value: "" },
+      } as unknown as TargetedEvent<HTMLInputElement>);
+      const saving = store.handleLocationSubmit(submitEvent());
+      store.closeOverlay();
+      store.openOverlay({ kind: "edit-location" });
+      store.setLocationDraft({ ...createOutsideLocationDraft(), notes: "new unsubmitted draft" });
+      const session = editorOf(store).session;
+      finish(new Error("fallback"));
+      await Promise.all([picking, saving]);
+      expect(editorOf(store).session).toBe(session);
+      expect(store.data.value.current).toBeNull();
+    });
+
+    it.each(["resolve", "reject"] as const)(
+      "keeps a reopened draft when an earlier photo save %ss",
+      async (outcome) => {
+        let resolve: (id: string) => void = () => undefined;
+        let reject: (error: Error) => void = () => undefined;
+        const dropUnusedPhotos = vi.fn(() => Promise.resolve());
+        const savingStore = createStore({
+          ...browserRepository,
+          dropUnusedPhotos,
+          savePhoto: () =>
+            new Promise<string>((done, fail) => {
+              resolve = done;
+              reject = fail;
+            }),
+        });
+        savingStore.openOverlay({ kind: "edit-location" });
+        savingStore.setLocationDraft({
+          ...createOutsideLocationDraft(),
+          notes: "cancelled",
+          photoFile: new File(["photo"], "bike.jpg"),
+        });
+        const saving = savingStore.handleLocationSubmit(submitEvent());
+        await Promise.resolve();
+        savingStore.closeOverlay();
+        savingStore.openOverlay({ kind: "edit-location" });
+        savingStore.setLocationDraft({ ...createOutsideLocationDraft(), notes: "new draft" });
+        const session = editorOf(savingStore).session;
+        if (outcome === "resolve") resolve("cancelled-photo");
+        else reject(new Error("quota"));
+        await saving;
+        expect(editorOf(savingStore).session).toBe(session);
+        expect(savingStore.data.value.current).toBeNull();
+        expect(savingStore.notice.value).toBeNull();
+        if (outcome === "resolve") {
+          expect(dropUnusedPhotos).toHaveBeenCalledWith(
+            expect.objectContaining({ current: expect.objectContaining({ photoId: "cancelled-photo" }), recent: [] }),
+            savingStore.data.value,
+          );
+        }
+      },
+    );
+
+    it("retains the draft and previous spot after a failed write, then allows retry", async () => {
+      browserRepository.saveAppData(sampleAppData);
+      let fail = false;
+      const savingStore = createStore({
+        ...browserRepository,
+        reconcilePhotos: async () => null,
+        saveAppData: (next) => {
+          if (fail) throw new Error("quota");
+          browserRepository.saveAppData(next);
+        },
+      });
+      const stop = savingStore.start();
+      savingStore.openOverlay({ kind: "edit-location" });
+      savingStore.setLocationDraft((draft) => ({ ...draft, lane: "42" }));
+      const session = editorOf(savingStore).session;
+      fail = true;
+      await savingStore.handleLocationSubmit(submitEvent());
+      expect(editorOf(savingStore).session).toBe(session);
+      expect(savingStore.data.value).toEqual(sampleAppData);
+      expect(window.localStorage.getItem(DRAFT_STORAGE_KEY)).toContain('"lane":"42"');
+      expect(JSON.parse(window.localStorage.getItem(APP_DATA_STORAGE_KEY) ?? "{}")).toEqual(sampleAppData);
+      expect(savingStore.notice.value).toEqual({ text: t.value.noticeSaveFailed, tone: "error" });
+      fail = false;
+      await savingStore.handleLocationSubmit(submitEvent());
+      expect(savingStore.overlay.value.kind).toBe("closed");
+      expect(savingStore.data.value.current).toMatchObject({ lane: "42" });
+      expect(window.localStorage.getItem(DRAFT_STORAGE_KEY)).toBeNull();
+      stop();
+    });
+
     async function saveOutsideSpot(notes: string) {
       store.openOverlay({ kind: "edit-location" });
       store.setLocationDraft({ ...createOutsideLocationDraft(), notes });

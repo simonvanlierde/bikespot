@@ -222,10 +222,16 @@ export function createStore(repo: SpotRepository = browserRepository) {
 
   async function handleLocationSubmit(event: TargetedEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
+    const session = openEditor()?.session;
+
+    if (session === undefined) {
+      return;
+    }
+
     // A photo picked just before Save is still being shrunk; wait so it is saved.
     await photoInFlight;
 
-    const editor = openEditor();
+    const editor = openEditor(session);
 
     if (!editor) {
       return;
@@ -249,23 +255,42 @@ export function createStore(repo: SpotRepository = browserRepository) {
       photoId = draft.photoFile ? await repo.savePhoto(draft.photoFile) : undefined;
     } catch {
       // Keep the sheet open so the user can retry or drop the photo.
-      notice.value = { text: t.value.noticeSaveFailed, tone: "error" };
+      if (openEditor(session)) {
+        notice.value = { text: t.value.noticeSaveFailed, tone: "error" };
+      }
       return;
     }
 
     const nextLocation = photoId ? { ...input, photoId } : input;
-    const previous = data.value.current;
+    const previousData = data.value;
+    const previous = previousData.current;
     const next = saveLocation(data.value, nextLocation);
     const replaced = previous !== null && next.recent[0] === previous;
 
-    // Close before committing, as in handleUseRecent: the record is persisted
-    // synchronously inside commitData; only best-effort blob cleanup is awaited.
+    if (!openEditor(session)) {
+      if (photoId) {
+        await repo.dropUnusedPhotos({ ...next, recent: [] }, data.value);
+      }
+      return;
+    }
+
+    // Persistence runs synchronously; keep the draft available for retry if it fails.
+    const committing = commitData(next);
+
+    if (!lastSaveOk) {
+      data.value = previousData;
+      if (photoId) {
+        await repo.dropUnusedPhotos({ ...next, recent: [] }, data.value);
+      }
+      return;
+    }
+
     closeOverlay();
     notice.value = {
       text: replaced ? t.value.noticeLocationReplaced : t.value.noticeLocationUpdated,
       saved: true,
     };
-    await commitData(next);
+    await committing;
     requestPersistentStorage();
   }
 
@@ -330,6 +355,7 @@ export function createStore(repo: SpotRepository = browserRepository) {
     const editor = openEditor();
 
     if (editor) {
+      photoChangeCount++;
       patchEditor(editor.session, {
         draft: { ...editor.draft, photoFile: null },
         photoMetadataKept: false,
