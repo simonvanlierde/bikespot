@@ -182,6 +182,7 @@ Blue and concrete, with one yellow signal and one red for errors.
 - **Display** (800, `clamp(2.85rem, 14vw, 4.4rem)`, 0.95): the spot headline on the sign ("Rack 42", "Lane 4"). An outside spot and the empty state drop to `clamp(1.85rem, 8vw, 2.7rem)`, because they are phrases, not markers.
 - **Headline** (800, 1.55rem, 1.1): sheet titles. No eyebrow above them.
 - **Body** (500, 1rem, 1.45): spot facts and summaries. Notes on the sign are 0.95rem and cut off after three lines.
+- **Hint** (500, 0.85rem): field help, import limits and secondary status text.
 - **Label** (mono 600, 0.72rem, 0.14em, uppercase): section kickers and the labels in detail rows.
 - **Stamp** (mono, 0.82rem): timestamps and GPS accuracy. Counts (0.78rem) and the version chip (0.8rem) use the same mono face.
 

@@ -7,6 +7,8 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-10
+
 ### Added
 
 - Station setup directly from the empty sign, an explanation of the lane number, and
@@ -46,6 +48,8 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Clearing parking data waits for pending writes and reports incomplete deletion, so
+  you can retry. The recovery-copy action also reports a failed deletion.
 - Cancelling while a photo is prepared or saved no longer commits a cancelled spot
   or closes a newly opened draft. Removing a photo also cancels a pending replacement.
 - A failed save keeps the editor and draft available for retry. Photo cleanup keeps
@@ -155,7 +159,8 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Recent spots, with a preview before you restore one.
 - Install it as an app and use it offline.
 
-[Unreleased]: https://github.com/simonvanlierde/bikespot/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/simonvanlierde/bikespot/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/simonvanlierde/bikespot/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/simonvanlierde/bikespot/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/simonvanlierde/bikespot/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/simonvanlierde/bikespot/compare/v0.1.1...v0.1.2
