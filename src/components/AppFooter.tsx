@@ -14,7 +14,7 @@ export function AppFooter() {
         href={SOURCE_URL}
         target="_blank"
         rel="noreferrer"
-        aria-label={t.value.viewSourceVersion(__APP_VERSION__)}
+        aria-label={t.value.viewSourceVersion(`v${__APP_VERSION__}`)}
       >
         <Code2 aria-hidden="true" className="app-footer__icon" />v{__APP_VERSION__}
       </a>
