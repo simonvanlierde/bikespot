@@ -14,7 +14,8 @@ There is no router. Navigation is modal state: the `OverlayState` discriminated 
 
 The store reaches storage only through the `SpotRepository` interface in [`lib/repository.ts`](../src/lib/repository.ts), which also keeps photos and records in step. Structured app data goes to `localStorage`. Photos go to IndexedDB, with an in-memory fallback ([`lib/photos.ts`](../src/lib/photos.ts)). [ADR 0001](adr/0001-split-persistence-across-localstorage-and-indexeddb.md) explains why.
 
-The export file is `{"version": 1, "spots": [...]}` and leaves photos out.
+The export file is `{"version": 1, "spots": [...]}`. It includes current and recent spot details, without photos or station settings.
+Import merges the file into Recent, keeping the five newest spots and leaving the current spot and station settings unchanged.
 
 ## Deployment
 
@@ -51,12 +52,12 @@ A preview address has separate browser storage; it cannot see spots saved on the
    Use separate accounts if preview credentials must be unable to overwrite the production Worker.
 3. Check that the target account has no unrelated Worker named `bikespot` before the first deployment.
    Merge the deployment changes and check the next production job's `workers.dev` address.
-   Save and reopen a spot, reload `/privacy` and `/accessibility`, and check security headers and `/.well-known/security.txt`.
+   Save and reopen a spot, reload `/`, and check the response security headers.
    Use a human pull request to verify preview creation, its `noindex` header and retirement.
 4. After approving the domain move, remove `bikespot.duinlab.nl` from the Pages project's **Custom domains**.
    Add the same hostname under the `bikespot` Worker's **Settings → Domains & Routes → Add → Custom Domain**.
    Expect a short gap while Cloudflare reassigns the domain. Keep the Pages project for rollback.
-   Check HTTPS, saved spots, offline reopening, legal pages and security headers on the custom domain.
+   Check HTTPS, saved spots, offline reopening and security headers on the custom domain.
 5. Delete the Pages project only after the custom domain checks pass and rollback is no longer needed.
 
 The Wrangler config deliberately leaves the custom domain unbound during migration.

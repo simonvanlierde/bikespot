@@ -247,4 +247,13 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: '"$GITHUB_WORKSPACE/.github/scripts/deploy-worker.sh" Production'
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |-
+          current=$(gh api "repos/$REPO/branches/main" --jq .commit.sha)
+          if [ "$current" != "$EXPECTED_SHA" ]; then
+            echo "::notice::Production deploy skipped: main has moved to a newer revision."
+            exit 0
+          fi
+          "$GITHUB_WORKSPACE/.github/scripts/deploy-worker.sh" Production

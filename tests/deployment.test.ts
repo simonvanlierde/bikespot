@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
@@ -22,6 +22,38 @@ function fake(directory: string, name: string, script: string) {
   writeFileSync(join(directory, name), `#!/bin/sh\n${script}\n`, { mode: 0o755 });
 }
 
+describe("production revision gate", () => {
+  it.each([
+    ["echo reviewed-head", true, 0],
+    ["echo newer-head", false, 0],
+    ["exit 7", false, 7],
+  ])("deploys only the current checked revision when lookup is %s", (lookup, deployed, status) => {
+    const directory = scratch();
+    fake(directory, "gh", lookup);
+    const scripts = join(directory, ".github/scripts");
+    mkdirSync(scripts, { recursive: true });
+    fake(scripts, "deploy-worker.sh", "echo deployed");
+    const workflow = readFileSync(".github/workflows/ts.yml", "utf8");
+    const script = workflow
+      .split("        id: deploy\n")[1]!
+      .split(/ {8}run: \|[-+]?\n/)[1]!
+      .replace(/^ {10}/gm, "");
+    const result = spawnSync("bash", ["-e", "-c", script], {
+      cwd: directory,
+      encoding: "utf8",
+      env: {
+        PATH: `${directory}:/usr/bin:/bin`,
+        GITHUB_WORKSPACE: directory,
+        EXPECTED_SHA: "reviewed-head",
+        REPO: "example/bikespot",
+      },
+    });
+    expect(result.error).toBeUndefined();
+    expect(result.status).toBe(status);
+    expect(result.stdout.includes("deployed")).toBe(deployed);
+  });
+});
+
 describe("Worker deployment", () => {
   it.each([
     ["echo https://bikespot.example.workers.dev", 0],
@@ -42,9 +74,10 @@ describe("Worker deployment", () => {
     });
     expect(result.error).toBeUndefined();
     expect(result.status).toBe(status);
-    if (status === 0) {
-      expect(readFileSync(join(directory, "output"), "utf8")).toContain("url=https://bikespot.example.workers.dev");
-    }
+    const output = join(directory, "output");
+    expect(existsSync(output) ? readFileSync(output, "utf8") : "").toBe(
+      status === 0 ? "url=https://bikespot.example.workers.dev\n" : "",
+    );
   });
 });
 

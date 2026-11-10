@@ -103,6 +103,7 @@
 
 .sheet-description,
 .spot-summary,
+.spot-note,
 .recent-meta,
 .recent-time,
 .timestamp,
@@ -111,6 +112,7 @@
   margin: 0;
   color: var(--muted);
   line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 
 .utility-count {
@@ -313,10 +315,6 @@
   flex: 1 1 12rem;
 }
 
-.current-card__maps {
-  flex: 1 1 10rem;
-}
-
 .current-card .ghost-button:focus-visible {
   outline-color: var(--sign-ink);
 }
@@ -472,6 +470,7 @@
    does not. Placed after the ghost-button skin above so plain class specificity
    is enough to win here and the wide-screen layout override still applies. */
 .current-card__maps {
+  flex: 1 1 10rem;
   border-color: var(--sign-keyline);
   background: var(--sign-tonal);
   color: var(--sign-ink);

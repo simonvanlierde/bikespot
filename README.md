@@ -29,7 +29,7 @@ Open **[bikespot.duinlab.nl](https://bikespot.duinlab.nl)** and add it to your h
 - **Android (Chrome):** menu (⋮) → *Install app*
 - **Desktop (Chrome/Edge):** install icon in the address bar
 
-The app works on one device only, on purpose: there's no sync between devices. To move spots to another device or keep a backup, use Export spots and Import spots in Settings. The export leaves photos out.
+The app stores spots on this device, with no sync between devices. Export spots in Settings saves the current and recent spot details to a file, without photos or station settings. Import spots keeps the five newest spots in Recent and leaves your current spot unchanged. Restore a spot from Recent to make it current.
 
 ## Run it locally
 

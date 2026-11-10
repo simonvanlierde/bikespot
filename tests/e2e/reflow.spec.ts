@@ -90,6 +90,27 @@ test("no sheet scrolls sideways at 320 px", async ({ page }) => {
   await checkEverySheet(page);
 });
 
+test("a long parking reference wraps on the sign, details and history", async ({ page }) => {
+  const reference =
+    "https://parking.example/station/entrance_north/underground_bicycle_parking/row_1234567890987654321";
+  await page.goto("/");
+  await page.getByRole("button", { name: "Save spot" }).click();
+  await page.getByRole("button", { name: "Parked Outside" }).click();
+  await page.getByRole("textbox", { name: "Notes" }).fill(reference);
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  await expect(page.getByRole("dialog")).toBeHidden();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
+
+  await page.getByRole("button", { name: "View details" }).press("Enter");
+  await expectNoSidewaysScroll(page, "details with a long reference");
+  await closeSheets(page);
+  await page.getByRole("button", { name: "Change spot" }).click();
+  await page.getByRole("textbox", { name: "Notes" }).fill("Beside the entrance");
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  await page.getByRole("button", { name: /Recent locations/ }).click();
+  await expectNoSidewaysScroll(page, "history with a long reference");
+});
+
 test.describe("on a touch screen", () => {
   // A coarse pointer shows the Take photo button next to Add photo.
   test.use({ hasTouch: true, isMobile: true });

@@ -256,7 +256,7 @@ export function createStore(repo: SpotRepository = browserRepository) {
     } catch {
       // Keep the sheet open so the user can retry or drop the photo.
       if (openEditor(session)) {
-        notice.value = { text: t.value.noticeSaveFailed, tone: "error" };
+        patchEditor(session, { error: t.value.noticeSaveFailed });
       }
       return;
     }
@@ -279,6 +279,7 @@ export function createStore(repo: SpotRepository = browserRepository) {
 
     if (!lastSaveOk) {
       data.value = previousData;
+      patchEditor(session, { error: t.value.noticeSaveFailed });
       if (photoId) {
         await repo.dropUnusedPhotos({ ...next, recent: [] }, data.value);
       }

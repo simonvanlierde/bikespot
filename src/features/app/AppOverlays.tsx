@@ -35,6 +35,7 @@ export function AppOverlays({ store }: { store: Store }) {
     case "station-settings":
       return (
         <StationSettingsSheet
+          notice={store.notice.value}
           stationForm={current.draft}
           setStationForm={store.handleStationChange}
           onClose={store.closeOverlay}

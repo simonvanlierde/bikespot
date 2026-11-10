@@ -15,9 +15,9 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - German, French, Danish, Swedish and Japanese, next to English and Dutch. The app picks
   the first of your browser languages it knows, and Settings now has a language list
   instead of two buttons. Dates, times and distances follow the language you choose.
-- Export your spots to a file and import them again from Settings, so a cleared browser or
-  a new phone no longer loses them. Import adds the spots from the file to Recent and
-  says how many it added. Photos stay on the device and are not exported.
+- Export current and recent spot details to a file from Settings. Import merges them
+  into Recent, keeping the five newest spots and leaving your current spot unchanged.
+  Photos and station settings are not exported.
 - After you save your first spot, the app asks the browser to keep its storage, so it is
   not cleared when the device runs low on space.
 - A note under a photo when the app could not remove its location data. The photo never
@@ -46,6 +46,13 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Cancelling while a photo is prepared or saved no longer commits a cancelled spot
+  or closes a newly opened draft. Removing a photo also cancels a pending replacement.
+- A failed save keeps the editor and draft available for retry. Photo cleanup keeps
+  images referenced by recoverable data, including when storage is full.
+- Import results and errors appear inside Settings. Long parking references wrap on
+  the sign and in details and history.
+- The footer's accessible version name includes the same version prefix as its label.
 - Escape closes a sheet, such as the spot map, also when you press it right after you
   open the sheet. Before, a quick press was missed and the sheet stayed open, most often
   on a touch screen with a keyboard.

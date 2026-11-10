@@ -35,8 +35,9 @@ app reads and writes it:
 - **Photos → IndexedDB**, keyed by an opaque `photoId`
   ([`lib/photos.ts`](../../src/lib/photos.ts)). A `LocationRecord` stores only
   the `photoId` string, and the app fetches the blob when it needs it. When
-  IndexedDB is unavailable (e.g. private-mode quirks), photos fall back to an
-  in-memory `Map` for the session.
+  the browser has no IndexedDB API, photos fall back to an in-memory `Map`
+  for the session. If the API exists but opening or writing the database fails,
+  the save reports an error so the user can retry or remove the photo.
 
 The only link between the two stores is the `photoId` reference. They can get
 out of step: a record can point at a blob that failed to write, or a deleted
