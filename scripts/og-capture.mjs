@@ -74,8 +74,6 @@ try {
   await page.waitForTimeout(300);
   await page.locator(".spot-map__canvas").screenshot({ path: "docs/og-card/map.png" });
   await page.locator(".spot-map__distance").screenshot({ path: "docs/og-card/distance.png" });
-  await page.screenshot({
-  });
 } finally {
   await browser.close();
   server.kill();
