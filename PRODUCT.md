@@ -40,7 +40,10 @@ Bikespot describes the spot the way the bike park does (lane, side, rack level, 
 ## Plans
 
 - Built: a schematic map of the spots that have a GPS fix, with the distance and direction from you to the current spot. It is drawn on the device with no map tiles, so it works offline and sends no spot to a map server. "Open in Maps" stays the way out to a real map.
-- After 0.4.0, in order: a return view with prominent lane, rack, floor and photo; faster repeat saving; then multiple station profiles.
+- After 0.4.0, in order: a return view with prominent lane, rack, floor and photo plus an offline saved-lane diagram; an outdoor street map; faster repeat saving; then multiple station profiles.
+- The lane diagram uses saved lane, side and near/middle/far details where known, with floor and rack level as labels. Unknown details stay unspecified. It is a schematic, not a measured station plan, and needs no GPS fix.
+- The outdoor map will help find the saved bike using its pin, current position when available, and nearby streets. Its basemap starts online, with tiles requested only when the map opens. A first-use explanation will describe the provider receiving the IP address and requested map area. Saved details, photos and the existing GPS schematic remain available offline. Provider selection must account for attribution, caching and referrer requirements; offline tile downloads are outside the initial scope.
+- Research whole-station maps alongside this work, starting with NS, then municipal and other open sources including OpenStreetMap. Leiden and Utrecht are the pilots. Ship each map only with verified layout, freshness and reuse rights; keep the lane diagram elsewhere. Users will not draw or upload station maps.
 - Stay offline first. Optional sync may be explored later; the current app has no account or sync service. Export and import move spot details to a new phone.
 
 ## Brand Commitments
