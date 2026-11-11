@@ -45,9 +45,9 @@ pnpm dev
 (needs Docker). From a checkout of that repo, with this repo next to it:
 
 ```sh
-pnpm gen:card --visual ../bikespot/public/icons/icon-512.png --name "Bikespot" \
+pnpm gen:card --mark ../bikespot/public/icons/icon.svg --name "Bikespot" \
   --line "Save where you parked your bike and find it again later." \
-  --domain bikespot.duinlab.nl --fit contain --out ../bikespot/public/og.png
+  --domain bikespot.duinlab.nl --out ../bikespot/public/og.png
 ```
 
 ## Deploy
