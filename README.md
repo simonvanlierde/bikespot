@@ -38,6 +38,18 @@ pnpm install
 pnpm dev
 ```
 
+## Social card
+
+`public/og.png` is the 1200x630 card shown when the link is shared. It is made with the generator in
+[my site repo](https://github.com/simonvanlierde/simonvanlierde.github.io/tree/main/scripts/social-card)
+(needs Docker). From a checkout of that repo, with this repo next to it:
+
+```sh
+pnpm gen:card --visual ../bikespot/public/icons/icon-512.png --name "Bikespot" \
+  --line "Save where you parked your bike and find it again later." \
+  --domain bikespot.duinlab.nl --fit contain --out ../bikespot/public/og.png
+```
+
 ## Deploy
 
 CI can deploy the checked build to Cloudflare Workers and create pull request previews.
