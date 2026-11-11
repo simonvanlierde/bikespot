@@ -40,15 +40,17 @@ pnpm dev
 
 ## Social card
 
-`public/og.png` is the 1200x630 card shown when the link is shared. It is made with the generator in
-[my site repo](https://github.com/simonvanlierde/simonvanlierde.github.io/tree/main/scripts/social-card)
-(needs Docker). From a checkout of that repo, with this repo next to it:
+`public/og.png` is the 1200x630 card shown when the link is shared. It shows the current-spot sign,
+captured from the app. The source is [docs/og-card.html](docs/og-card.html); the captures it uses are in
+`docs/og-card/`.
 
 ```sh
-pnpm gen:card --mark ../bikespot/public/icons/icon.svg --name "Bikespot" \
-  --line "Save where you parked your bike and find it again later." \
-  --domain bikespot.duinlab.nl --out ../bikespot/public/og.png
+pnpm og-card:capture   # capture the sign and map from the app, with demo data, at 3x
+pnpm og-card           # render docs/og-card.html to public/og.png
 ```
+
+`pnpm og-card --option map` draws the other layout (the spot map and the distance to the bike). The build
+adds the PNG's hash to the `og:image` URL, so a changed card gets a new URL.
 
 ## Deploy
 
