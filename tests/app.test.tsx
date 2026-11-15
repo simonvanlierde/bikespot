@@ -51,7 +51,7 @@ describe("bike storage tracker app", () => {
     const currentSpotCard = screen.getByRole("region", { name: /current spot/i });
     expect(await within(currentSpotCard).findByRole("heading", { name: /no bike parked/i })).toBeVisible();
     expect(within(currentSpotCard).queryByRole("button", { name: /view details/i })).toBeNull();
-    expect(screen.getByText("0")).toBeInTheDocument();
+    expect(screen.queryByText("0")).toBeNull();
 
     await openSheet(user, /save spot/i);
     await user.type(screen.getByLabelText(/^lane$/i), "7");
