@@ -128,6 +128,11 @@ const nl: Dict = {
   factDistance: (distance) => `Afstand ${nl.opts[distance].toLowerCase()}`,
   factSide: (side) => (side === "left" ? "Linkerkant" : "Rechterkant"),
   factRack: (level) => (level === "top" ? "Bovenste rek" : "Onderste rek"),
+  diagramAlt: (details) => `Opgeslagen plek in het baandiagram: ${details}`,
+  diagramCaption: "Gezien vanaf het begin van de baan",
+  diagramHelpTitle: "Zo lees je dit",
+  diagramHelp:
+    "Je kijkt langs de baan vanaf het begin. Links en rechts zoals je langs de baan kijkt. Dichtbij is het dichtst bij de ingang, ver is dieper naar binnen. Niet op schaal.",
   notSaved: "nog niet opgeslagen",
 
   noticeSaveFailed: "Kon niet opslaan — opslag vol of geblokkeerd",

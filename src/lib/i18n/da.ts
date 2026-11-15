@@ -133,6 +133,11 @@ const da: Dict = {
   factDistance: (distance) => DA_DISTANCE[distance],
   factSide: (side) => (side === "left" ? "Venstre side" : "Højre side"),
   factRack: (level) => (level === "top" ? "Øverste stativ" : "Nederste stativ"),
+  diagramAlt: (details) => `Gemt plads i sporskemaet: ${details}`,
+  diagramCaption: "Set fra sporets nærmeste ende",
+  diagramHelpTitle: "Sådan læser du det",
+  diagramHelp:
+    "Set langs sporet fra dets nærmeste ende. Venstre og højre, som du ser langs sporet. Tæt er nærmest indgangen, langt inde er dybere inde. Ikke i målestok.",
   notSaved: "ikke gemt endnu",
 
   noticeSaveFailed: "Kunne ikke gemme – lageret er fuldt eller blokeret",

@@ -4,6 +4,7 @@ import { usePhotoUrl } from "@/components/usePhotoUrl";
 import type { LocationRecord } from "@/lib/app-data";
 import { t } from "@/lib/i18n";
 import { formatAccuracy, getPrimaryFieldKey, mapsLink, shouldShowEntryField, showFloor } from "./display";
+import { LaneDiagram } from "./LaneDiagram";
 
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: conditional field rows are inherent to the detail view
 export function LocationDetailContent({ entry, photoAlt }: { entry: LocationRecord; photoAlt: string }) {
@@ -48,6 +49,8 @@ export function LocationDetailContent({ entry, photoAlt }: { entry: LocationReco
       ) : null}
 
       {entry.notes ? <p className="detail-note">{entry.notes}</p> : null}
+
+      <LaneDiagram entry={entry} />
 
       {stationDetails.some((detail) => detail.value) ? (
         <div className="detail-list">

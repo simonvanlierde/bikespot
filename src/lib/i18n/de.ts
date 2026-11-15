@@ -135,6 +135,11 @@ const de: Dict = {
   factDistance: (distance) => DE_DISTANCE[distance],
   factSide: (side) => (side === "left" ? "Linke Seite" : "Rechte Seite"),
   factRack: (level) => (level === "top" ? "Obere Ebene" : "Untere Ebene"),
+  diagramAlt: (details) => `Gespeicherter Platz im Spurdiagramm: ${details}`,
+  diagramCaption: "Gesehen vom vorderen Ende der Spur",
+  diagramHelpTitle: "So liest du das",
+  diagramHelp:
+    "Blick entlang der Spur vom vorderen Ende. Links und rechts, wie du entlang der Spur blickst. Nah ist am nächsten zum Eingang, weit hinten ist tiefer drinnen. Nicht maßstabsgetreu.",
   notSaved: "noch nicht gespeichert",
 
   noticeSaveFailed: "Speichern fehlgeschlagen – Speicher voll oder blockiert",

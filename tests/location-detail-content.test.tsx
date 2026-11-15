@@ -117,7 +117,7 @@ describe("location detail content", () => {
 
     await screen.findByAltText(/saved bike reference/i);
     const order = Array.from(container.children).map((el) => el.className);
-    expect(order.slice(0, 3)).toEqual(["photo-preview", "detail-note", "detail-list"]);
+    expect(order.slice(0, 4)).toEqual(["photo-preview", "detail-note", "lane-diagram", "detail-list"]);
   });
 
   it("renders no maps link when coordinates are absent", () => {

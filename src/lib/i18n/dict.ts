@@ -120,6 +120,10 @@ export type Dict = {
   factDistance: (distance: Distance) => string;
   factSide: (side: Side) => string;
   factRack: (level: RackLevel) => string;
+  diagramAlt: (details: string) => string;
+  diagramCaption: string;
+  diagramHelpTitle: string;
+  diagramHelp: string;
   notSaved: string;
 
   noticeSaveFailed: string;
