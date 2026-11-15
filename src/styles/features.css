@@ -333,3 +333,31 @@
   line-height: 1.4;
   text-align: center;
 }
+
+.lane-diagram__help {
+  width: 100%;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.lane-diagram__help summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  color: var(--link);
+  cursor: pointer;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.lane-diagram__help summary:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.lane-diagram__help p {
+  margin: 0.4rem 0 0;
+  color: var(--muted);
+  text-align: center;
+}

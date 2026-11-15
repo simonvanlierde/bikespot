@@ -122,6 +122,8 @@ export type Dict = {
   factRack: (level: RackLevel) => string;
   diagramAlt: (details: string) => string;
   diagramCaption: string;
+  diagramHelpTitle: string;
+  diagramHelp: string;
   notSaved: string;
 
   noticeSaveFailed: string;

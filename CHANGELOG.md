@@ -9,7 +9,7 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- The details sheet draws a lane diagram from the saved lane, side and distance, with a caption that says which way left, right, close and far are seen. It works without GPS, leaves out what is not saved, and is not to scale.
+- The details sheet draws a lane diagram from the saved lane, side and distance, with a one-line caption and a collapsed "How to read this" that says which way left, right, close and far are seen. It works without GPS, leaves out what is not saved, and is not to scale.
 
 ### Changed
 

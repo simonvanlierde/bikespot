@@ -43,7 +43,11 @@ describe("lane diagram component", () => {
   it("names the saved details and explains the viewing direction", () => {
     const { container } = render(<LaneDiagram entry={station({ lane: "4", side: "left", distance: "far" })} />);
     expect(screen.getByRole("img", { name: /Lane 4, Left side, Far distance/ })).toBeTruthy();
-    expect(screen.getByText(/Not to scale/)).toBeTruthy();
+    expect(screen.getByText("Seen from the lane's near end")).toBeTruthy();
+    const details = container.querySelector("details");
+    expect(details?.open).toBe(false);
+    expect(details?.querySelector("summary")?.textContent).toBe("How to read this");
+    expect(details?.textContent).toMatch(/Not to scale/);
     expect(container.querySelectorAll(".lane-diagram__mark")).toHaveLength(1);
   });
 

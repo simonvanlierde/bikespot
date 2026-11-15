@@ -135,8 +135,10 @@ const sv: Dict = {
   factSide: (side) => (side === "left" ? "Vänster sida" : "Höger sida"),
   factRack: (level) => (level === "top" ? "Övre stället" : "Undre stället"),
   diagramAlt: (details) => `Sparad plats i spårschemat: ${details}`,
-  diagramCaption:
-    "Ritat från spårets närmaste ände, sett längs spåret. Vänster och höger som du ser längs spåret; nära är närmast ingången, långt är djupare in. Inte skalenligt.",
+  diagramCaption: "Sett från spårets närmaste ände",
+  diagramHelpTitle: "Så läser du det",
+  diagramHelp:
+    "Sett längs spåret från dess närmaste ände. Vänster och höger som du ser längs spåret. Nära är närmast ingången, långt in är djupare in. Inte skalenligt.",
   notSaved: "inte sparad än",
 
   noticeSaveFailed: "Kunde inte spara – lagringen är full eller blockerad",

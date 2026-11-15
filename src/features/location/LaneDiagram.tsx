@@ -36,6 +36,10 @@ export function LaneDiagram({ entry }: { entry: LocationRecord }) {
         <path className="lane-diagram__viewer" d="M48 117l7 9h-14z" />
       </svg>
       <figcaption className="lane-diagram__caption">{t.value.diagramCaption}</figcaption>
+      <details className="lane-diagram__help">
+        <summary>{t.value.diagramHelpTitle}</summary>
+        <p>{t.value.diagramHelp}</p>
+      </details>
     </figure>
   );
 }

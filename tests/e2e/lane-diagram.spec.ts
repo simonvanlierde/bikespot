@@ -59,7 +59,19 @@ for (const colorScheme of ["light", "dark"] as const) {
           await expect(diagram).toHaveCount(0);
         } else {
           await expect(diagram).toBeVisible();
-          await expect(page.getByRole("dialog").getByText(/Not to scale/)).toBeVisible();
+          await expect(page.getByRole("dialog").getByText("Seen from the lane's near end")).toBeVisible();
+          const summary = page.getByRole("dialog").getByText("How to read this");
+          await expect(page.getByText(/Not to scale/)).toBeHidden();
+          expect((await summary.boundingBox())?.height).toBeGreaterThanOrEqual(44);
+          await page.screenshot({ path: `test-results/shots/${name}-${colorScheme}.png`, fullPage: true });
+          await summary.focus();
+          await page.keyboard.press("Enter");
+          await expect(page.getByText(/Not to scale/)).toBeVisible();
+          await page.keyboard.press("Space");
+          await expect(page.getByText(/Not to scale/)).toBeHidden();
+          await page.keyboard.press("Space");
+          await expect(page.getByText(/Not to scale/)).toBeVisible();
+          await page.screenshot({ path: `test-results/shots/${name}-${colorScheme}-open.png`, fullPage: true });
           await expect(page.locator(".lane-diagram__mark")).toHaveCount(name === "full" ? 1 : 0);
         }
         expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
@@ -78,6 +90,7 @@ test.describe("lane diagram at 200% text", () => {
     await page.evaluate(() => {
       document.documentElement.style.fontSize = "200%";
     });
+    await page.getByText("How to read this").click();
     // The sheet scrolls inside itself, so compare against its own edges.
     const sheet = await page.getByRole("dialog").boundingBox();
     for (const selector of [".lane-diagram", ".lane-diagram__svg"]) {
