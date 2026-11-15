@@ -108,7 +108,6 @@ const da: Dict = {
   fromCurrent: (label, distance, direction) => `${label}: ${distance} ${COMPASS_DA[direction]} for den nuværende plads`,
   stationFloor: "Etage",
   useThisLocation: "Gendan denne plads",
-  viewRecent: (title) => `Se ${title}`,
 
   station: "Cykelparkering",
   stationName: "Parkeringens navn",

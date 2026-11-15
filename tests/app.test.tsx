@@ -328,7 +328,7 @@ describe("bike storage tracker app", () => {
     await openSheet(user, /recent locations/i);
     await user.click(
       screen.getByRole("button", {
-        name: /^view lane 4$/i,
+        name: /^lane 4/i,
       }),
     );
 
@@ -346,11 +346,11 @@ describe("bike storage tracker app", () => {
 
     await renderApp();
     await openSheet(user, /recent locations/i);
-    await user.click(screen.getByRole("button", { name: /^view lane 5$/i }));
+    await user.click(screen.getByRole("button", { name: /^lane 5/i }));
     await user.click(screen.getByRole("button", { name: /remove from recent/i }));
 
     const list = screen.getByRole("dialog", { name: /recent locations/i });
-    expect(within(list).queryByRole("button", { name: /^view lane 5$/i })).toBeNull();
+    expect(within(list).queryByRole("button", { name: /^lane 5/i })).toBeNull();
     expect(screen.getByRole("status")).toHaveTextContent(/removed from recent/i);
 
     // Tab from the sheet: the close button first, then undo.
@@ -360,7 +360,7 @@ describe("bike storage tracker app", () => {
     expect(within(list).getByRole("button", { name: /^undo$/i })).toHaveFocus();
     await user.keyboard("{Enter}");
 
-    expect(within(list).getByRole("button", { name: /^view lane 5$/i })).toBeInTheDocument();
+    expect(within(list).getByRole("button", { name: /^lane 5/i })).toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent(/back in recent/i);
     expect(within(list).queryByRole("button", { name: /^undo$/i })).toBeNull();
     expect(screen.getByRole("region", { name: /current spot/i })).not.toHaveClass("current-card--flip");
@@ -389,7 +389,7 @@ describe("bike storage tracker app", () => {
     await openSheet(user, /recent locations/i);
     await user.click(
       screen.getByRole("button", {
-        name: /^view lane 4$/i,
+        name: /^lane 4/i,
       }),
     );
 

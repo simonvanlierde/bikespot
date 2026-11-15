@@ -109,7 +109,6 @@ const sv: Dict = {
   fromCurrent: (label, distance, direction) => `${label}: ${distance} ${COMPASS_SV[direction]} om nuvarande plats`,
   stationFloor: "Våning",
   useThisLocation: "Återställ den här platsen",
-  viewRecent: (title) => `Visa ${title}`,
 
   station: "Cykelgarage",
   stationName: "Garagets namn",

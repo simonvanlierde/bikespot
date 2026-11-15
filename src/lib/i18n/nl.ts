@@ -103,7 +103,6 @@ const nl: Dict = {
   fromCurrent: (label, distance, direction) => `${label}: ${distance} ten ${COMPASS_NL[direction]} van de huidige plek`,
   stationFloor: "Verdieping stalling",
   useThisLocation: "Deze plek herstellen",
-  viewRecent: (title) => `${title} bekijken`,
 
   station: "Stalling",
   stationName: "Naam van de stalling",

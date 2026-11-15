@@ -64,7 +64,7 @@ describe("names and timestamps", () => {
 
     await openSheet(user, /recent locations/i);
     expect(within(screen.getByRole("dialog")).getByText("5 hours ago")).toBeInTheDocument();
-    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: /view/i }));
+    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: /lane 5/i }));
     expect(screen.getByText(t.value.saved("5 hours ago"))).toBeInTheDocument();
   });
 });

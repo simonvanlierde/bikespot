@@ -112,7 +112,6 @@ const fr: Dict = {
   fromCurrent: (label, distance, direction) => `${label} : ${distance} ${COMPASS_FR[direction]} de la place actuelle`,
   stationFloor: "Étage",
   useThisLocation: "Reprendre cette place",
-  viewRecent: (title) => `Voir ${title}`,
 
   station: "Parking vélos",
   stationName: "Nom du parking",

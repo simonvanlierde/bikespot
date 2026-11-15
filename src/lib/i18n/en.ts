@@ -100,7 +100,6 @@ const en: Dict = {
   fromCurrent: (label, distance, direction) => `${label}: ${distance} ${COMPASS_EN[direction]} of the current spot`,
   stationFloor: "Station floor",
   useThisLocation: "Restore this spot",
-  viewRecent: (title) => `View ${title}`,
 
   station: "Station",
   stationName: "Station name",

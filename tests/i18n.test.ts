@@ -15,7 +15,6 @@ const CALLS: Record<string, unknown[][]> = {
   mapLabel: [[1], [3]],
   towards: COMPASS.map((d) => ["120 m", d]),
   fromCurrent: COMPASS.map((d) => ["Utrecht", "120 m", d]),
-  viewRecent: [["Utrecht"]],
   presetLabel: [["Lane", 2]],
   removePreset: [["Lane", 2]],
   addPreset: [["Lane"]],

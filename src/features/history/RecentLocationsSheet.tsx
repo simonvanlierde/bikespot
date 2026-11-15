@@ -51,13 +51,7 @@ export function RecentLocationsSheet({
           const meta = getRecentMeta(entry);
 
           return (
-            <button
-              aria-label={t.value.viewRecent(title)}
-              key={entry.id}
-              className="recent-item"
-              type="button"
-              onClick={() => onPreview(entry.id)}
-            >
+            <button key={entry.id} className="recent-item" type="button" onClick={() => onPreview(entry.id)}>
               <span className="recent-item__body">
                 <span className="recent-title">
                   {title}

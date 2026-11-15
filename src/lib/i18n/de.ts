@@ -110,7 +110,6 @@ const de: Dict = {
   fromCurrent: (label, distance, direction) => `${label}: ${distance} ${COMPASS_DE[direction]} des aktuellen Platzes`,
   stationFloor: "Etage",
   useThisLocation: "Diesen Platz wiederherstellen",
-  viewRecent: (title) => `${title} ansehen`,
 
   station: "Fahrradparkhaus",
   stationName: "Name des Parkhauses",

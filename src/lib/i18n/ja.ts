@@ -108,7 +108,6 @@ const ja: Dict = {
   fromCurrent: (label, distance, direction) => `${label}：現在の場所から${COMPASS_JA[direction]}へ${distance}`,
   stationFloor: "階",
   useThisLocation: "この場所に戻す",
-  viewRecent: (title) => `${title}を見る`,
 
   station: "駐輪場",
   stationName: "駐輪場の名前",
