@@ -7,6 +7,12 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- The sign shows floor, lane and rack as three plates, with a full-width photo when one is saved.
+- The details sheet opens with the photo and the note, and no longer repeats the lane or rack from its title.
+- The dot between facts now has even space on both sides.
+
 ## [0.4.0] - 2026-11-10
 
 ### Added
