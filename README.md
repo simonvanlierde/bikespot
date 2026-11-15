@@ -3,6 +3,7 @@
 [![ts](https://github.com/simonvanlierde/bikespot/actions/workflows/ts.yml/badge.svg)](https://github.com/simonvanlierde/bikespot/actions/workflows/ts.yml)
 [![codecov](https://codecov.io/gh/simonvanlierde/bikespot/branch/main/graph/badge.svg)](https://codecov.io/gh/simonvanlierde/bikespot)
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Fbikespot.duinlab.nl)](https://bikespot.duinlab.nl)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/simonvanlierde/bikespot/badge)](https://scorecard.dev/viewer/?uri=github.com/simonvanlierde/bikespot)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![PWA](https://img.shields.io/badge/PWA-installable-5a3.svg)](https://bikespot.duinlab.nl)
 
@@ -31,12 +32,22 @@ Open **[bikespot.duinlab.nl](https://bikespot.duinlab.nl)** and add it to your h
 
 The app stores spots on this device, with no sync between devices. Export spots in Settings saves the current and recent spot details to a file, without photos or station settings. Import spots keeps the five newest spots in Recent and leaves your current spot unchanged. Restore a spot from Recent to make it current.
 
-## Run it locally
+## Development
 
-```bash
-pnpm install
-pnpm dev
+You need Node.js 26 and [pnpm](https://pnpm.io/installation). [CONTRIBUTING.md](CONTRIBUTING.md) lists the rest.
+
+```sh
+pnpm install --frozen-lockfile
+pnpm run check
+pnpm run typecheck
+pnpm run build
 ```
+
+`pnpm dev` starts the dev server.
+
+Tests live in `tests/`. The `*.test.ts(x)` files are Vitest unit and component tests (`pnpm test`), and
+`tests/photos.browser.test.ts` runs in headless Chromium. `tests/e2e/` holds the Playwright specs for
+accessibility, CSP, reflow and persistence, which run against the production build (`pnpm test:e2e`).
 
 ## Social card
 
@@ -59,7 +70,8 @@ CI can deploy the checked build to Cloudflare Workers and create pull request pr
 
 ## More
 
-- [CONTRIBUTING.md](CONTRIBUTING.md): prerequisites and checks
+- [CONTRIBUTING.md](CONTRIBUTING.md): prerequisites, checks and coding standards
+- [Code of conduct](.github/CODE_OF_CONDUCT.md)
 - [docs/architecture.md](docs/architecture.md): code layout, storage and deployment
 - [docs/adr/](docs/adr/): design decisions
 - [PRODUCT.md](PRODUCT.md) and [DESIGN.md](DESIGN.md): who it's for and how it looks
