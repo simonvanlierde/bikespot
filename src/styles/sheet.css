@@ -95,3 +95,41 @@
   display: grid;
   gap: 0.95rem;
 }
+
+/* In-sheet confirmation for a destructive action. */
+.confirm-action {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.9rem;
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-control);
+  background: var(--danger-plate);
+  color: var(--danger-plate-ink);
+}
+
+.confirm-action__prompt {
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.confirm-action__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.confirm-action__buttons > * {
+  flex: 1 1 8rem;
+}
+
+/* The plate stays light in both themes, so its buttons use the plate's own ink. */
+.confirm-action .ghost-button {
+  border-color: var(--danger-plate-ink);
+  color: var(--danger-plate-ink);
+}
+
+.confirm-action .ghost-button--danger {
+  background: var(--danger-plate-ink);
+  color: var(--danger-plate);
+}

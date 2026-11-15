@@ -146,7 +146,6 @@ describe("restored draft", () => {
 
 describe("clear all data", () => {
   it("still clears photos and reports the failure when the draft cannot be cleared", async () => {
-    vi.stubGlobal("confirm", () => true);
     const clearPhotos = vi.fn(() => Promise.resolve());
     const store = createStore({
       ...browserRepository,
@@ -165,7 +164,6 @@ describe("clear all data", () => {
 
 describe("clearing the unreadable copy during an undo window", () => {
   it("keeps the removed spot's photo so undo restores it whole", async () => {
-    vi.stubGlobal("confirm", () => true);
     const photoId = await savePhotoBlob(new Blob(["photo"]));
     const record = { ...sampleAppData.recent[0]!, photoId };
     seedStorage({ ...sampleAppData, recent: [record] });

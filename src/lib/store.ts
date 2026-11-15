@@ -532,8 +532,7 @@ export function createStore(repo: SpotRepository = browserRepository) {
   }
 
   async function handleClearAllData(): Promise<void> {
-    // biome-ignore lint/suspicious/noAlert: a native confirm is the honest guard for a one-off destructive action
-    if (clearingData || !window.confirm(t.value.clearAllDataConfirm)) {
+    if (clearingData) {
       return;
     }
 
@@ -589,11 +588,6 @@ export function createStore(repo: SpotRepository = browserRepository) {
   }
 
   async function handleClearUnreadable(): Promise<void> {
-    // biome-ignore lint/suspicious/noAlert: a native confirm is the honest guard for a one-off destructive action
-    if (!window.confirm(t.value.clearUnreadableConfirm)) {
-      return;
-    }
-
     try {
       repo.clearUnreadableBackup();
     } catch {

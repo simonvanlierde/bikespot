@@ -156,7 +156,6 @@ describe("draft restore through the store", () => {
     type(first.store, draft);
     first.stop();
 
-    vi.stubGlobal("confirm", () => true);
     const { store, stop } = load();
     store.openOverlay({ kind: "station-settings" });
     await store.handleClearAllData();
