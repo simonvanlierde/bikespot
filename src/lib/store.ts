@@ -21,8 +21,14 @@ import {
 import { captureCoords } from "./geolocation";
 import { t } from "./i18n";
 import { downscalePhoto } from "./photos";
-import { browserRepository, type LoadLoss, type SpotRepository } from "./repository";
-import { exportSpots, mergeSpots, parseSpotsFile } from "./spotsTransfer";
+import {
+  APP_DATA_STORAGE_KEY,
+  browserRepository,
+  DRAFT_MAX_AGE_MS,
+  type LoadLoss,
+  type SpotRepository,
+} from "./repository";
+import { exportSpots, MAX_IMPORT_BYTES, mergeSpots, parseSpotsFile } from "./spotsTransfer";
 
 // What a caller asks to open. The store builds any draft the overlay needs.
 export type OverlayRequest =
@@ -129,11 +135,26 @@ export function createStore(repo: SpotRepository = browserRepository) {
       }
     });
 
+    // Another tab saved: take its data instead of overwriting it with ours.
+    const onStorage = (event: StorageEvent) => {
+      if (event.key !== APP_DATA_STORAGE_KEY && event.key !== null) {
+        return;
+      }
+
+      const { data: stored, lost } = repo.loadAppData();
+
+      if (!lost && JSON.stringify(stored) !== JSON.stringify(data.value)) {
+        data.value = stored;
+      }
+    };
+    window.addEventListener("storage", onStorage);
+
     // biome-ignore lint/complexity/noVoid: deliberate fire-and-forget cleanup
     void sweepPhotos(() => active);
 
     return () => {
       active = false;
+      window.removeEventListener("storage", onStorage);
       stopSaving();
       stopDraftSaving();
     };
@@ -142,6 +163,11 @@ export function createStore(repo: SpotRepository = browserRepository) {
   // Deletes photos nothing refers to any more, and drops references to photos
   // that are gone, unless the data changed while the sweep ran.
   async function sweepPhotos(isActive: () => boolean = () => true): Promise<void> {
+    // A removed spot's photo is unreferenced until its undo window ends; sweeping now would delete it.
+    if (pendingRemoval) {
+      return;
+    }
+
     const snapshot = data.value;
     const isCurrent = () => isActive() && data.value === snapshot;
     const cleaned = await repo.reconcilePhotos(snapshot, isCurrent);
@@ -187,10 +213,12 @@ export function createStore(repo: SpotRepository = browserRepository) {
     if (request.kind === "edit-location") {
       // Work saved from an interrupted edit wins over a fresh draft, but only
       // once: after this the user either saves or cancels, and both clear it.
+      // The age is checked here too: the draft may have waited since the store was made.
+      const restored = restoredDraft && Date.now() - restoredDraft.savedAt <= DRAFT_MAX_AGE_MS ? restoredDraft : null;
       overlay.value = {
         kind: "edit-location",
-        draft: restoredDraft?.draft ?? createLocationDraft(data.value.current, data.value.station),
-        showDetails: restoredDraft?.showDetails ?? false,
+        draft: restored?.draft ?? createLocationDraft(data.value.current, data.value.station),
+        showDetails: restored?.showDetails ?? false,
         error: null,
         geoStatus: "idle",
         photoMetadataKept: false,
@@ -423,6 +451,8 @@ export function createStore(repo: SpotRepository = browserRepository) {
 
   async function handleClearCurrent(): Promise<void> {
     const next = clearCurrentLocation(data.value);
+    // The spot the interrupted edit described is gone; its lane must not come back.
+    restoredDraft = null;
     closeOverlay();
     notice.value = { text: t.value.noticeCollected };
     await commitData(next);
@@ -491,6 +521,7 @@ export function createStore(repo: SpotRepository = browserRepository) {
 
   async function handleUseRecent(id: string): Promise<void> {
     const next = promoteRecentLocation(data.value, id);
+    restoredDraft = null;
 
     // Close before committing: commitData removes the previewed entry from
     // `recent`, which would leave the still-open preview sheet rendering nothing
@@ -515,6 +546,7 @@ export function createStore(repo: SpotRepository = browserRepository) {
     closeOverlay();
     notice.value = null;
     const previous = data.value;
+    let draftCleared = true;
 
     try {
       data.value = defaultAppData;
@@ -523,14 +555,21 @@ export function createStore(repo: SpotRepository = browserRepository) {
         throw new Error("Could not clear stored spots");
       }
 
-      repo.clearDraft();
       restoredDraft = null;
+      try {
+        repo.clearDraft();
+      } catch {
+        // Still clear the rest, then say the draft is left.
+        draftCleared = false;
+      }
       repo.clearUnreadableBackup();
       unreadableBackup.value = repo.loadUnreadableBackup();
       // A cancelled save may still be writing its photo; clear after it finishes.
       await Promise.allSettled(photoWrites);
       await repo.clearPhotos();
-      notice.value = { text: t.value.noticeDataCleared };
+      notice.value = draftCleared
+        ? { text: t.value.noticeDataCleared }
+        : { text: t.value.noticeClearFailed, tone: "error" };
     } catch {
       notice.value = { text: t.value.noticeClearFailed, tone: "error" };
     } finally {
@@ -579,7 +618,7 @@ export function createStore(repo: SpotRepository = browserRepository) {
       return;
     }
 
-    const spots = parseSpotsFile(await file.text().catch(() => ""));
+    const spots = file.size > MAX_IMPORT_BYTES ? null : parseSpotsFile(await file.text().catch(() => ""));
 
     if (generation !== clearGeneration) {
       return;

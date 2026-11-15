@@ -10,6 +10,7 @@ ts-check:
     pnpm run build
     pnpm run budget
     pnpm audit --prod --audit-level=moderate
+    pnpm run licenses
 
 # Fix what biome can fix, then format.
 ts-fmt:
@@ -23,7 +24,7 @@ ts-cov:
 ts-test *args:
     pnpm exec vitest run {{ args }}
 
-# Playwright against the production build: the accessibility and CSP specs.
+# Playwright against the production build: the accessibility, CSP, reflow and persistence specs.
 # Install the browser once per machine: `pnpm exec playwright install chromium`.
 ts-e2e *args:
     pnpm run test:e2e {{ args }}

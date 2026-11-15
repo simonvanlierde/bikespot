@@ -4,6 +4,9 @@ import { normalizeLocationRecord } from "./repository";
 
 const SPOTS_FILE_VERSION = 1;
 
+// A few hundred spots fit in well under this; it stops a huge file from being read into memory.
+export const MAX_IMPORT_BYTES = 1_000_000;
+
 // Photos stay on the device that took them, so the file drops their ids:
 // on another device they would point at nothing.
 export function exportSpots(data: AppData): string {
@@ -37,7 +40,10 @@ export function parseSpotsFile(text: string): LocationRecord[] | null {
 
   const spots = candidate.spots.map((entry) => normalizeLocationRecord(entry));
 
-  return spots.every((entry) => entry !== null) ? (spots as LocationRecord[]) : null;
+  // A file's photoId could name another spot's blob; photos never travel in the file.
+  return spots.every((entry) => entry !== null)
+    ? (spots as LocationRecord[]).map((entry) => ({ ...entry, photoId: undefined }))
+    : null;
 }
 
 // Imported spots join Recent, newest first, within the usual cap. The current

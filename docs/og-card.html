@@ -1,0 +1,52 @@
+<!doctype html>
+<!-- Source of public/og.png (1200x630). Render with `pnpm og-card`; the app elements in
+     docs/og-card/ come from `pnpm og-card:capture`. `pnpm og-card --option map` draws the other layout. -->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Bikespot social card</title>
+<style>
+  @font-face { font-family: "Overpass"; font-weight: 100 900;
+    src: url("../node_modules/@fontsource-variable/overpass/files/overpass-latin-wght-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Overpass Mono"; font-weight: 100 900;
+    src: url("../node_modules/@fontsource-variable/overpass-mono/files/overpass-mono-latin-wght-normal.woff2") format("woff2"); }
+  :root {
+    --sign: #1d3d91; --signal: #ffc917; --concrete: #f2f4f7; --ink: #16233f; --muted: #5c6880;
+    --keyline: rgba(255, 255, 255, 0.55);
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+  body { position: relative; font-family: "Overpass", sans-serif; background: var(--concrete); color: var(--ink); }
+  .brand { position: absolute; top: 42px; left: 0; right: 0; display: flex; align-items: center; justify-content: center; gap: 24px; }
+  .brand img { width: 80px; height: 80px; }
+  .brand b { font-size: 88px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+  .line { position: absolute; top: 490px; left: 60px; right: 60px; text-align: center; font-size: 36px; font-weight: 600; line-height: 1.25; color: var(--muted); }
+  .addr { position: absolute; top: 540px; left: 0; right: 0; text-align: center; font-family: "Overpass Mono", monospace; font-size: 30px; font-weight: 600; letter-spacing: 0.02em; color: var(--sign); }
+  .proof { position: absolute; top: 152px; display: flex; align-items: center; overflow: hidden; }
+  .proof img { display: block; }
+
+  /* sign: the real current-spot sign, captured at 3x */
+  .proof-map, .sign .proof-map { display: none; }
+  .map .proof-sign { display: none; }
+  .map .proof-map { display: flex; }
+  .sign .proof-sign { left: 217px; width: 767px; height: 322px; border-radius: 14px; box-shadow: 0 6px 20px rgba(22, 35, 63, 0.22); }
+  .sign .proof-sign img { width: 767px; }
+
+  /* map: the real spot map and route line on a plate, on a sign-blue field with the sign's keyline */
+  .map { background: var(--sign); color: #fff; }
+  .map::before { content: ""; position: absolute; inset: 14px; border: 2px solid var(--keyline); border-radius: 22px; }
+  .map .line, .map .addr { color: rgba(255, 255, 255, 0.88); }
+  .map .brand img { box-shadow: 0 0 0 3px var(--keyline); border-radius: 22px; }
+  .map .proof-map { left: 94px; width: 1012px; height: 322px; padding: 24px; gap: 30px; background: #fff; border-radius: 16px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25); }
+  .map .proof-map img:first-child { height: 274px; border-radius: 10px; }
+  .map .proof-map img:last-child { width: 538px; }
+</style>
+</head>
+<body>
+<div class="brand"><img src="../public/icons/icon.svg" alt="" /><b>Bikespot</b></div>
+<p class="line">Save where you parked your bike and find it again later.</p>
+<div class="proof proof-sign"><img src="og-card/sign.png" alt="" /></div>
+<div class="proof proof-map"><img src="og-card/map.png" alt="" /><img src="og-card/distance.png" alt="" /></div>
+<span class="addr">bikespot.duinlab.nl</span>
+</body>
+</html>

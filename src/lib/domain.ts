@@ -14,13 +14,9 @@ type StationLocationRecordSeed = Omit<Extract<LocationRecord, { mode: "station" 
 type OutsideLocationRecordSeed = Omit<Extract<LocationRecord, { mode: "outside" }>, "id" | "updatedAt">;
 type LocationRecordSeed = StationLocationRecordSeed | OutsideLocationRecordSeed;
 
+// randomUUID needs a secure context, which geolocation, the service worker and storage.persist() need too.
 export function createId(): string {
-  if (typeof crypto.randomUUID === "function") {
-    return crypto.randomUUID();
-  }
-
-  // randomUUID needs a secure context; http-on-LAN testing lands here.
-  return Array.from(crypto.getRandomValues(new Uint8Array(16)), (byte) => byte.toString(16).padStart(2, "0")).join("");
+  return crypto.randomUUID();
 }
 
 export function createLocationRecord(

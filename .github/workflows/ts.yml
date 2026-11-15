@@ -67,6 +67,9 @@ jobs:
           retention-days: 7
       # Known advisories, moderate and up, in what ships: dependencies, not dev tooling.
       - run: pnpm audit --prod --audit-level=moderate
+      # Lists the licence of each package that ships (dependencies, not dev tooling) and
+      # fails on one MIT cannot take. The allow-list is in scripts/checkLicenses.mjs.
+      - run: pnpm run licenses
 
   e2e:
     name: e2e (chromium)
