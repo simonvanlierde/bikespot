@@ -21,6 +21,7 @@
     "coverage": "vitest run --coverage --coverage.reporter=text",
     "deploy": "pnpm run build && wrangler deploy",
     "dev": "vite",
+    "licenses": "pnpm licenses list --prod --json | node scripts/checkLicenses.mjs",
     "fix": "biome check --write",
     "og-card": "node scripts/og-card.mjs",
     "og-card:capture": "node scripts/og-capture.mjs",
