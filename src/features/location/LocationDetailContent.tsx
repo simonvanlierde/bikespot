@@ -53,6 +53,7 @@ export function LocationDetailContent({ entry, photoAlt }: { entry: LocationReco
         <a className="maps-link" href={mapsLink(entry.coords)} rel="noopener noreferrer" target="_blank">
           <MapPin aria-hidden="true" className="button-icon" />
           <span>{t.value.openInMaps}</span>
+          <span className="sr-only">{t.value.opensInNewWindow}</span>
           {formatAccuracy(entry.coords) ? (
             <span className="maps-link__accuracy">{formatAccuracy(entry.coords)}</span>
           ) : null}

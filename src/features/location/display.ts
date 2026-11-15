@@ -190,6 +190,12 @@ export function getDetailFacts(entry: LocationRecord): string[] {
   return facts;
 }
 
+// One run of text. The no-break space glues each dot to the fact before it, so
+// a wrapped line never starts with an orphan "·".
+export function joinFacts(facts: string[]): string {
+  return facts.join("\u00A0· ");
+}
+
 const distanceFormat = computed(() => ({
   m: new Intl.NumberFormat(lang.value, { style: "unit", unit: "meter", maximumFractionDigits: 0 }),
   km: new Intl.NumberFormat(lang.value, {

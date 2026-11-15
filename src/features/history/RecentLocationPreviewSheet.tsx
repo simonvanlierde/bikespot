@@ -1,7 +1,7 @@
 import { RotateCcw, Trash2 } from "lucide-preact";
 
 import { SheetDialog } from "@/components/SheetDialog";
-import { formatTimestamp, getPrimaryLabel } from "@/features/location/display";
+import { formatRelativeTimestamp, getPrimaryLabel } from "@/features/location/display";
 import { LocationDetailContent } from "@/features/location/LocationDetailContent";
 import type { LocationRecord } from "@/lib/app-data";
 import { t } from "@/lib/i18n";
@@ -26,7 +26,7 @@ export function RecentLocationPreviewSheet({
     >
       <div className="preview-stack">
         <LocationDetailContent entry={selectedRecent} photoAlt={t.value.recentBikeRef} />
-        <p className="timestamp">{t.value.saved(formatTimestamp(selectedRecent.updatedAt))}</p>
+        <p className="timestamp">{t.value.saved(formatRelativeTimestamp(selectedRecent.updatedAt))}</p>
         <button className="primary-button primary-button--wide" type="button" onClick={() => onUse(selectedRecent.id)}>
           <RotateCcw aria-hidden="true" className="button-icon" />
           {t.value.useThisLocation}
