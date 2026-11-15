@@ -60,6 +60,7 @@ const de: Dict = {
   side: "Seite",
   rackLevel: "Ebene",
   rackNumber: "Stellplatznummer",
+  rackPlate: "Platz",
   opts: {
     close: "Nah",
     middle: "Mitte",

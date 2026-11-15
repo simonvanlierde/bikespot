@@ -60,6 +60,7 @@ const ja: Dict = {
   side: "左右",
   rackLevel: "段",
   rackNumber: "ラック番号",
+  rackPlate: "ラック",
   opts: {
     close: "手前",
     middle: "中ほど",
