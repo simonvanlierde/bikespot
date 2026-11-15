@@ -26,6 +26,7 @@ const CALLS: Record<string, unknown[][]> = {
   factSide: SIDES.map((s) => [s]),
   factRack: RACK_LEVELS.map((r) => [r]),
   noticeImported: [[1], [3]],
+  noticeImportedSkipped: [[2, 3]],
   viewSourceVersion: [["1.2.3"]],
 };
 

@@ -161,6 +161,10 @@ const de: Dict = {
   clearUnreadableConfirm:
     "Die Kopie der unlesbaren Daten von diesem Gerät löschen, samt der Fotos, auf die nur sie verweist? Exportiere sie vorher, wenn du sie behalten willst.",
   noticeImported: (count) => (count === 1 ? "1 Platz importiert" : `${count} Plätze importiert`),
+  noticeImportedSkipped: (a, s) => `${a} importiert, ${s} übersprungen: Verlauf ist voll`,
+  sameAsLastTime: "Wie beim letzten Mal",
+  resetFields: "Zurücksetzen",
+  opensInNewWindow: "(öffnet in einem neuen Fenster)",
   noticeImportInvalid: "Keine Bikespot-Exportdatei – nichts importiert",
   clearAllDataConfirm:
     "Alle gespeicherten Plätze, Fotos und Einstellungen des Fahrradparkhauses von diesem Gerät löschen? Sprache und Darstellung bleiben unverändert.",

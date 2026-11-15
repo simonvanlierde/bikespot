@@ -159,6 +159,10 @@ const sv: Dict = {
   clearUnreadableConfirm:
     "Vill du rensa kopian av den oläsliga datan från enheten, inklusive de foton som enbart tillhör den? Exportera datan först om du vill behålla den.",
   noticeImported: (count) => (count === 1 ? "1 plats importerad" : `${count} platser importerade`),
+  noticeImportedSkipped: (a, s) => `${a} importerade, ${s} hoppades över: Senaste platser är full`,
+  sameAsLastTime: "Samma som förra gången",
+  resetFields: "Återställ",
+  opensInNewWindow: "(öppnas i ett nytt fönster)",
   noticeImportInvalid: "Inte en Bikespot-exportfil – inget importerat",
   clearAllDataConfirm:
     "Rensa alla sparade platser, foton och inställningar för cykelgaraget från den här enheten? Språk och utseende förblir oförändrade.",

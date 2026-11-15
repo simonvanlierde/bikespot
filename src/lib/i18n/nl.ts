@@ -154,6 +154,10 @@ const nl: Dict = {
   clearUnreadableConfirm:
     "Wil je de kopie van de onleesbare gegevens van dit apparaat wissen, inclusief de bijbehorende foto's? Exporteer deze eerst als je ze wilt bewaren.",
   noticeImported: (count) => (count === 1 ? "1 plek geïmporteerd" : `${count} plekken geïmporteerd`),
+  noticeImportedSkipped: (a, s) => `${a} geïmporteerd, ${s} overgeslagen: Recente locaties is vol`,
+  sameAsLastTime: "Zelfde als de vorige keer",
+  resetFields: "Opnieuw instellen",
+  opensInNewWindow: "(opent in een nieuw venster)",
   noticeImportInvalid: "Geen Bikespot-exportbestand — niets geïmporteerd",
   clearAllDataConfirm:
     "Alle opgeslagen plekken, foto's en stallingsinstellingen van dit apparaat wissen? Je taal en weergave blijven ongewijzigd.",

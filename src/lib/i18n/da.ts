@@ -158,6 +158,10 @@ const da: Dict = {
   clearUnreadableConfirm:
     "Vil du slette kopien af de ulæselige data fra denne enhed, sammen med de fotos, den henviser til? Eksporter den først, hvis du vil beholde den.",
   noticeImported: (count) => (count === 1 ? "1 plads importeret" : `${count} pladser importeret`),
+  noticeImportedSkipped: (a, s) => `${a} importeret, ${s} sprunget over: Seneste pladser er fuld`,
+  sameAsLastTime: "Samme som sidst",
+  resetFields: "Nulstil",
+  opensInNewWindow: "(åbner i et nyt vindue)",
   noticeImportInvalid: "Ikke en Bikespot-eksportfil – intet importeret",
   clearAllDataConfirm:
     "Slet alle gemte pladser, fotos og indstillinger for cykelparkeringen fra denne enhed? Dit sprog og udseende forbliver uændret.",

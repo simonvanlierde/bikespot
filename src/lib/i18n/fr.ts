@@ -163,6 +163,10 @@ const fr: Dict = {
   clearUnreadableConfirm:
     "Effacer de cet appareil la copie des données illisibles, avec les photos auxquelles elle seule renvoie ? Exporte-la d’abord pour la garder.",
   noticeImported: (count) => (count === 1 ? "1 place importée" : `${count} places importées`),
+  noticeImportedSkipped: (a, s) => `${a} importées, ${s} ignorées : l’historique est plein`,
+  sameAsLastTime: "Comme la dernière fois",
+  resetFields: "Réinitialiser",
+  opensInNewWindow: "(s’ouvre dans une nouvelle fenêtre)",
   noticeImportInvalid: "Ce n’est pas un fichier d’export Bikespot – rien n’a été importé",
   clearAllDataConfirm:
     "Effacer de cet appareil toutes les places, photos et réglages du parking vélos enregistrés ? La langue et l’apparence restent inchangées.",
