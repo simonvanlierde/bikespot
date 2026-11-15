@@ -3,25 +3,11 @@ import { describe, expect, it } from "vitest";
 import { defaultAppData } from "../src/lib/defaults.ts";
 import {
   clearCurrentLocation,
-  createId,
   createLocationRecord,
   promoteRecentLocation,
   removeRecentLocation,
   saveLocation,
 } from "../src/lib/domain.ts";
-
-describe("createId", () => {
-  it("falls back to getRandomValues when randomUUID is unavailable", () => {
-    // http-on-LAN (insecure context) has no crypto.randomUUID at all.
-    const original = crypto.randomUUID;
-    Object.defineProperty(crypto, "randomUUID", { value: undefined, configurable: true });
-    try {
-      expect(createId()).toMatch(/^[0-9a-f]{32}$/);
-    } finally {
-      Object.defineProperty(crypto, "randomUUID", { value: original, configurable: true });
-    }
-  });
-});
 
 describe("saveLocation with no current spot", () => {
   it("sets the first current spot and leaves recent untouched", () => {

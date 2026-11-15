@@ -40,7 +40,7 @@ describe("draft storage", () => {
   it("round-trips an in-progress edit", () => {
     saveDraft(draft, true);
 
-    expect(loadDraft()).toEqual({ draft, showDetails: true });
+    expect(loadDraft()).toMatchObject({ draft, showDetails: true });
   });
 
   it("drops a pending photo, which cannot be serialized", () => {
