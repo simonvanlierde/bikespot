@@ -435,8 +435,10 @@ describe("bike storage tracker app", () => {
 
     await user.selectOptions(picker, "de");
 
+    // The German dictionary loads on demand, so the switch lands a moment later.
+    expect(await screen.findByRole("combobox", { name: /sprache/i })).toHaveValue("de");
     expect(document.documentElement.lang).toBe("de");
-    expect(screen.getByRole("combobox", { name: /sprache/i })).toHaveValue("de");
     await user.selectOptions(screen.getByRole("combobox", { name: /sprache/i }), "en");
+    expect(await screen.findByRole("combobox", { name: /language/i })).toHaveValue("en");
   });
 });
