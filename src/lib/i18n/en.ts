@@ -125,6 +125,9 @@ const en: Dict = {
   factDistance: (distance) => `${en.opts[distance]} distance`,
   factSide: (side) => (side === "left" ? "Left side" : "Right side"),
   factRack: (level) => (level === "top" ? "Top rack" : "Bottom rack"),
+  diagramAlt: (details) => `Saved spot in the lane diagram: ${details}`,
+  diagramCaption:
+    "Drawn from the near end of the lane, looking along it. Left and right are as you face along the lane; close is nearest the entrance, far is deeper inside. Not to scale.",
   notSaved: "not saved yet",
 
   noticeSaveFailed: "Could not save — storage is full or blocked",

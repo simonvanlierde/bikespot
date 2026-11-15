@@ -1,4 +1,5 @@
 .preview-stack {
+  grid-template-columns: minmax(0, 1fr);
   margin-top: 0.2rem;
 }
 
@@ -283,4 +284,52 @@
 
 .current-card .notice-undo:hover {
   background: var(--sign-tonal-hover);
+}
+
+/* Lane schematic: tokens only, so light and dark follow the theme. */
+.lane-diagram {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0.95rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+}
+
+.lane-diagram__svg {
+  width: 100%;
+  max-width: 9rem;
+  height: auto;
+}
+
+.lane-diagram__lane {
+  fill: var(--surface-sunken);
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+
+.lane-diagram__mark {
+  fill: var(--signal);
+  stroke: var(--signal-ink);
+  stroke-width: 2;
+}
+
+.lane-diagram__grid {
+  fill: none;
+  stroke: var(--control-edge);
+  stroke-dasharray: 3 3;
+  stroke-width: 1;
+}
+
+.lane-diagram__viewer {
+  fill: var(--muted);
+}
+
+.lane-diagram__caption {
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.4;
+  text-align: center;
 }

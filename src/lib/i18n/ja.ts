@@ -133,6 +133,9 @@ const ja: Dict = {
   factDistance: (distance) => JA_DISTANCE[distance],
   factSide: (side) => (side === "left" ? "左側" : "右側"),
   factRack: (level) => (level === "top" ? "上段" : "下段"),
+  diagramAlt: (details) => `レーン図の保存場所: ${details}`,
+  diagramCaption:
+    "レーンの手前側から、レーンに沿って見た図です。左右はレーンに向かって立ったときの向き。手前は入口に近い側、奥は奥側です。縮尺は正確ではありません。",
   notSaved: "未保存",
 
   noticeSaveFailed: "保存できません。ストレージがいっぱいか、ブロックされています",

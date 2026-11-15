@@ -137,6 +137,9 @@ const fr: Dict = {
   factDistance: (distance) => FR_DISTANCE[distance],
   factSide: (side) => (side === "left" ? "Côté gauche" : "Côté droit"),
   factRack: (level) => (level === "top" ? "Niveau haut" : "Niveau bas"),
+  diagramAlt: (details) => `Emplacement enregistré dans le schéma de la voie : ${details}`,
+  diagramCaption:
+    "Dessiné depuis le début de la voie, en regardant le long de celle-ci. Gauche et droite comme vous regardez le long de la voie ; proche est le plus près de l’entrée, au fond est plus à l’intérieur. Pas à l'échelle.",
   notSaved: "pas encore enregistrée",
 
   noticeSaveFailed: "Enregistrement impossible – stockage plein ou bloqué",
