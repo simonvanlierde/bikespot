@@ -6,7 +6,8 @@ import { PhotoField } from "@/components/PhotoField";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { DISTANCES, RACK_LEVELS, SIDES, type StationConfig } from "@/lib/app-data";
 import type { StationLocationDraft } from "@/lib/drafts";
-import { type OptKey, t } from "@/lib/i18n";
+import { t } from "@/lib/i18n";
+import type { OptKey } from "@/lib/i18n/dict";
 import { FieldValueInput } from "./FieldValueInput";
 
 const optLabel = (option: OptKey) => t.value.opts[option];

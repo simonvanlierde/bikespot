@@ -8,7 +8,8 @@ import { gzipSync } from "node:zlib";
 // The budget, in gzipped bytes. It catches a dependency or a chunk split gone wrong, not
 // the next feature: keep it at least 25% above the build. When a change goes over, find
 // what grew first, then raise it in its own commit, back to 25% headroom.
-// The largest file (preact, signals, the app) measured 40,879 bytes when this was set.
+// The largest file (preact, signals, the app, English) measured 31,025 bytes gzipped when this
+// was last checked; the six other languages are separate chunks of about 2.5 KB each.
 const MAX_GZIP_BYTES = 50 * 1024;
 const DIST_ASSETS_DIR = join(process.cwd(), "dist", "assets");
 

@@ -22,6 +22,9 @@ let keepStoredData = false;
 export function loadAppData(): LoadedAppData {
   let raw: string | null;
 
+  // Every load decides afresh; an empty or blocked store has nothing to protect.
+  keepStoredData = false;
+
   // getItem itself can throw when storage is blocked (private mode, extensions).
   try {
     raw = window.localStorage.getItem(APP_DATA_STORAGE_KEY);
@@ -45,7 +48,6 @@ export function loadAppData(): LoadedAppData {
     if (loaded.lost) {
       window.localStorage.setItem(UNREADABLE_BACKUP_KEY, raw);
     }
-    keepStoredData = false;
   } catch {
     keepStoredData = true;
   }

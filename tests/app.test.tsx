@@ -189,7 +189,7 @@ describe("bike storage tracker app", () => {
     expect(card).toHaveClass("current-card--flip");
 
     // The motion lives only under no-preference, so reduced motion gets none.
-    const css = readFileSync("src/styles/surfaces.css", "utf8");
+    const css = readFileSync("src/styles/current-spot.css", "utf8");
     const motionFree = css.replace(/@media \(prefers-reduced-motion: no-preference\) \{[\s\S]*?\n\}\n/g, "");
     expect(css).toContain(".current-card--flip");
     expect(motionFree).not.toContain("current-card--flip");

@@ -1,5 +1,6 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { DISTANCES, RACK_LEVELS, SIDES } from "../src/lib/app-data.ts";
+import en from "../src/lib/i18n/en.ts";
 import { detectLang, LANGS, lang, setLang, t } from "../src/lib/i18n.ts";
 
 const COMPASS = ["n", "ne", "e", "se", "s", "sw", "w", "nw"] as const;
@@ -39,6 +40,9 @@ afterEach(() => {
 });
 
 describe("detectLang", () => {
+  // Importing i18n persists the language it detected, so start from empty storage.
+  beforeEach(() => window.localStorage.removeItem("bikespot-lang"));
+
   it("keeps a stored choice", () => {
     browserLanguages(["nl-NL"]);
     window.localStorage.setItem("bikespot-lang", "ja");
@@ -80,10 +84,27 @@ function problems(label: string, out: unknown, echoed: string[]): string[] {
 }
 
 describe("templates", () => {
-  afterEach(() => setLang("en"));
+  afterEach(async () => {
+    await setLang("en");
+    window.localStorage.removeItem("bikespot-lang");
+  });
 
-  it.each(LANGS)("render every argument in %s", (code) => {
-    setLang(code);
+  // The types guarantee this at compile time; this proves each lazy chunk loads at run time.
+  it.each(LANGS)("loads the %s dictionary with the same keys as English", async (code) => {
+    await setLang(code);
+    expect(lang.value).toBe(code);
+    const shape = (dict: object): [string, string][] =>
+      Object.entries(dict)
+        .map(([key, value]): [string, string] => [
+          key,
+          typeof value === "object" ? JSON.stringify(Object.keys(value).sort()) : typeof value,
+        ])
+        .sort(([a], [b]) => a.localeCompare(b));
+    expect(shape(t.value)).toEqual(shape(en));
+  });
+
+  it.each(LANGS)("render every argument in %s", async (code) => {
+    await setLang(code);
     expect(lang.value).toBe(code);
     const templates = Object.entries(t.value).filter(([, value]) => typeof value === "function");
     const missing = templates.map(([key]) => key).filter((key) => !CALLS[key]);

@@ -111,7 +111,7 @@ export function StationSettingsSheet({
           {/* A native select: seven languages don't fit a segmented row at 320 px. */}
           <label className="field">
             <span>{t.value.language}</span>
-            <select value={lang.value} onChange={(event) => setLang(event.currentTarget.value as Lang)}>
+            <select value={lang.value} onChange={(event) => void setLang(event.currentTarget.value as Lang)}>
               {LANGS.map((code) => (
                 <option key={code} lang={code} value={code}>
                   {LANG_NAMES[code]}
