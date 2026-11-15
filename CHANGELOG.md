@@ -16,6 +16,24 @@ project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - The sign shows floor, lane and rack as three plates, with a full-width photo when one is saved.
 - The details sheet opens with the photo and the note, and no longer repeats the lane or rack from its title.
 - The dot between facts now has even space on both sides.
+- Clearing parking data or all data asks for confirmation inside the sheet, not in a browser dialog.
+- Import fills free Recent slots only. It no longer replaces existing spots, and says how many it skipped.
+- The editor labels the floor carried over from the last spot, with one control to reset it.
+- Times are relative everywhere, and the Recent count is hidden while it is zero.
+- The other six languages load on demand, which keeps the first load smaller. They still work offline.
+- The app checks for a new version every hour and when it comes back to the foreground.
+
+### Fixed
+
+- A second tab with older data no longer overwrites the spot saved in the first.
+- Import drops photo links from the file and refuses files over 1 MB.
+- One failed photo delete no longer skips the rest of the cleanup, and a closed photo database reopens.
+- A restored draft no longer outlives its one-hour limit, and a failing draft cleanup no longer makes Clear all report failure.
+- At 200% text the buttons no longer run past the screen edge. Controls on the sign, the map links and the lane error have accessible names.
+
+### Security
+
+- Adds `/.well-known/security.txt`.
 
 ## [0.4.0] - 2026-11-10
 
