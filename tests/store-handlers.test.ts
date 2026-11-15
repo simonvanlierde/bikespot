@@ -638,8 +638,10 @@ describe("store handlers", () => {
         currentTarget: { files: [file], value: "" },
       } as unknown as TargetedEvent<HTMLInputElement>);
 
-      expect(importing.data.value.recent.map((entry) => entry.id)).not.toContain("old-0");
-      expect(dropUnusedPhotos).toHaveBeenCalledWith(expect.objectContaining({ recent: old }), importing.data.value);
+      expect(importing.data.value.recent).toEqual(old);
+      for (const [, kept] of dropUnusedPhotos.mock.calls as unknown as [unknown, { recent: { photoId: string }[] }][]) {
+        expect(kept.recent.map((entry) => entry.photoId)).toEqual(old.map((entry) => entry.photoId));
+      }
       stop();
     });
   });

@@ -631,8 +631,11 @@ export function createStore(repo: SpotRepository = browserRepository) {
 
     const result = mergeSpots(data.value, spots);
     // Notice before data, so a failed save in the persistence effect replaces it.
-    // commitData also drops the photos of spots the import pushed out of Recent.
-    notice.value = { text: t.value.noticeImported(result.added) };
+    notice.value = {
+      text: result.skipped
+        ? t.value.noticeImportedSkipped(result.added, result.skipped)
+        : t.value.noticeImported(result.added),
+    };
     await commitData(result.data);
   }
 

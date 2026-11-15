@@ -62,16 +62,28 @@ describe("spots transfer", () => {
   it("leaves data untouched when nothing is new", () => {
     const result = mergeSpots(sampleAppData, [previous]);
 
-    expect(result).toEqual({ data: sampleAppData, added: 0 });
+    expect(result).toEqual({ data: sampleAppData, added: 0, skipped: 0 });
   });
 
-  it("keeps Recent within its cap and counts only the spots that fit", () => {
+  it("fills only the free Recent slots, keeps every existing spot and counts the rest as skipped", () => {
     const older = Array.from({ length: 6 }, (_, i) => outsideSpot(`2026-01-0${i + 1}T00:00:00.000Z`));
 
     const result = mergeSpots(sampleAppData, older);
 
     expect(result.data.recent).toHaveLength(5);
+    expect(result.data.recent[0]?.id).toBe(sampleAppData.recent[0]?.id);
     expect(result.added).toBe(4);
+    expect(result.skipped).toBe(2);
+  });
+
+  it("never evicts an existing spot, even for a newer one", () => {
+    const full = {
+      ...sampleAppData,
+      recent: Array.from({ length: 5 }, (_, i) => outsideSpot(`2026-02-0${i + 1}T00:00:00.000Z`)),
+    };
+    const result = mergeSpots(full, [outsideSpot("2026-04-19T09:00:00.000Z")]);
+
+    expect(result).toEqual({ data: full, added: 0, skipped: 1 });
   });
 });
 
@@ -90,6 +102,14 @@ describe("handleImportSpots", () => {
 
     expect(store.data.value.recent[0]?.id).toBe(fresh.id);
     expect(store.notice.value).toEqual({ text: "1 spot imported" });
+  });
+
+  it("tells the user how many spots found no free slot", async () => {
+    const spots = Array.from({ length: 6 }, (_, i) => outsideSpot(`2026-01-0${i + 1}T00:00:00.000Z`));
+
+    await store.handleImportSpots(fileEvent(JSON.stringify({ version: 1, spots })));
+
+    expect(store.notice.value).toEqual({ text: "Imported 4, skipped 2 because Recent is full" });
   });
 
   it("shows an error and changes nothing for a bad file", async () => {
