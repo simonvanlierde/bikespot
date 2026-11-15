@@ -3,18 +3,20 @@ import { DetailRow } from "@/components/DetailRow";
 import { usePhotoUrl } from "@/components/usePhotoUrl";
 import type { LocationRecord } from "@/lib/app-data";
 import { t } from "@/lib/i18n";
-import { formatAccuracy, mapsLink, shouldShowEntryField, showFloor } from "./display";
+import { formatAccuracy, getPrimaryFieldKey, mapsLink, shouldShowEntryField, showFloor } from "./display";
 
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: conditional field rows are inherent to the detail view
 export function LocationDetailContent({ entry, photoAlt }: { entry: LocationRecord; photoAlt: string }) {
   const photoUrl = usePhotoUrl(entry.photoId);
+  // The sheet title already says the lane or rack, so its row is left out.
+  const primary = getPrimaryFieldKey(entry);
   // Enabled fields in broad → specific order (floor → rack number), matching the
   // editor and settings views.
   const stationDetails =
     entry.mode === "station"
       ? [
           { label: t.value.stationFloor, value: showFloor(entry) ? entry.floor : undefined },
-          { label: t.value.lane, value: entry.lane },
+          { label: t.value.lane, value: primary === "lane" ? undefined : entry.lane },
           {
             label: t.value.distance,
             value: shouldShowEntryField(entry, "distance") && entry.distance ? t.value.opts[entry.distance] : undefined,
@@ -30,7 +32,7 @@ export function LocationDetailContent({ entry, photoAlt }: { entry: LocationReco
           },
           {
             label: t.value.rackNumber,
-            value: shouldShowEntryField(entry, "rackNumber") ? entry.rackNumber : undefined,
+            value: primary !== "rackNumber" && shouldShowEntryField(entry, "rackNumber") ? entry.rackNumber : undefined,
           },
         ]
       : [];
@@ -39,6 +41,14 @@ export function LocationDetailContent({ entry, photoAlt }: { entry: LocationReco
   // returning a fragment keeps the details on a single, even grid.
   return (
     <>
+      {photoUrl ? (
+        <figure className="photo-preview">
+          <img src={photoUrl} alt={photoAlt} />
+        </figure>
+      ) : null}
+
+      {entry.notes ? <p className="detail-note">{entry.notes}</p> : null}
+
       {stationDetails.some((detail) => detail.value) ? (
         <div className="detail-list">
           {stationDetails.map((detail) => (
@@ -46,8 +56,6 @@ export function LocationDetailContent({ entry, photoAlt }: { entry: LocationReco
           ))}
         </div>
       ) : null}
-
-      {entry.notes ? <p className="detail-note">{entry.notes}</p> : null}
 
       {entry.coords ? (
         <a className="maps-link" href={mapsLink(entry.coords)} rel="noopener noreferrer" target="_blank">
@@ -58,12 +66,6 @@ export function LocationDetailContent({ entry, photoAlt }: { entry: LocationReco
             <span className="maps-link__accuracy">{formatAccuracy(entry.coords)}</span>
           ) : null}
         </a>
-      ) : null}
-
-      {photoUrl ? (
-        <figure className="photo-preview">
-          <img src={photoUrl} alt={photoAlt} />
-        </figure>
       ) : null}
     </>
   );

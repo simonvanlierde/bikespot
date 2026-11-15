@@ -92,8 +92,32 @@ describe("location detail content", () => {
     );
 
     const labels = Array.from(container.querySelectorAll(".detail-row__label")).map((element) => element.textContent);
-    expect(labels).toEqual(["Station floor", "Lane", "Distance", "Side", "Rack level", "Rack number"]);
+    expect(labels).toEqual(["Station floor", "Lane", "Distance", "Side", "Rack level"]);
     expect(screen.queryByText(/^station$/i)).not.toBeInTheDocument();
+  });
+
+  it("puts the photo first and the note directly under it, ahead of the rows", async () => {
+    const photoId = await savePhotoBlob(new File(["bike-photo"], "bike.png", { type: "image/png" }));
+    const { container } = render(
+      <LocationDetailContent
+        entry={{
+          id: "station-2",
+          mode: "station",
+          stationName: "My station",
+          updatedAt: "2026-04-20T20:00:00.000Z",
+          lane: "5",
+          floor: "2",
+          notes: "Blue pillar",
+          photoId,
+          visibleFields: { floor: true },
+        }}
+        photoAlt="Saved bike reference"
+      />,
+    );
+
+    await screen.findByAltText(/saved bike reference/i);
+    const order = Array.from(container.children).map((el) => el.className);
+    expect(order.slice(0, 3)).toEqual(["photo-preview", "detail-note", "detail-list"]);
   });
 
   it("renders no maps link when coordinates are absent", () => {
