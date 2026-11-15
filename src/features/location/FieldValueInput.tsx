@@ -2,6 +2,8 @@ import { useId } from "preact/hooks";
 import { segmentKeyHandler } from "@/components/SegmentedControl";
 import type { FieldInputMode } from "@/lib/app-data";
 
+export const EDITOR_ERROR_ID = "editor-error";
+
 // Editor-side value input for one location field (lane or floor): quick preset
 // buttons when configured, otherwise a number-keypad text input.
 export function FieldValueInput({
@@ -22,13 +24,11 @@ export function FieldValueInput({
   onChange: (value: string) => void;
 }) {
   const hintId = useId();
+  // The lane error is the editor's alert; point the field at it.
+  const describedBy = [hint ? hintId : "", invalid ? EDITOR_ERROR_ID : ""].filter(Boolean).join(" ") || undefined;
   if (mode === "quick") {
     return (
-      <fieldset
-        className="segmented-field"
-        aria-invalid={invalid || undefined}
-        aria-describedby={hint ? hintId : undefined}
-      >
+      <fieldset className="segmented-field" aria-describedby={describedBy}>
         <legend>{noun}</legend>
         <div className="segmented-field__options segmented-field__options--fit">
           {labels.map((label) => (
@@ -59,7 +59,7 @@ export function FieldValueInput({
       <span>{noun}</span>
       <input
         aria-invalid={invalid || undefined}
-        aria-describedby={hint ? hintId : undefined}
+        aria-describedby={describedBy}
         aria-label={noun}
         autoComplete="off"
         inputMode="numeric"

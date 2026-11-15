@@ -71,6 +71,7 @@ describe("bike storage tracker app", () => {
 
     expect(screen.getByRole("alert")).toHaveTextContent(/enter the lane/i);
     expect(screen.getByLabelText(/^lane$/i)).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getByLabelText(/^lane$/i)).toHaveAccessibleDescription(/enter the lane/i);
     expect(screen.getByRole("dialog", { name: /change spot/i })).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: /parked outside/i }));

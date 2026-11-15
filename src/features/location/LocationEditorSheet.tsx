@@ -8,6 +8,7 @@ import { SheetDialog } from "@/components/SheetDialog";
 import type { StationConfig } from "@/lib/app-data";
 import { createLocationDraft, createOutsideLocationDraft, type LocationDraft } from "@/lib/drafts";
 import { t } from "@/lib/i18n";
+import { EDITOR_ERROR_ID } from "./FieldValueInput";
 import { StationLocationFields, type UpdateStationField } from "./StationLocationFields";
 
 const WHERE_OPTIONS: LocationDraft["kind"][] = ["station", "outside"];
@@ -112,7 +113,7 @@ export function LocationEditorSheet({
         )}
 
         <div className="editor-form__submit">
-          <p className="form-error" role="alert">
+          <p className="form-error" id={EDITOR_ERROR_ID} role="alert">
             {error}
           </p>
           <button className="primary-button primary-button--wide" type="submit">
