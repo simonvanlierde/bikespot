@@ -1,0 +1,97 @@
+/* Full-screen dimmed backdrop. Sheets sit centred on small screens and
+   top-anchored on wider ones (features.css), so on wide screens a
+   content-height change (e.g. toggling station/outside) never shifts the
+   sheet's top edge. */
+.sheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  overflow-y: auto;
+  background: rgba(10, 16, 30, 0.5);
+}
+
+.sheet-overlay__hit {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: default;
+}
+
+/* Focus lands on the sheet on open so AT announces it; the ring belongs on
+   the controls inside, not around the whole panel. */
+.editor-sheet:focus {
+  outline: none;
+}
+
+.editor-sheet {
+  position: relative;
+  z-index: 1;
+  width: min(34rem, 100%);
+  max-height: min(92dvh, 54rem);
+  overflow: auto;
+  border: 0;
+  border-radius: var(--radius-sheet);
+  padding: 1rem;
+  background: var(--surface);
+  box-shadow: var(--shadow-sheet);
+}
+
+/* The submit row sticks to the sheet's bottom edge so "Save" never scrolls
+   away behind the keyboard. Negative margins run it out to the sheet padding. */
+.editor-form__submit {
+  position: sticky;
+  bottom: -1rem;
+  z-index: 1;
+  display: grid;
+  gap: 0.6rem;
+  margin: 0 -1rem -1rem;
+  padding: 0.75rem 1rem 1rem;
+  background: var(--surface);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .sheet-overlay {
+    animation: overlay-fade 180ms ease-out;
+  }
+
+  .editor-sheet {
+    animation: sheet-rise 220ms cubic-bezier(0.32, 0.72, 0.28, 1);
+  }
+
+  @keyframes overlay-fade {
+    from {
+      background-color: transparent;
+    }
+  }
+
+  @keyframes sheet-rise {
+    from {
+      transform: translateY(2.5rem);
+      opacity: 0.4;
+    }
+  }
+}
+
+.sheet-header {
+  margin-bottom: 1rem;
+}
+
+.sheet-close {
+  flex-shrink: 0;
+}
+
+.editor-form,
+.preview-stack,
+.details-panel,
+.settings-fieldset {
+  display: grid;
+  gap: 0.95rem;
+}

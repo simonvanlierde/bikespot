@@ -10,7 +10,7 @@ import {
   screenHeading,
   toLocalMeters,
 } from "../src/lib/geo.ts";
-import { lang } from "../src/lib/i18n.ts";
+import { setLang } from "../src/lib/i18n.ts";
 
 const amsterdamCentraal = { lat: 52.3791, lng: 4.9003 };
 const utrechtCentraal = { lat: 52.0894, lng: 5.1101 };
@@ -186,15 +186,15 @@ describe("scaleBar", () => {
 });
 
 describe("formatDistance", () => {
-  it("rounds to steps a reader can use", () => {
-    lang.value = "en";
+  it("rounds to steps a reader can use", async () => {
+    await setLang("en");
     expect(formatDistance(7.4)).toBe("7 m");
     expect(formatDistance(42)).toBe("40 m");
     expect(formatDistance(123)).toBe("120 m");
     expect(formatDistance(996)).toBe("1 km");
     expect(formatDistance(1234)).toBe("1.2 km");
-    lang.value = "nl";
+    await setLang("nl");
     expect(formatDistance(1234)).toBe("1,2 km");
-    lang.value = "en";
+    await setLang("en");
   });
 });

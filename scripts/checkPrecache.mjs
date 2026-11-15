@@ -1,4 +1,5 @@
-// Post-build guard: every font the app ships, and every file the built CSS
+// Post-build guard: every font and script chunk (the lazy language files
+// included) the app ships, and every file the built CSS
 // loads, must be in the service worker's precache. Anything missing there
 // fails to load offline, which is where people read their spot back.
 import { readdirSync, readFileSync } from "node:fs";
@@ -13,6 +14,7 @@ const precached = new Set(
 );
 
 const fonts = files.filter((file) => FONT_FILE.test(file));
+const scripts = files.filter((file) => /^assets\/.*\.js$/.test(file));
 const cssUrls = files
   .filter((file) => file.endsWith(".css"))
   .flatMap((css) =>
@@ -27,9 +29,11 @@ if (fonts.length === 0) {
   throw new Error("dist has no font files; the check would pass on nothing");
 }
 
-const missing = [...new Set([...fonts, ...cssUrls])].filter((file) => !precached.has(file));
+const missing = [...new Set([...fonts, ...scripts, ...cssUrls])].filter((file) => !precached.has(file));
 
 if (missing.length > 0) {
   throw new Error(`dist/sw.js does not precache: ${missing.join(", ")}`);
 }
-process.stdout.write(`Precache: all ${fonts.length} font file(s) and CSS assets are in dist/sw.js\n`);
+process.stdout.write(
+  `Precache: all ${fonts.length} font file(s), ${scripts.length} script chunk(s) and CSS assets are in dist/sw.js\n`,
+);

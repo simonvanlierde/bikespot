@@ -2,7 +2,10 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const css = readFileSync("src/styles/base.css", "utf8");
-const surfaces = readFileSync("src/styles/surfaces.css", "utf8");
+// The surface rules, in the order styles.css imports them.
+const surfaces = ["current-spot", "buttons", "sheet", "settings", "fields"]
+  .map((name) => readFileSync(`src/styles/${name}.css`, "utf8"))
+  .join("\n");
 const features = readFileSync("src/styles/features.css", "utf8");
 
 // The token block, and the blocks that force a theme from Settings.

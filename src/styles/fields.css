@@ -1,0 +1,282 @@
+.segmented-field__legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.segmented-field__hint {
+  margin: 0.6rem 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.text-button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.text-button:hover {
+  color: var(--ink);
+}
+
+.text-button--switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: fit-content;
+  min-height: 2.75rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--control-edge);
+  background: transparent;
+  font-size: 0.85rem;
+}
+
+.text-button--switch:hover {
+  background: var(--surface-sunken);
+}
+
+.segmented-field,
+.settings-fieldset {
+  margin: 0;
+  padding: 0.95rem;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+
+/* Single-input fields are flat: a bold label above a control that carries its
+   own border — no outer card. */
+.field {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.field span,
+.segmented-field legend,
+.settings-fieldset legend {
+  padding: 0;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+/* Legends read as headings inside the box, not as tabs straddling its border. */
+.segmented-field legend,
+.settings-fieldset legend {
+  float: left;
+  width: 100%;
+  margin-bottom: 0.1rem;
+}
+
+.field input[aria-invalid="true"],
+.segmented-field[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  border: 1px solid var(--control-edge);
+  border-radius: var(--radius-control);
+  padding: 0.9rem 1rem;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.segmented-field--compact {
+  padding: 0.7rem 0.8rem 0.8rem;
+  background: var(--surface-sunken);
+}
+
+.segmented-field__options {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 0.55rem;
+  clear: both;
+}
+
+.segmented-field__options--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.segmented-field__options--fit {
+  grid-template-columns: repeat(auto-fit, minmax(5.2rem, 1fr));
+}
+
+.segment {
+  background: transparent;
+  border-color: var(--control-edge);
+  color: var(--ink);
+  font-weight: 600;
+  padding-inline: 0.7rem;
+  /* Long compounds (Dutch, German, Nordic) break with a hyphen, not past the edge. */
+  hyphens: auto;
+}
+
+.segment--dense {
+  padding: 0.65rem 0.55rem;
+}
+
+.segment.is-active {
+  background: var(--sign);
+  border-color: var(--selected);
+  color: var(--sign-ink);
+  font-weight: 700;
+}
+
+.details-panel {
+  padding: 0.95rem;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--line);
+  background: var(--surface-sunken);
+}
+
+/* A clean button-style trigger wrapping a visually-hidden file input. */
+.file-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: 0.55rem;
+  padding: 0.8rem 1.1rem;
+  border: 1px solid var(--control-edge);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.file-trigger--camera {
+  display: none;
+}
+
+@media (any-pointer: coarse) {
+  .file-trigger--camera {
+    display: inline-flex;
+  }
+}
+
+.file-trigger:hover {
+  background: var(--surface-sunken);
+}
+
+.file-trigger:has(input:focus-visible) {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.toggle-row {
+  clear: both;
+  min-height: 3rem;
+  padding: 0.8rem 0;
+  border-top: 1px solid var(--line);
+  align-items: center;
+}
+
+.toggle-row:first-of-type {
+  border-top: 0;
+}
+
+.toggle-row__label {
+  color: var(--ink);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.toggle-row__input {
+  appearance: none;
+  position: relative;
+  flex: none;
+  width: 2.75rem;
+  height: 1.6rem;
+  min-height: 0; /* override the global input min-height */
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--control-edge);
+  cursor: pointer;
+}
+
+.toggle-row__input::before {
+  content: "";
+  position: absolute;
+  top: 0.15rem;
+  left: 0.15rem;
+  width: 1.3rem;
+  height: 1.3rem;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(14, 21, 34, 0.3);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .toggle-row__input {
+    transition: background 150ms ease;
+  }
+
+  .toggle-row__input::before {
+    transition: transform 150ms ease;
+  }
+}
+
+.toggle-row__input:checked {
+  background: var(--selected);
+}
+
+.toggle-row__input:checked::before {
+  transform: translateX(1.15rem);
+}
+
+.toggle-row__input:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* High-contrast modes repaint backgrounds with one system colour, which would
+   hide the knob and the checked state; draw them in system colours instead. */
+@media (forced-colors: active) {
+  .toggle-row__input {
+    forced-color-adjust: none;
+    background: Canvas;
+    border: 1px solid ButtonText;
+  }
+
+  .toggle-row__input::before {
+    top: calc(0.15rem - 1px);
+    left: calc(0.15rem - 1px);
+    background: ButtonText;
+    box-shadow: none;
+  }
+
+  .toggle-row__input:checked {
+    background: Highlight;
+    border-color: Highlight;
+  }
+
+  .toggle-row__input:checked::before {
+    background: HighlightText;
+  }
+
+  .segment.is-active {
+    forced-color-adjust: none;
+    background: Highlight;
+    border-color: Highlight;
+    color: HighlightText;
+  }
+}

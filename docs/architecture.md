@@ -20,6 +20,10 @@ State is a few `@preact/signals` made by `createStore()` in [`lib/store.ts`](../
 
 There is no router. Navigation is modal state: the `OverlayState` discriminated union describes which overlay is open, together with the state that belongs to it (the editor's draft, error and GPS status, or the settings draft). [`features/app/AppOverlays.tsx`](../src/features/app/AppOverlays.tsx) renders it.
 
+## Translations
+
+[`lib/i18n.ts`](../src/lib/i18n.ts) holds the `lang` signal, `t` and `setLang`. Each of the seven languages is a module in [`lib/i18n/`](../src/lib/i18n), typed `Dict`, so a missing key fails `tsc`. English ships in the main bundle and is the fallback. The other six load with a dynamic `import()` and the service worker precaches them, so every language works offline. `main.tsx` waits for the stored or detected language before the first render, so a Dutch browser never sees English first. `setLang` switches only after the new dictionary is in.
+
 ## Storage
 
 The store reaches storage only through the `SpotRepository` interface in [`lib/repository.ts`](../src/lib/repository.ts), which also keeps photos and records in step. Structured app data goes to `localStorage`. Photos go to IndexedDB, with an in-memory fallback ([`lib/photos.ts`](../src/lib/photos.ts)). [ADR 0001](adr/0001-split-persistence-across-localstorage-and-indexeddb.md) explains why.

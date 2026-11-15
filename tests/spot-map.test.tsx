@@ -5,7 +5,7 @@ import { axe } from "vitest-axe";
 
 import App from "../src/App.tsx";
 import type { AppData } from "../src/lib/app-data.ts";
-import { lang } from "../src/lib/i18n.ts";
+import { setLang } from "../src/lib/i18n.ts";
 import { createStore } from "../src/lib/store.ts";
 import { sampleAppData, seedStorage } from "./fixtures.ts";
 
@@ -63,9 +63,9 @@ async function openMap() {
 }
 
 describe("spot map", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     window.localStorage.clear();
-    lang.value = "en";
+    await setLang("en");
   });
 
   afterEach(() => {
@@ -122,7 +122,7 @@ describe("spot map", () => {
   });
 
   it("speaks Dutch", async () => {
-    lang.value = "nl";
+    await setLang("nl");
     seedStorage(withCoords);
     const geo = mockGeolocation();
     const user = userEvent.setup();

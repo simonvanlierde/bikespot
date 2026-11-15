@@ -189,7 +189,7 @@ describe("bike storage tracker app", () => {
     expect(card).toHaveClass("current-card--flip");
 
     // The motion lives only under no-preference, so reduced motion gets none.
-    const css = readFileSync("src/styles/surfaces.css", "utf8");
+    const css = readFileSync("src/styles/current-spot.css", "utf8");
     const motionFree = css.replace(/@media \(prefers-reduced-motion: no-preference\) \{[\s\S]*?\n\}\n/g, "");
     expect(css).toContain(".current-card--flip");
     expect(motionFree).not.toContain("current-card--flip");
@@ -435,8 +435,10 @@ describe("bike storage tracker app", () => {
 
     await user.selectOptions(picker, "de");
 
+    // The German dictionary loads on demand, so the switch lands a moment later.
+    expect(await screen.findByRole("combobox", { name: /sprache/i })).toHaveValue("de");
     expect(document.documentElement.lang).toBe("de");
-    expect(screen.getByRole("combobox", { name: /sprache/i })).toHaveValue("de");
     await user.selectOptions(screen.getByRole("combobox", { name: /sprache/i }), "en");
+    expect(await screen.findByRole("combobox", { name: /language/i })).toHaveValue("en");
   });
 });

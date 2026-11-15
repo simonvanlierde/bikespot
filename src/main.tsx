@@ -2,6 +2,7 @@ import { registerSW } from "virtual:pwa-register";
 import { effect } from "@preact/signals";
 import { render } from "preact";
 import App from "./App";
+import { ready } from "./lib/i18n";
 import { checkForUpdates } from "./lib/serviceWorkerUpdates";
 import { createStore } from "./lib/store";
 // Applies the stored theme to <html> at import, before the first render.
@@ -13,6 +14,9 @@ const rootElement = document.getElementById("root");
 if (!rootElement) {
   throw new Error("Root element #root was not found");
 }
+
+// The stored or detected language loads first, so there is no English flash.
+await ready;
 
 const store = createStore();
 

@@ -1,0 +1,174 @@
+import type { Distance } from "../app-data";
+import type { Compass } from "../geo";
+import type { Dict } from "./dict";
+
+// With their preposition, for "120 m au nord-est" and "à 40 m à l'est de".
+const COMPASS_FR: Record<Compass, string> = {
+  n: "au nord",
+  ne: "au nord-est",
+  e: "à l’est",
+  se: "au sud-est",
+  s: "au sud",
+  sw: "au sud-ouest",
+  w: "à l’ouest",
+  nw: "au nord-ouest",
+};
+
+const FR_DISTANCE: Record<Distance, string> = {
+  close: "Près de l’entrée",
+  middle: "Au milieu",
+  far: "Au fond",
+};
+
+// French needs the article and gender of the noun: "Ajouter une allée".
+const FR_ARTICLE: Record<string, string> = { Allée: "une allée", Étage: "un étage" };
+
+const fr: Dict = {
+  currentSpot: "Place actuelle",
+  hasGps: "Avec position GPS",
+  viewDetails: "Voir les détails",
+  changeLocation: "Changer de place",
+  updated: (time) => `Mis à jour ${time}`,
+  saved: (time) => `Enregistré ${time}`,
+  currentBikeRef: "Photo de la place actuelle",
+  navigation: "Plus",
+  noSpotYet: "Aucun vélo garé",
+  emptyIntro: "Enregistre l’endroit où tu laisses ton vélo, et retrouve-le plus tard. Tout reste sur ce téléphone.",
+  saveSpot: "Enregistrer la place",
+  justNow: "à l’instant",
+  bikeCollected: "Vélo récupéré",
+  removeFromRecent: "Retirer de l’historique",
+  noRecentYet: "Tes places précédentes s’affichent ici dès que tu en enregistres une nouvelle.",
+  recentLocations: "Historique",
+  settings: "Réglages",
+  setupStation: "Configurer ton parking",
+  laneHelp: "Le numéro de l’allée indiqué dans le parking vélo, par exemple 12.",
+  exportHelp: "Exporte uniquement les détails des places. Les photos restent sur cet appareil et ne sont pas incluses.",
+
+  cancel: "Annuler",
+  back: "Retour",
+  whereParked: "Lieu de stationnement",
+  whereOpts: { station: "Au parking", outside: "Dehors" },
+  saveLocation: "Enregistrer",
+  errorLaneRequired: "Indique l’allée pour retrouver ton vélo.",
+  errorNothingToFindBy: "Ajoute une note, une photo ou une position GPS pour retrouver ton vélo.",
+  moreDetails: "Plus de détails",
+  gpsLocation: "Position GPS",
+  notes: "Notes",
+  photo: "Photo",
+  floor: "Étage",
+  lane: "Allée",
+  distance: "Distance",
+  distanceHelpText: "Proche = vers l’entrée. Milieu = vers le milieu. Loin = plus au fond.",
+  side: "Côté",
+  rackLevel: "Niveau",
+  rackNumber: "N° d’emplacement",
+  opts: {
+    close: "Proche",
+    middle: "Milieu",
+    far: "Loin",
+    left: "Gauche",
+    right: "Droite",
+    top: "Haut",
+    bottom: "Bas",
+  },
+
+  locating: "Localisation…",
+  updateLocation: "Mettre à jour la position",
+  useMyLocation: "Utiliser ma position",
+  captured: "Enregistrée",
+  accuracy: (value) => `Précision : ${value}`,
+  geoError: "Impossible d’obtenir ta position. Vérifie les autorisations et réessaie.",
+
+  photoPreviewAlt: "Aperçu de la photo",
+  replacePhoto: "Remplacer la photo",
+  addPhoto: "Ajouter une photo",
+  takePhoto: "Prendre une photo",
+  removePhoto: "Supprimer la photo",
+  photoMetadataKept:
+    "Ce navigateur n’a pas pu retirer les données de position de la photo. La photo reste sur cet appareil.",
+
+  close: "Fermer",
+
+  locationDetails: "Détails de la place",
+  savedBikeRef: "Photo de la place enregistrée",
+  recentBikeRef: "Photo d’une place précédente",
+  recentPreview: "Aperçu d’une place précédente",
+  openInMaps: "Ouvrir dans Maps",
+  spotMap: "Carte des places",
+  mapIntro: "Dessinée sur ce téléphone à partir du GPS de tes places. Aucune carte n’est chargée. Le nord est en haut.",
+  mapNoGps: "Aucune de tes places n’a encore de position GPS. Ajoute-en une quand tu enregistres une place.",
+  mapCurrentNoGps: "La place actuelle n’a pas de position GPS.",
+  mapLabel: (count) => (count === 1 ? "Carte d’une place" : `Carte de ${count} places`),
+  showMyPosition: "Afficher ma position",
+  locatingYou: "Recherche de ta position…",
+  noSignal: "Pas encore de signal GPS. La recherche continue ; ça marche mieux dehors.",
+  positionError: "Impossible d’obtenir ta position. Vérifie que ce site peut l’utiliser.",
+  toYourBike: "Vers ton vélo",
+  you: "Toi",
+  youOffMap: "Toi, hors de la carte",
+  atYourBike: "Tu es près de ton vélo",
+  towards: (distance, direction) => `${distance} ${COMPASS_FR[direction]}`,
+  fromCurrent: (label, distance, direction) => `${label} : ${distance} ${COMPASS_FR[direction]} de la place actuelle`,
+  stationFloor: "Étage",
+  useThisLocation: "Reprendre cette place",
+  viewRecent: (title) => `Voir ${title}`,
+
+  station: "Parking vélos",
+  stationName: "Nom du parking",
+  stationNamePlaceholder: "ex. Strasbourg Gare",
+  general: "Général",
+  enabledFields: "Quels repères a ton parking ?",
+  floorInput: "Saisie de l’étage",
+  laneInput: "Saisie de l’allée",
+  theme: "Thème",
+  themeOpts: { system: "Système", light: "Clair", dark: "Sombre" },
+  numberInput: "Saisie libre",
+  quickMode: { lane: "Allées fixes", floor: "Étages fixes" },
+  presetLabel: (noun, n) => `${noun} ${n}`,
+  removePreset: (noun, n) => `Supprimer ${noun.toLowerCase()} ${n}`,
+  addPreset: (noun) => `Ajouter ${FR_ARTICLE[noun] ?? noun.toLowerCase()}`,
+
+  outsideStation: "Hors du parking",
+  bikeSpot: "Place vélo",
+  rackN: (n) => `Emplacement ${n}`,
+  laneN: (n) => `Allée ${n}`,
+  stationFloorN: (n) => `Étage ${n}`,
+  factDistance: (distance) => FR_DISTANCE[distance],
+  factSide: (side) => (side === "left" ? "Côté gauche" : "Côté droit"),
+  factRack: (level) => (level === "top" ? "Niveau haut" : "Niveau bas"),
+  notSaved: "pas encore enregistrée",
+
+  noticeSaveFailed: "Enregistrement impossible – stockage plein ou bloqué",
+  noticeDataUnreadable:
+    "Impossible de lire tes places et réglages – une copie est conservée sur cet appareil ; exporte-la depuis les Réglages",
+  noticeSomeDataUnreadable:
+    "Certaines places n’ont pas pu être lues – une copie est gardée sur cet appareil ; exporte-la depuis les Réglages",
+  noticeLocationUpdated: "Place enregistrée",
+  noticeLocationReplaced: "Place enregistrée – la précédente est dans l’historique",
+  noticeCollected: "Place libérée – conservée dans l'historique",
+  noticeRecentRemoved: "Retirée de l’historique",
+  noticeRecentRestored: "De retour dans l’historique",
+  undo: "Annuler",
+  noticeLocationFromRecent: "Place précédente reprise",
+  noticeDataCleared: "Données de stationnement effacées",
+  noticeClearFailed: "Certaines données n’ont pas pu être effacées. Réessaie.",
+  clearAllData: "Effacer les données de stationnement",
+  exportSpots: "Exporter les places",
+  importSpots: "Importer des places",
+  importHelp:
+    "Garde les cinq places les plus récentes dans l’historique. Ta place actuelle et les réglages du parking ne changent pas.",
+  exportUnreadable: "Exporter les données illisibles",
+  clearUnreadable: "Effacer les données illisibles",
+  clearUnreadableConfirm:
+    "Effacer de cet appareil la copie des données illisibles, avec les photos auxquelles elle seule renvoie ? Exporte-la d’abord pour la garder.",
+  noticeImported: (count) => (count === 1 ? "1 place importée" : `${count} places importées`),
+  noticeImportInvalid: "Ce n’est pas un fichier d’export Bikespot – rien n’a été importé",
+  clearAllDataConfirm:
+    "Effacer de cet appareil toutes les places, photos et réglages du parking vélos enregistrés ? La langue et l’apparence restent inchangées.",
+  viewSourceVersion: (version) => `Voir le code source, version ${version}`,
+
+  language: "Langue",
+};
+
+export default fr;
