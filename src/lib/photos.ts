@@ -22,7 +22,16 @@ function openPhotoDb(): Promise<IDBDatabase> {
     };
     request.onsuccess = () => {
       // A future version bump must not hang behind this tab's open connection.
-      request.result.onversionchange = () => request.result.close();
+      const database = request.result;
+      const forget = () => {
+        dbPromise = null;
+      };
+      database.onversionchange = () => {
+        database.close();
+        forget();
+      };
+      // The browser closed the connection (storage cleared, profile removed).
+      database.onclose = forget;
       resolve(request.result);
     };
     request.onblocked = () => {

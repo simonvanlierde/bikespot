@@ -2,6 +2,7 @@ import { registerSW } from "virtual:pwa-register";
 import { effect } from "@preact/signals";
 import { render } from "preact";
 import App from "./App";
+import { checkForUpdates } from "./lib/serviceWorkerUpdates";
 import { createStore } from "./lib/store";
 // Applies the stored theme to <html> at import, before the first render.
 import "./lib/theme";
@@ -19,6 +20,7 @@ render(<App store={store} />, rootElement);
 
 registerSW({
   immediate: true,
+  onRegisteredSW: (_swUrl, registration) => registration && checkForUpdates(registration),
   onRegisterError: (error) => console.error("Service worker registration failed", error),
   // autoUpdate reloads on activation; hold it while a sheet is open so an
   // unsaved draft isn't thrown away mid-edit.

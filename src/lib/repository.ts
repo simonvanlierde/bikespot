@@ -79,6 +79,8 @@ export const DRAFT_STORAGE_KEY = "bikespot-draft";
 export type StoredDraft = {
   draft: LocationDraft;
   showDetails: boolean;
+  // Epoch ms of the last write, so a holder can re-check the age when it uses the draft.
+  savedAt: number;
 };
 
 // An interrupted edit is worth resuming for about as long as the interruption
@@ -184,7 +186,11 @@ async function reconcilePhotos(data: AppData, isCurrent: () => boolean): Promise
     const referenced = referencedPhotoIds(data);
     // Photos of records only the unreadable backup still holds stay with it.
     const backup = window.localStorage.getItem(UNREADABLE_BACKUP_KEY) ?? "";
-    await Promise.all([...stored].filter((id) => !(referenced.has(id) || backup.includes(id))).map(deletePhotoBlob));
+    await Promise.all(
+      [...stored]
+        .filter((id) => !(referenced.has(id) || backup.includes(id)))
+        .map((id) => deletePhotoBlob(id).catch(() => undefined)),
+    );
 
     const dropMissing = (entry: LocationRecord): LocationRecord =>
       entry.photoId && !stored.has(entry.photoId) ? { ...entry, photoId: undefined } : entry;
@@ -237,7 +243,7 @@ function normalizeStoredDraft(value: unknown, now: number): StoredDraft | null {
 
   const draft = normalizeLocationDraft(candidate.draft);
 
-  return draft ? { draft, showDetails: candidate.showDetails === true } : null;
+  return draft ? { draft, showDetails: candidate.showDetails === true, savedAt } : null;
 }
 
 function normalizeLocationDraft(value: unknown): LocationDraft | null {
