@@ -124,3 +124,24 @@ test.describe("on a touch screen", () => {
     await checkEverySheet(page);
   });
 });
+
+// WCAG 1.4.4 and 1.4.10: with the text at 200% the buttons still fit the page width.
+test("200% text does not push the sign's buttons past the page", async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 640 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Save spot" }).click();
+  await page.getByRole("textbox", { name: "Lane" }).fill("4");
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  await expect(page.getByRole("dialog")).toBeHidden();
+  await page.evaluate(() => {
+    document.documentElement.style.fontSize = "200%";
+  });
+
+  const overflowing = await page.evaluate(() =>
+    [...document.querySelectorAll(".utility-button")]
+      .filter((el) => el.getBoundingClientRect().right > window.innerWidth)
+      .map((el) => el.textContent),
+  );
+  expect(overflowing).toEqual([]);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
+});
