@@ -1,0 +1,168 @@
+.primary-button,
+.ghost-button,
+.segment,
+.recent-item,
+.utility-button {
+  min-height: 2.75rem;
+  border-radius: var(--radius-control);
+  border: 1px solid transparent;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .primary-button,
+  .ghost-button,
+  .segment,
+  .recent-item,
+  .utility-button,
+  .text-button,
+  .file-trigger,
+  .labels-editor__remove {
+    transition:
+      background-color 150ms ease,
+      color 150ms ease,
+      border-color 150ms ease,
+      transform 100ms ease;
+  }
+
+  .primary-button:active,
+  .ghost-button:active,
+  .segment:active,
+  .utility-button:active {
+    transform: scale(0.985);
+  }
+}
+
+.primary-button,
+.ghost-button,
+.segment,
+.utility-button {
+  padding: 0.9rem 1rem;
+}
+
+.primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  background: var(--sign);
+  border-color: var(--selected);
+  color: var(--sign-ink);
+  font-weight: 700;
+}
+
+.primary-button:hover {
+  background: var(--sign-edge);
+}
+
+/* On the sign panel the roles invert: a white plate with sign-blue lettering. */
+.current-card .primary-button {
+  background: var(--sign-ink);
+  border-color: transparent;
+  color: var(--sign);
+}
+
+.current-card .primary-button:hover {
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.current-card .primary-button:focus-visible {
+  outline-color: var(--sign-ink);
+}
+
+.primary-button--wide,
+.ghost-button--wide {
+  width: 100%;
+}
+
+.primary-button--hero {
+  min-width: min(100%, 12rem);
+}
+
+.ghost-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  background: transparent;
+  border-color: var(--control-edge);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.ghost-button--danger {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.ghost-button--icon {
+  width: 2.75rem;
+  min-width: 2.75rem;
+  padding: 0;
+}
+
+.button-icon {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+}
+
+.ghost-button:hover,
+.segment:hover,
+.recent-item:hover,
+.utility-button:hover {
+  background: var(--surface-sunken);
+}
+
+/* The sign's secondary action. Filled like its sibling but tonal, so the solid
+   white plate stays primary; it's an anchor, so the underline has to go. The
+   keyline colour gives its edge 3:1 against the sign, which the tonal fill alone
+   does not. Placed after the ghost-button skin above so plain class specificity
+   is enough to win here and the wide-screen layout override still applies. */
+.current-card__maps {
+  flex: 1 1 10rem;
+  border-color: var(--sign-keyline);
+  background: var(--sign-tonal);
+  color: var(--sign-ink);
+  text-decoration: none;
+}
+
+.current-card__maps:hover {
+  border-color: var(--sign-keyline);
+  background: var(--sign-tonal-hover);
+}
+
+.utility-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.utility-button {
+  width: 100%;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background: var(--surface);
+  border-color: var(--control-edge);
+}
+
+.utility-button__row {
+  align-items: center;
+}
+
+.utility-button__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* Trim the font's half-leading so the text's cap-to-baseline ink is what gets
+   centered, not the taller line box. Without this the descender-less "Recent
+   locations" sits visually high. Degrades gracefully where unsupported. */
+.utility-button__title > span {
+  text-box: trim-both cap alphabetic;
+}

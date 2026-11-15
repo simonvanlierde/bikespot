@@ -1,5 +1,9 @@
 @import "./styles/base.css";
-@import "./styles/surfaces.css";
+@import "./styles/current-spot.css";
+@import "./styles/buttons.css";
+@import "./styles/sheet.css";
+@import "./styles/settings.css";
+@import "./styles/fields.css";
 @import "./styles/features.css";
 @import "./styles/spot-map.css";
 
