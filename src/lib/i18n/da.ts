@@ -60,6 +60,7 @@ const da: Dict = {
   side: "Side",
   rackLevel: "Niveau",
   rackNumber: "Stativnummer",
+  rackPlate: "Stativ",
   opts: {
     close: "Tæt",
     middle: "Midt",

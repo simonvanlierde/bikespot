@@ -4,7 +4,9 @@ import {
   formatRelativeTimestamp,
   formatTimestamp,
   getDetailFacts,
+  getPlates,
   getPrimaryLabel,
+  getSecondaryFacts,
   getSummary,
   mapsLink,
   showFloor,
@@ -165,5 +167,32 @@ describe("formatRelativeTimestamp", () => {
     expect(formatRelativeTimestamp("2026-04-18T12:00:00.000Z", now)).toBe("2 days ago");
     expect(formatRelativeTimestamp("2026-04-01T12:00:00.000Z", now)).toMatch(/2026/);
     expect(formatRelativeTimestamp(undefined, now)).toBe("not saved yet");
+  });
+});
+
+describe("getPlates", () => {
+  it("lists floor, lane and rack in walking order with their labels", () => {
+    expect(getPlates(station({ floor: "2", lane: "4", rackNumber: "42" }))).toEqual([
+      { key: "floor", label: "Floor", value: "2" },
+      { key: "lane", label: "Lane", value: "4" },
+      { key: "rackNumber", label: "Rack", value: "42" },
+    ]);
+  });
+
+  it("leaves out fields that are blank or switched off, and has none outside", () => {
+    expect(getPlates(station({ lane: "4", floor: " ", rackNumber: "7", visibleFields: {} }))).toEqual([
+      { key: "lane", label: "Lane", value: "4" },
+    ]);
+    expect(getPlates({ id: "o", updatedAt: "2026-04-19T07:05:00.000Z", stationName: "x", mode: "outside" })).toEqual(
+      [],
+    );
+  });
+
+  it("keeps distance, side and rack level as the secondary facts", () => {
+    expect(getSecondaryFacts(station({ lane: "4", distance: "close", side: "left", rackLevel: "top" }))).toEqual([
+      "Close distance",
+      "Left side",
+      "Top rack",
+    ]);
   });
 });

@@ -29,8 +29,37 @@ async function openSheet(user: ReturnType<typeof userEvent.setup>, name: RegExp)
 
 describe("separators", () => {
   it("glues each dot to the fact before it, so a wrapped line never starts with one", () => {
-    expect(joinFacts(["Floor 1", "Middle distance", "Top rack"])).toBe("Floor 1 · Middle distance · Top rack");
+    expect(joinFacts(["Floor 1", "Middle distance", "Top rack"])).toBe(
+      "Floor 1\u00A0·\u2002Middle distance\u00A0·\u2002Top rack",
+    );
     expect(joinFacts(["Floor 1"])).toBe("Floor 1");
+  });
+});
+
+describe("plates on the sign", () => {
+  beforeEach(() => window.localStorage.clear());
+
+  it("shows the lane plate and a heading for assistive tech, and no dot list of them", async () => {
+    await renderSeeded(userEvent.setup());
+    const card = screen.getByRole("region", { name: /current spot/i });
+    const plates = within(card).getAllByRole("listitem");
+
+    expect(plates.map((plate) => plate.textContent)).toEqual(["Lane4"]);
+    expect(within(card).getByRole("heading", { name: "Lane 4" })).toHaveClass("sr-only");
+    expect(card.querySelector(".spot-facts")?.textContent).toBe(
+      "Middle distance\u00A0·\u2002Right side\u00A0·\u2002Bottom rack",
+    );
+  });
+
+  it("keeps the free-text headline for an outside spot", async () => {
+    seedStorage({
+      ...sampleAppData,
+      current: { id: "o", mode: "outside", stationName: "x", notes: "By the lamp", updatedAt: hoursAgo(1) },
+    });
+    render(<App store={createStore()} />);
+    const heading = await screen.findByRole("heading", { name: t.value.outsideStation });
+    expect(heading).not.toHaveClass("sr-only");
+    expect(screen.queryAllByRole("listitem")).toHaveLength(0);
   });
 });
 

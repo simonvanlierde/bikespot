@@ -60,6 +60,7 @@ const sv: Dict = {
   side: "Sida",
   rackLevel: "Nivå",
   rackNumber: "Ställnummer",
+  rackPlate: "Ställ",
   opts: {
     close: "Nära",
     middle: "Mitten",

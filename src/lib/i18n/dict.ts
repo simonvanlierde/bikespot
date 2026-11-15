@@ -48,6 +48,7 @@ export type Dict = {
   side: string;
   rackLevel: string;
   rackNumber: string;
+  rackPlate: string;
   opts: Record<OptKey, string>;
 
   locating: string;

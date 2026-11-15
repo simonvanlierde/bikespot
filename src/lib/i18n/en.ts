@@ -52,6 +52,7 @@ const en: Dict = {
   side: "Side",
   rackLevel: "Rack level",
   rackNumber: "Rack number",
+  rackPlate: "Rack",
   opts: {
     close: "Close",
     middle: "Middle",

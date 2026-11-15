@@ -4,7 +4,7 @@ import { usePhotoUrl } from "@/components/usePhotoUrl";
 import type { LocationRecord } from "@/lib/app-data";
 import { t } from "@/lib/i18n";
 import type { Notice } from "@/lib/store";
-import { formatRelativeTimestamp, getDetailFacts, getPrimaryLabel, joinFacts, mapsLink } from "./display";
+import { formatRelativeTimestamp, getPlates, getPrimaryLabel, getSecondaryFacts, joinFacts, mapsLink } from "./display";
 
 // biome-ignore lint/complexity/noExcessiveLinesPerFunction: JSX render fn; markup dominates the line count
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: the branches are the card's empty/station/outside states
@@ -21,7 +21,8 @@ export function CurrentSpotCard({
   onOpenDetails: () => void;
   onSetup: () => void;
 }) {
-  const facts = current ? getDetailFacts(current) : [];
+  const plates = current ? getPlates(current) : [];
+  const facts = current ? getSecondaryFacts(current) : [];
   const photoUrl = usePhotoUrl(current?.photoId);
   // Keyed on the save time, so the flip-in plays once per save, also when a
   // second save follows while the first notice is still up.
@@ -69,19 +70,34 @@ export function CurrentSpotCard({
           ) : null}
         </div>
         <div className="current-card__header">
-          <div className="current-card__lead">
-            {photoUrl ? (
-              <figure className="current-card__thumb">
-                <img src={photoUrl} alt={t.value.currentBikeRef} />
-              </figure>
-            ) : null}
+          <div key={flipKey}>
             <h1
-              key={flipKey}
-              className={!current || current.mode === "outside" ? "headline headline--outside" : "headline"}
+              className={
+                plates.length
+                  ? "sr-only"
+                  : !current || current.mode === "outside"
+                    ? "headline headline--outside"
+                    : "headline"
+              }
             >
               {current ? getPrimaryLabel(current) : t.value.noSpotYet}
             </h1>
+            {plates.length ? (
+              <ul className="plates">
+                {plates.map((plate) => (
+                  <li className="plate" key={plate.key}>
+                    <span className="plate__label">{plate.label}</span>
+                    <span className="plate__value">{plate.value}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </div>
+          {photoUrl ? (
+            <figure className="current-card__photo">
+              <img src={photoUrl} alt={t.value.currentBikeRef} />
+            </figure>
+          ) : null}
           <div className="current-card__body" key={flipKey}>
             {!current ? <p className="spot-summary">{t.value.emptyIntro}</p> : null}
             {current?.mode === "outside" && current.notes ? <p className="spot-summary">{current.notes}</p> : null}

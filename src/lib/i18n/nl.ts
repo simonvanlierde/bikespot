@@ -54,6 +54,7 @@ const nl: Dict = {
   side: "Kant",
   rackLevel: "Rekniveau",
   rackNumber: "Reknummer",
+  rackPlate: "Rek",
   opts: {
     close: "Dichtbij",
     middle: "Midden",

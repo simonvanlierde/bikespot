@@ -114,7 +114,7 @@ export function formatAccuracy(coords: Coords): string {
 // Which field earns the headline: the most specific primary locator that's
 // filled — a rack number pinpoints a spot, a lane names a zone. Everything else
 // (floor, side, level, distance) is a supporting detail, not a headline.
-function getPrimaryFieldKey(entry: LocationRecord): "rackNumber" | "lane" | null {
+export function getPrimaryFieldKey(entry: LocationRecord): "rackNumber" | "lane" | null {
   if (entry.mode !== "station") {
     return null;
   }
@@ -190,10 +190,51 @@ export function getDetailFacts(entry: LocationRecord): string[] {
   return facts;
 }
 
+export type Plate = { key: "floor" | "lane" | "rackNumber"; label: string; value: string };
+
+// The three locators a returning rider reads first, in walking order. Fields
+// that are not saved are absent, never a placeholder.
+export function getPlates(entry: LocationRecord): Plate[] {
+  const plates: Plate[] = [];
+
+  if (entry.mode !== "station") {
+    return plates;
+  }
+
+  if (shouldShowEntryField(entry, "floor")) {
+    plates.push({ key: "floor", label: t.value.floor, value: entry.floor ?? "" });
+  }
+
+  if (shouldShowEntryField(entry, "lane")) {
+    plates.push({ key: "lane", label: t.value.lane, value: entry.lane ?? "" });
+  }
+
+  if (shouldShowEntryField(entry, "rackNumber")) {
+    plates.push({ key: "rackNumber", label: t.value.rackPlate, value: entry.rackNumber ?? "" });
+  }
+
+  return plates;
+}
+
+// What the plates leave out: distance, side and rack level, as labeled facts.
+export function getSecondaryFacts(entry: LocationRecord): string[] {
+  if (entry.mode !== "station") {
+    return [];
+  }
+
+  return [
+    shouldShowEntryField(entry, "distance") && entry.distance ? t.value.factDistance(entry.distance) : "",
+    shouldShowEntryField(entry, "side") && entry.side ? t.value.factSide(entry.side) : "",
+    shouldShowEntryField(entry, "rackLevel") && entry.rackLevel ? t.value.factRack(entry.rackLevel) : "",
+  ].filter(Boolean);
+}
+
 // One run of text. The no-break space glues each dot to the fact before it, so
-// a wrapped line never starts with an orphan "·".
+// a wrapped line never starts with an orphan "·". An en space follows it: the
+// font's middle dot has almost no right-hand bearing, so a plain space reads
+// as "fact ·fact".
 export function joinFacts(facts: string[]): string {
-  return facts.join("\u00A0· ");
+  return facts.join("\u00A0·\u2002");
 }
 
 const distanceFormat = computed(() => ({

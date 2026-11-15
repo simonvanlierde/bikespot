@@ -63,6 +63,7 @@ const fr: Dict = {
   side: "Côté",
   rackLevel: "Niveau",
   rackNumber: "N° d’emplacement",
+  rackPlate: "Place",
   opts: {
     close: "Proche",
     middle: "Milieu",
