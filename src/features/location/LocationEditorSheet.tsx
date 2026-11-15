@@ -22,6 +22,7 @@ export function LocationEditorSheet({
   photoMetadataKept,
   error,
   title,
+  carriedFloor,
   setFormState,
   onClose,
   onSubmit,
@@ -37,6 +38,8 @@ export function LocationEditorSheet({
   photoMetadataKept: boolean;
   error: string | null;
   title: string;
+  // Floor of the last spot; the draft starts from it.
+  carriedFloor?: string;
   setFormState: Dispatch<SetStateAction<LocationDraft>>;
   onClose: () => void;
   onSubmit: (event: TargetedEvent<HTMLFormElement>) => void;
@@ -103,6 +106,7 @@ export function LocationEditorSheet({
             geoStatus={geoStatus}
             photoMetadataKept={photoMetadataKept}
             laneInvalid={Boolean(error) && !formState.lane.trim()}
+            carriedFloor={carriedFloor}
             updateStationField={updateStationField}
             onNotesChange={updateNotes}
             onToggleDetails={onToggleDetails}

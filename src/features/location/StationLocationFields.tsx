@@ -33,6 +33,7 @@ export function StationLocationFields({
   geoStatus,
   photoMetadataKept = false,
   laneInvalid = false,
+  carriedFloor,
   updateStationField,
   onNotesChange,
   onToggleDetails,
@@ -46,6 +47,8 @@ export function StationLocationFields({
   geoStatus: "idle" | "capturing" | "error";
   photoMetadataKept?: boolean;
   laneInvalid?: boolean;
+  // The floor of the last spot, when the draft started from it.
+  carriedFloor?: string;
   updateStationField: UpdateStationField;
   onNotesChange: (notes: string) => void;
   onToggleDetails: () => void;
@@ -65,6 +68,23 @@ export function StationLocationFields({
           value={formState.floor}
           onChange={(value) => updateStationField("floor", value)}
         />
+      ) : null}
+
+      {station.enabledFields.floor && carriedFloor && formState.floor === carriedFloor ? (
+        <p className="same-as-last">
+          <span className="field-hint">{t.value.sameAsLastTime}</span>
+          <button
+            className="text-button text-button--switch"
+            type="button"
+            onClick={(event) => {
+              updateStationField("floor", station.floorLabels[0] ?? "");
+              // The button unmounts; keep focus inside the sheet.
+              event.currentTarget.closest<HTMLElement>("[aria-modal]")?.focus();
+            }}
+          >
+            {t.value.resetFields}
+          </button>
+        </p>
       ) : null}
 
       {station.enabledFields.lane ? (
