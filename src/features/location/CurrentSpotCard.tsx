@@ -4,7 +4,7 @@ import { usePhotoUrl } from "@/components/usePhotoUrl";
 import type { LocationRecord } from "@/lib/app-data";
 import { t } from "@/lib/i18n";
 import type { Notice } from "@/lib/store";
-import { formatRelativeTimestamp, getDetailFacts, getPrimaryLabel, mapsLink } from "./display";
+import { formatRelativeTimestamp, getDetailFacts, getPrimaryLabel, joinFacts, mapsLink } from "./display";
 
 // biome-ignore lint/complexity/noExcessiveLinesPerFunction: JSX render fn; markup dominates the line count
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: the branches are the card's empty/station/outside states
@@ -45,7 +45,9 @@ export function CurrentSpotCard({
       <div className="current-card__content">
         {current ? (
           <span className="current-card__topline-end">
-            {current.coords ? <MapPin aria-label={t.value.hasGps} className="button-icon current-card__pin" /> : null}
+            {current.coords ? (
+              <MapPin aria-label={t.value.hasGps} role="img" className="button-icon current-card__pin" />
+            ) : null}
             <ChevronRight aria-hidden="true" className="button-icon current-card__chevron" />
           </span>
         ) : null}
@@ -83,15 +85,7 @@ export function CurrentSpotCard({
           <div className="current-card__body" key={flipKey}>
             {!current ? <p className="spot-summary">{t.value.emptyIntro}</p> : null}
             {current?.mode === "outside" && current.notes ? <p className="spot-summary">{current.notes}</p> : null}
-            {facts.length ? (
-              <p className="spot-facts">
-                {facts.map((fact) => (
-                  <span className="spot-fact" key={fact}>
-                    {fact}
-                  </span>
-                ))}
-              </p>
-            ) : null}
+            {facts.length ? <p className="spot-facts">{joinFacts(facts)}</p> : null}
             {current?.mode === "station" && current.notes?.trim() ? <p className="spot-note">{current.notes}</p> : null}
           </div>
           <div className="current-card__footer">
@@ -111,6 +105,7 @@ export function CurrentSpotCard({
                 >
                   <MapPin aria-hidden="true" className="button-icon" />
                   <span>{t.value.openInMaps}</span>
+                  <span className="sr-only">{t.value.opensInNewWindow}</span>
                 </a>
               ) : null}
               <button
@@ -138,7 +133,13 @@ export function CurrentSpotCard({
         </div>
       </div>
       {/* Keyboard / AT path to the details sheet; its click bubbles to the section. */}
-      {current ? <button aria-label={t.value.viewDetails} className="current-card__hit" type="button" /> : null}
+      {current ? (
+        <button
+          aria-label={`${t.value.viewDetails}: ${getPrimaryLabel(current)}`}
+          className="current-card__hit"
+          type="button"
+        />
+      ) : null}
     </section>
   );
 }

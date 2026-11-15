@@ -269,6 +269,7 @@ export function SpotMapSheet({
             <a className="maps-link" href={mapsLink(currentCoords)} rel="noopener noreferrer" target="_blank">
               <MapPin aria-hidden="true" className="button-icon" />
               <span>{t.value.openInMaps}</span>
+              <span className="sr-only">{t.value.opensInNewWindow}</span>
             </a>
           </div>
         ) : null}

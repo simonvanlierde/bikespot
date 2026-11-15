@@ -1,7 +1,7 @@
 import { History, MapPin, Undo2 } from "lucide-preact";
 
 import { SheetDialog } from "@/components/SheetDialog";
-import { formatTimestamp, getDetailFacts, getPrimaryLabel } from "@/features/location/display";
+import { formatRelativeTimestamp, getDetailFacts, getPrimaryLabel, joinFacts } from "@/features/location/display";
 import type { LocationRecord } from "@/lib/app-data";
 import { t } from "@/lib/i18n";
 import type { Notice } from "@/lib/store";
@@ -51,21 +51,17 @@ export function RecentLocationsSheet({
           const meta = getRecentMeta(entry);
 
           return (
-            <button
-              aria-label={t.value.viewRecent(title)}
-              key={entry.id}
-              className="recent-item"
-              type="button"
-              onClick={() => onPreview(entry.id)}
-            >
+            <button key={entry.id} className="recent-item" type="button" onClick={() => onPreview(entry.id)}>
               <span className="recent-item__body">
                 <span className="recent-title">
                   {title}
-                  {entry.coords ? <MapPin aria-label={t.value.hasGps} className="recent-title__pin" /> : null}
+                  {entry.coords ? (
+                    <MapPin aria-label={t.value.hasGps} role="img" className="recent-title__pin" />
+                  ) : null}
                 </span>
                 {meta ? <span className="recent-meta">{meta}</span> : null}
               </span>
-              <span className="recent-time">{formatTimestamp(entry.updatedAt)}</span>
+              <span className="recent-time">{formatRelativeTimestamp(entry.updatedAt)}</span>
             </button>
           );
         })}
@@ -81,5 +77,5 @@ function getRecentMeta(entry: LocationRecord) {
     return entry.notes ?? "";
   }
 
-  return getDetailFacts(entry).join(" · ");
+  return joinFacts(getDetailFacts(entry));
 }

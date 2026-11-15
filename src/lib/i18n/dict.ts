@@ -90,7 +90,6 @@ export type Dict = {
   fromCurrent: (label: string, distance: string, direction: Compass) => string;
   stationFloor: string;
   useThisLocation: string;
-  viewRecent: (title: string) => string;
 
   station: string;
   stationName: string;
@@ -142,6 +141,10 @@ export type Dict = {
   clearUnreadable: string;
   clearUnreadableConfirm: string;
   noticeImported: (count: number) => string;
+  noticeImportedSkipped: (imported: number, skipped: number) => string;
+  sameAsLastTime: string;
+  resetFields: string;
+  opensInNewWindow: string;
   noticeImportInvalid: string;
   clearAllDataConfirm: string;
   viewSourceVersion: (version: string) => string;

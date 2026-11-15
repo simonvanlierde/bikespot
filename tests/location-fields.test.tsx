@@ -39,6 +39,28 @@ const draft: StationLocationDraft = {
 };
 
 describe("StationLocationFields", () => {
+  it("ties a quick-preset lane error to the group, without aria-invalid on the fieldset", () => {
+    render(
+      <StationLocationFields
+        formState={{ ...draft, lane: "" }}
+        station={{ ...allFieldsStation, laneInputMode: "quick", laneLabels: ["1", "2"] }}
+        showDetails={false}
+        geoStatus="idle"
+        laneInvalid
+        updateStationField={() => {}}
+        onNotesChange={() => {}}
+        onToggleDetails={() => {}}
+        onPhotoChange={() => {}}
+        onPhotoRemove={() => {}}
+        onCaptureLocation={() => {}}
+      />,
+    );
+
+    const group = screen.getByRole("group", { name: "Lane" });
+    expect(group).not.toHaveAttribute("aria-invalid");
+    expect(group.getAttribute("aria-describedby")).toContain("editor-error");
+  });
+
   it("routes each enabled field's change through updateStationField", () => {
     const update = vi.fn();
     render(

@@ -108,7 +108,6 @@ const ja: Dict = {
   fromCurrent: (label, distance, direction) => `${label}：現在の場所から${COMPASS_JA[direction]}へ${distance}`,
   stationFloor: "階",
   useThisLocation: "この場所に戻す",
-  viewRecent: (title) => `${title}を見る`,
 
   station: "駐輪場",
   stationName: "駐輪場の名前",
@@ -158,6 +157,10 @@ const ja: Dict = {
   clearUnreadableConfirm:
     "読み込めないデータのコピーと、関連する写真をこの端末から消去しますか？データを残す場合は、先にエクスポートしてください。",
   noticeImported: (count) => `${count}か所をインポートしました`,
+  noticeImportedSkipped: (a, s) => `${a}か所をインポート、${s}か所はスキップ（履歴がいっぱい）`,
+  sameAsLastTime: "前回と同じ",
+  resetFields: "リセット",
+  opensInNewWindow: "（新しいウィンドウで開きます）",
   noticeImportInvalid: "Bikespotのエクスポートファイルではありません。何もインポートしていません",
   clearAllDataConfirm: "保存した場所・写真・駐輪場の設定をすべてこの端末から消去しますか？言語と外観は変わりません。",
   viewSourceVersion: (version) => `ソースコードを見る（バージョン ${version}）`,

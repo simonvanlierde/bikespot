@@ -386,7 +386,6 @@ describe("store handlers", () => {
     it.each(["clearPhotos", "clearUnreadableBackup", "clearDraft"] as const)(
       "reports failed %s deletion and permits a retry",
       async (method) => {
-        vi.stubGlobal("confirm", () => true);
         let blocked = true;
         const deletion = vi.fn(() => {
           if (blocked) throw new Error("blocked");
@@ -405,7 +404,6 @@ describe("store handlers", () => {
     );
 
     it("waits for an earlier photo write before clearing photos and reporting success", async () => {
-      vi.stubGlobal("confirm", () => true);
       let finish: (id: string) => void = () => undefined;
       const clearPhotos = vi.fn(() => Promise.resolve());
       const clearing = createStore({
@@ -439,7 +437,6 @@ describe("store handlers", () => {
     });
 
     it("cancels the previous removal timer and undo when clearing", async () => {
-      vi.stubGlobal("confirm", () => true);
       vi.useFakeTimers();
       const clearing = createStore({
         ...browserRepository,
@@ -459,7 +456,6 @@ describe("store handlers", () => {
     });
 
     it("does not restore spots from an import that finishes after clearing", async () => {
-      vi.stubGlobal("confirm", () => true);
       let finish: (text: string) => void = () => undefined;
       const file = {
         text: () =>
@@ -479,7 +475,6 @@ describe("store handlers", () => {
     });
 
     it("preserves the previous spots and their photos if clearing app data fails", async () => {
-      vi.stubGlobal("confirm", () => true);
       let blocked = false;
       const clearPhotos = vi.fn(() => Promise.resolve());
       const clearing = createStore({
@@ -523,7 +518,6 @@ describe("store handlers", () => {
     });
 
     it("keeps the photos of records a failed save left on disk", async () => {
-      vi.stubGlobal("confirm", () => true);
       const dropUnusedPhotos = vi.fn(() => Promise.resolve());
       const clearPhotos = vi.fn(() => Promise.resolve());
       const withPhoto = { ...sampleAppData.recent[0]!, photoId: "photo-1" };
@@ -616,7 +610,7 @@ describe("store handlers", () => {
   });
 
   describe("handleImportSpots", () => {
-    it("drops the photos of spots the import pushes out of Recent", async () => {
+    it("keeps every Recent spot, photos included, when the import finds Recent full", async () => {
       const dropUnusedPhotos = vi.fn(() => Promise.resolve());
       const old = Array.from({ length: RECENT_LIMIT }, (_, index) => ({
         ...sampleAppData.recent[0]!,
@@ -638,8 +632,10 @@ describe("store handlers", () => {
         currentTarget: { files: [file], value: "" },
       } as unknown as TargetedEvent<HTMLInputElement>);
 
-      expect(importing.data.value.recent.map((entry) => entry.id)).not.toContain("old-0");
-      expect(dropUnusedPhotos).toHaveBeenCalledWith(expect.objectContaining({ recent: old }), importing.data.value);
+      expect(importing.data.value.recent).toEqual(old);
+      for (const [, kept] of dropUnusedPhotos.mock.calls as unknown as [unknown, { recent: { photoId: string }[] }][]) {
+        expect(kept.recent.map((entry) => entry.photoId)).toEqual(old.map((entry) => entry.photoId));
+      }
       stop();
     });
   });

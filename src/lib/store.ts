@@ -532,8 +532,7 @@ export function createStore(repo: SpotRepository = browserRepository) {
   }
 
   async function handleClearAllData(): Promise<void> {
-    // biome-ignore lint/suspicious/noAlert: a native confirm is the honest guard for a one-off destructive action
-    if (clearingData || !window.confirm(t.value.clearAllDataConfirm)) {
+    if (clearingData) {
       return;
     }
 
@@ -589,11 +588,6 @@ export function createStore(repo: SpotRepository = browserRepository) {
   }
 
   async function handleClearUnreadable(): Promise<void> {
-    // biome-ignore lint/suspicious/noAlert: a native confirm is the honest guard for a one-off destructive action
-    if (!window.confirm(t.value.clearUnreadableConfirm)) {
-      return;
-    }
-
     try {
       repo.clearUnreadableBackup();
     } catch {
@@ -631,8 +625,11 @@ export function createStore(repo: SpotRepository = browserRepository) {
 
     const result = mergeSpots(data.value, spots);
     // Notice before data, so a failed save in the persistence effect replaces it.
-    // commitData also drops the photos of spots the import pushed out of Recent.
-    notice.value = { text: t.value.noticeImported(result.added) };
+    notice.value = {
+      text: result.skipped
+        ? t.value.noticeImportedSkipped(result.added, result.skipped)
+        : t.value.noticeImported(result.added),
+    };
     await commitData(result.data);
   }
 

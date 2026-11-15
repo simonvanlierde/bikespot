@@ -23,6 +23,7 @@ export function AppOverlays({ store }: { store: Store }) {
           photoMetadataKept={current.photoMetadataKept}
           error={current.error}
           title={appData.current ? t.value.changeLocation : t.value.saveSpot}
+          carriedFloor={appData.current?.mode === "station" ? appData.current.floor : undefined}
           setFormState={store.setLocationDraft}
           onClose={store.closeOverlay}
           onSubmit={store.handleLocationSubmit}

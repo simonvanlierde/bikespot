@@ -2,6 +2,7 @@ import { Download, Upload } from "lucide-preact";
 import { Fragment, type TargetedEvent } from "preact";
 import type { Dispatch, SetStateAction } from "preact/compat";
 
+import { ConfirmAction } from "@/components/ConfirmAction";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { SheetDialog } from "@/components/SheetDialog";
 import { ToggleField } from "@/components/ToggleField";
@@ -162,22 +163,14 @@ export function StationSettingsSheet({
                 <Download aria-hidden="true" className="button-icon" />
                 <span>{t.value.exportUnreadable}</span>
               </button>
-              <button
-                className="ghost-button ghost-button--wide ghost-button--danger"
-                type="button"
-                onClick={onClearUnreadable}
-              >
-                {t.value.clearUnreadable}
-              </button>
+              <ConfirmAction
+                label={t.value.clearUnreadable}
+                prompt={t.value.clearUnreadableConfirm}
+                onConfirm={onClearUnreadable}
+              />
             </>
           ) : null}
-          <button
-            className="ghost-button ghost-button--wide ghost-button--danger"
-            type="button"
-            onClick={onClearAllData}
-          >
-            {t.value.clearAllData}
-          </button>
+          <ConfirmAction label={t.value.clearAllData} prompt={t.value.clearAllDataConfirm} onConfirm={onClearAllData} />
         </section>
       </div>
     </SheetDialog>

@@ -100,7 +100,6 @@ const en: Dict = {
   fromCurrent: (label, distance, direction) => `${label}: ${distance} ${COMPASS_EN[direction]} of the current spot`,
   stationFloor: "Station floor",
   useThisLocation: "Restore this spot",
-  viewRecent: (title) => `View ${title}`,
 
   station: "Station",
   stationName: "Station name",
@@ -150,6 +149,10 @@ const en: Dict = {
   clearUnreadableConfirm:
     "Clear the copy of the unreadable data from this device, with the photos only it refers to? Export it first to keep it.",
   noticeImported: (count) => (count === 1 ? "1 spot imported" : `${count} spots imported`),
+  noticeImportedSkipped: (a, s) => `Imported ${a}, skipped ${s} because Recent is full`,
+  sameAsLastTime: "Same as last time",
+  resetFields: "Reset",
+  opensInNewWindow: "(opens in a new window)",
   noticeImportInvalid: "Not a Bikespot export file — nothing imported",
   clearAllDataConfirm:
     "Clear all saved spots, photos and station settings from this device? Your language and appearance will stay unchanged.",

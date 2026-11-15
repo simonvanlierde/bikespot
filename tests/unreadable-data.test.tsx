@@ -106,7 +106,6 @@ describe("stored data that cannot be read", () => {
   });
 
   it("removes the backup when all data is cleared", async () => {
-    vi.stubGlobal("confirm", () => true);
     window.localStorage.setItem(APP_DATA_STORAGE_KEY, corrupt);
     const store = createStore();
     const stop = store.start();
@@ -170,7 +169,7 @@ describe("getting the unreadable copy out", () => {
     expect(await saved?.text()).toBe(corrupt);
   });
 
-  it("clears the copy after a confirm, then sweeps the photos it kept", async () => {
+  it("clears the copy, then sweeps the photos it kept", async () => {
     const photoId = await savePhotoBlob(new File(["bike"], "bike.png", { type: "image/png" }));
     window.localStorage.setItem(APP_DATA_STORAGE_KEY, `{"current":{"photoId":"${photoId}"`);
     const store = createStore();
@@ -178,11 +177,6 @@ describe("getting the unreadable copy out", () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
     expect(await listPhotoIds()).toEqual([photoId]);
 
-    vi.stubGlobal("confirm", () => false);
-    await store.handleClearUnreadable();
-    expect(window.localStorage.getItem(UNREADABLE_BACKUP_KEY)).not.toBeNull();
-
-    vi.stubGlobal("confirm", () => true);
     await store.handleClearUnreadable();
 
     expect(window.localStorage.getItem(UNREADABLE_BACKUP_KEY)).toBeNull();
@@ -192,7 +186,6 @@ describe("getting the unreadable copy out", () => {
   });
 
   it("reports a failed recovery-copy deletion and keeps the copy available", async () => {
-    vi.stubGlobal("confirm", () => true);
     const store = createStore({
       ...browserRepository,
       loadUnreadableBackup: () => corrupt,

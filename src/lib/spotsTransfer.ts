@@ -46,23 +46,30 @@ export function parseSpotsFile(text: string): LocationRecord[] | null {
     : null;
 }
 
-// Imported spots join Recent, newest first, within the usual cap. The current
-// spot is left alone: the file cannot say whether that bike is still parked.
-// `added` counts only spots that made it past the id check and the cap.
-export function mergeSpots(data: AppData, spots: LocationRecord[]): { data: AppData; added: number } {
+// Imported spots fill the free Recent slots, newest first; they never push out
+// a spot (or its photo) the user already has. The current spot is left alone:
+// the file cannot say whether that bike is still parked. `skipped` counts new
+// spots that found no free slot; spots already known by id are not counted.
+export function mergeSpots(data: AppData, spots: LocationRecord[]): { data: AppData; added: number; skipped: number } {
   const known = new Set([data.current?.id, ...data.recent.map((entry) => entry.id)]);
-  const incoming = spots.filter((entry) => {
-    if (known.has(entry.id)) {
-      return false;
-    }
-    known.add(entry.id);
-    return true;
-  });
+  const incoming = spots
+    .filter((entry) => {
+      if (known.has(entry.id)) {
+        return false;
+      }
+      known.add(entry.id);
+      return true;
+    })
+    .sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt));
 
-  const recent = [...data.recent, ...incoming]
-    .sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
-    .slice(0, RECENT_LIMIT);
-  const added = recent.filter((entry) => incoming.includes(entry)).length;
+  const accepted = incoming.slice(0, Math.max(0, RECENT_LIMIT - data.recent.length));
+  const skipped = incoming.length - accepted.length;
 
-  return { data: added > 0 ? { ...data, recent } : data, added };
+  if (accepted.length === 0) {
+    return { data, added: 0, skipped };
+  }
+
+  const recent = [...data.recent, ...accepted].sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt));
+
+  return { data: { ...data, recent }, added: accepted.length, skipped };
 }

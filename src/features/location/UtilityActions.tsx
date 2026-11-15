@@ -23,7 +23,7 @@ export function UtilityActions({
             <History aria-hidden="true" className="button-icon" />
             <span>{t.value.recentLocations}</span>
           </span>
-          <span className="utility-count">{recentCount}</span>
+          {recentCount > 0 ? <span className="utility-count">{recentCount}</span> : null}
         </span>
       </button>
       {hasGps ? (
