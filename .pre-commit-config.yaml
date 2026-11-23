@@ -23,7 +23,7 @@ repos:
 
   # Tolerates JSONC configs (tsconfig, VS Code settings).
   - repo: https://github.com/simonvanlierde/jsonvet
-    rev: 83df66110a108e0fa4b7d2b2adcef6831f618e05 # frozen: v3.3.1
+    rev: b56355ba1b7dd807944177a126592f8cb2cd3255 # frozen: v3.5.1
     hooks:
       - id: jsonvet
 
@@ -40,7 +40,7 @@ repos:
 
   # gitleaks' successor from the same authors. gitleaks takes security fixes only.
   - repo: https://github.com/betterleaks/betterleaks
-    rev: 81aff7a638638aae3a659845d089043e1d8fe9ac # frozen: v1.9.0
+    rev: 39d5bdcf34db54e944facac5cf6e8b03db5e2b99 # frozen: v1.10.1
     hooks:
       - id: betterleaks
 
@@ -48,7 +48,7 @@ repos:
   # and impostor commits. Set GH_TOKEN to enable the audits that need the API;
   # without it only the offline subset runs.
   - repo: https://github.com/zizmorcore/zizmor-pre-commit
-    rev: c92afdf2c6ca336aaa8f39e2bd8d48f62dbd8e1f # frozen: v1.31.1
+    rev: 06a39750ec31860bb44f2acf67182c40016cd1e7 # frozen: v1.32.0
     hooks:
       - id: zizmor
 
@@ -56,11 +56,11 @@ repos:
   # and shellcheck over every `run:` when shellcheck is on PATH. jactionlint is a
   # maintained fork of actionlint that adds release, cache and concurrency checks.
   - repo: https://github.com/jdx/jactionlint
-    rev: baa8d685e2b27ff5821558c9eeabb2051c1da61b # frozen: v2.4.0
+    rev: 72c00452809bcca05b8bc12acdcf15dd7a9c1c5e # frozen: v2.6.0
     hooks:
       - id: jactionlint
   - repo: https://github.com/rvben/rumdl-pre-commit
-    rev: b0cff962ee693b9e612c097d22e71e0cba127447 # frozen: v0.3.2
+    rev: df5a947a3af0dba56640e644c6b9316184749168 # frozen: v0.3.4
     hooks:
       - id: rumdl
         args: [--fix]
